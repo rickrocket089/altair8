@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# Environment
+.env
+*.env
+
+# Docker
+*.log
+
+# Database
+*.db
+*.sqlite
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Workspace (large files, not tracked)
+workspace/papers/*
+workspace/outputs/*
+workspace/memory/*
+!workspace/papers/.gitkeep
+!workspace/outputs/.gitkeep
+!workspace/memory/.gitkeep
