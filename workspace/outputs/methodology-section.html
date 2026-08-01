@@ -1,0 +1,563 @@
+<style>
+  /* ─── Methodology Deep-Dive ─── */
+  .methodology-intro {
+    font-size: 1.05rem;
+    color: var(--ink-mid);
+    margin-bottom: 3rem;
+    max-width: 600px;
+    line-height: 1.7;
+  }
+
+  .methodology-subsection {
+    margin-bottom: 3.5rem;
+  }
+
+  .methodology-subsection h3 {
+    font-size: 1.05rem;
+    color: var(--ink);
+    margin-bottom: 0.75rem;
+    margin-top: 0;
+  }
+
+  .methodology-subsection p {
+    font-size: 0.9rem;
+    color: var(--ink-mid);
+    line-height: 1.7;
+    margin-bottom: 0.9rem;
+  }
+
+  .methodology-subsection p:last-child {
+    margin-bottom: 0;
+  }
+
+  .methodology-note {
+    font-size: 0.82rem;
+    color: var(--ink-light);
+    border-left: 2px solid var(--rule);
+    padding-left: 1rem;
+    margin-top: 1rem;
+    line-height: 1.6;
+  }
+
+  .methodology-note strong {
+    color: var(--ink-mid);
+  }
+
+  /* ─── Sprint Flow Diagram ─── */
+  .flow-diagram {
+    margin: 2.5rem 0 2rem;
+    font-family: 'Iowan Old Style', 'Palatino Linotype', Palatino, Georgia, serif;
+  }
+
+  .flow-row {
+    display: flex;
+    align-items: center;
+    gap: 0;
+  }
+
+  .flow-row.parallel-row {
+    align-items: stretch;
+  }
+
+  .flow-node {
+    border: 1px solid var(--rule);
+    border-radius: 2px;
+    padding: 0.65rem 1rem;
+    font-size: 0.8rem;
+    color: var(--ink-mid);
+    line-height: 1.45;
+    background: var(--cream);
+    flex-shrink: 0;
+  }
+
+  .flow-node.node-start {
+    background: var(--cream-dark);
+    border-color: var(--rule);
+    min-width: 11rem;
+  }
+
+  .flow-node.node-gate {
+    border-color: var(--accent);
+    border-width: 1.5px;
+    color: var(--ink);
+    min-width: 9rem;
+  }
+
+  .flow-node.node-gate .node-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 600;
+    display: block;
+    margin-bottom: 0.2rem;
+  }
+
+  .flow-node.node-close {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--cream);
+    min-width: 7rem;
+    text-align: center;
+  }
+
+  .flow-node.node-revise {
+    background: var(--cream-dark);
+    border-color: var(--rule);
+    border-style: dashed;
+    min-width: 9rem;
+    color: var(--ink-mid);
+  }
+
+  /* parallel work block */
+  .parallel-block {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    flex-shrink: 0;
+  }
+
+  .parallel-block .flow-node {
+    min-width: 9.5rem;
+  }
+
+  .parallel-block .parallel-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-light);
+    padding: 0 0 0.1rem 0;
+  }
+
+  /* connectors */
+  .flow-connector {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    color: var(--ink-light);
+    font-size: 0.75rem;
+    position: relative;
+  }
+
+  .flow-connector .arrow-line {
+    width: 2rem;
+    height: 1px;
+    background: var(--rule);
+    position: relative;
+    flex-shrink: 0;
+  }
+
+  .flow-connector .arrow-line::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: -3px;
+    border-top: 3px solid transparent;
+    border-bottom: 3px solid transparent;
+    border-left: 5px solid var(--rule);
+  }
+
+  .flow-connector.connector-gate .arrow-line {
+    background: var(--accent);
+    opacity: 0.5;
+  }
+  .flow-connector.connector-gate .arrow-line::after {
+    border-left-color: var(--accent-lt);
+  }
+
+  /* vertical connector between parallel nodes */
+  .parallel-connector {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    flex-shrink: 0;
+    position: relative;
+  }
+
+  .parallel-connector .v-line {
+    width: 1px;
+    flex: 1;
+    background: var(--rule);
+  }
+
+  .parallel-connector .h-cap {
+    width: 0.5rem;
+    height: 1px;
+    background: var(--rule);
+  }
+
+  /* merge and split connectors */
+  .split-connector {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-shrink: 0;
+    position: relative;
+    width: 2rem;
+  }
+
+  .split-connector .v-top {
+    flex: 1;
+    width: 1px;
+    background: var(--rule);
+    min-height: 1.5rem;
+  }
+
+  .split-connector .v-mid {
+    width: 1rem;
+    height: 1px;
+    background: var(--rule);
+  }
+
+  .flow-row-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  /* loop-back annotation */
+  .loop-annotation {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    margin-top: 1.25rem;
+    padding: 0.85rem 1rem;
+    border: 1px dashed var(--rule);
+    border-radius: 2px;
+    background: var(--cream-dark);
+  }
+
+  .loop-annotation .loop-icon {
+    font-size: 1rem;
+    color: var(--accent-lt);
+    flex-shrink: 0;
+    margin-top: 0.05rem;
+  }
+
+  .loop-annotation p {
+    font-size: 0.8rem;
+    color: var(--ink-mid);
+    line-height: 1.55;
+    margin: 0;
+  }
+
+  .loop-annotation p strong {
+    color: var(--ink);
+  }
+
+  /* outcome/verdict labels inline */
+  .verdict {
+    display: inline-block;
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-weight: 600;
+    padding: 0.1rem 0.4rem;
+    border-radius: 2px;
+    vertical-align: middle;
+  }
+
+  .verdict-approved {
+    background: rgba(31, 77, 62, 0.1);
+    color: var(--accent);
+  }
+
+  .verdict-revision {
+    background: rgba(109, 118, 121, 0.1);
+    color: var(--ink-mid);
+  }
+
+  /* checklist table */
+  .checklist-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+    margin: 1.5rem 0;
+  }
+
+  .checklist-table th {
+    text-align: left;
+    font-size: 0.68rem;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+    color: var(--ink-light);
+    font-weight: 600;
+    padding: 0.5rem 0.75rem 0.5rem 0;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .checklist-table td {
+    padding: 0.65rem 0.75rem 0.65rem 0;
+    border-bottom: 1px solid var(--rule);
+    color: var(--ink-mid);
+    line-height: 1.5;
+    vertical-align: top;
+  }
+
+  .checklist-table tr:last-child td {
+    border-bottom: none;
+  }
+
+  .checklist-table .cat-name {
+    color: var(--ink);
+    font-size: 0.82rem;
+  }
+
+  .checklist-gap {
+    color: var(--ink-light);
+    font-style: italic;
+  }
+
+  /* responsive adjustments */
+  @media (max-width: 600px) {
+    .flow-diagram {
+      overflow-x: auto;
+      padding-bottom: 0.5rem;
+    }
+
+    .flow-diagram-inner {
+      min-width: 520px;
+    }
+
+    .checklist-table {
+      font-size: 0.78rem;
+    }
+  }
+</style>
+
+<hr class="rule">
+
+<section id="methodology">
+  <div class="container">
+
+    <p class="section-label">Methodology</p>
+    <h2>How We Actually Work</h2>
+    <p class="methodology-intro">
+      This is for other researchers who want to understand the mechanics precisely —
+      not a summary of our goals. Three things are worth explaining in detail:
+      how the review gate is enforced, how we fix process failures when they surface,
+      and where we are deliberately not relying on automation.
+    </p>
+
+    <!-- ─── 1. Review Gate ─── -->
+    <div class="methodology-subsection">
+      <h3>1. The review gate: what it actually enforces</h3>
+
+      <p>
+        Every sprint produces deliverables from the two Researchers (Kenji and Naledi)
+        and the Developer (Mateo). Before a sprint can be marked closed, the Reviewer
+        (Ingrid) must record a verdict — <span class="verdict verdict-approved">approved</span>,
+        <span class="verdict verdict-revision">needs&nbsp;revision</span>, or rejected — in
+        a <code>reviews</code> Postgres table. A sprint-close operation fails at the
+        database level if the latest review row for that sprint does not carry
+        <code>result&nbsp;=&nbsp;'approved'</code>. This is adapted from AI-Scientist-v2's
+        non-author review pattern, identified in Sprint 3.
+      </p>
+
+      <p>
+        The diagram below shows one sprint cycle. The gate is the branch: an
+        <span class="verdict verdict-approved">approved</span> verdict closes the sprint;
+        a <span class="verdict verdict-revision">needs&nbsp;revision</span> verdict
+        routes deliverables back to the researcher(s) with specific instructions,
+        and the sprint stays open until a new review passes.
+      </p>
+
+      <!-- Flow Diagram -->
+      <div class="flow-diagram" role="img" aria-label="Sprint cycle flow: question opens sprint, parallel research and development work runs, Reviewer gate either closes sprint or routes back to revision">
+        <div class="flow-diagram-inner">
+
+          <!-- Row 1: Question → split → parallel work -->
+          <div class="flow-row" style="align-items:flex-start; margin-bottom:0;">
+
+            <!-- START: Sprint question -->
+            <div class="flow-node node-start" style="align-self:center;">
+              <span style="font-size:0.68rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);font-weight:600;display:block;margin-bottom:.2rem;">Sprint opens</span>
+              Research question<br>defined &amp; scoped
+            </div>
+
+            <!-- connector to split -->
+            <div class="flow-connector" style="align-self:center;">
+              <div class="arrow-line"></div>
+            </div>
+
+            <!-- parallel split point -->
+            <div style="display:flex;flex-direction:column;align-items:center;align-self:stretch;flex-shrink:0;width:1.2rem;">
+              <div style="flex:1;width:1px;background:var(--rule);"></div>
+              <div style="width:1rem;height:1px;background:var(--rule);"></div>
+              <div style="flex:1;width:1px;background:var(--rule);"></div>
+            </div>
+
+            <!-- parallel work block -->
+            <div class="parallel-block" style="align-self:center;">
+              <div style="font-size:0.68rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-light);margin-bottom:.15rem;">Parallel work</div>
+              <div class="flow-node" style="min-width:10rem;">
+                <strong style="color:var(--ink);font-size:0.8rem;">Researchers</strong><br>
+                Literature, landscape,<br>cognitive briefs
+              </div>
+              <div class="flow-node" style="min-width:10rem;">
+                <strong style="color:var(--ink);font-size:0.8rem;">Developer</strong><br>
+                Prototype translating<br>researcher findings
+              </div>
+            </div>
+
+            <!-- connector to merge -->
+            <div style="display:flex;flex-direction:column;align-items:center;align-self:stretch;flex-shrink:0;width:2rem;">
+              <div style="flex:1;width:1px;background:var(--rule);"></div>
+              <div style="width:1rem;height:1px;background:var(--rule);"></div>
+              <div style="flex:1;width:1px;background:var(--rule);"></div>
+            </div>
+
+            <!-- GATE -->
+            <div class="flow-node node-gate" style="align-self:center;">
+              <span class="node-label">Review gate</span>
+              Ingrid reviews<br>all deliverables
+            </div>
+
+            <!-- connector to outcomes -->
+            <div style="display:flex;flex-direction:column;align-items:center;align-self:stretch;flex-shrink:0;width:2rem;">
+              <div style="flex:1;width:1px;background:var(--rule);opacity:.4;"></div>
+              <div style="width:1rem;height:1px;background:var(--rule);"></div>
+              <div style="flex:1;width:1px;background:var(--rule);opacity:.4;"></div>
+            </div>
+
+            <!-- outcomes: approved / needs revision -->
+            <div style="display:flex;flex-direction:column;gap:.5rem;align-self:center;flex-shrink:0;">
+              <div class="flow-node node-close" style="font-size:0.8rem;">
+                Sprint closes
+              </div>
+              <div style="font-size:0.7rem;color:var(--ink-light);text-align:center;padding:.1rem 0;">or</div>
+              <div class="flow-node node-revise" style="font-size:0.8rem;">
+                Revise + re-submit<br>
+                <span style="font-size:0.72rem;color:var(--ink-light);">per specific instructions</span>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Loop annotation -->
+          <div class="loop-annotation">
+            <div class="loop-icon">↩</div>
+            <p>
+              <strong>The loop is not symbolic.</strong> Sprint 4 (completed 2026-07-22/23)
+              received a <span class="verdict verdict-revision">needs&nbsp;revision</span>
+              verdict from Ingrid first. The sprint-close operation was refused by the gate.
+              Both Kenji and Mateo revised their deliverables against six specific instructions
+              from Ingrid's review. Ingrid spot-checked the revisions; the sprint then closed.
+              The gate was not bypassed or waived.
+            </p>
+          </div>
+
+        </div><!-- /flow-diagram-inner -->
+      </div><!-- /flow-diagram -->
+
+    </div><!-- /subsection 1 -->
+
+    <hr style="border:none;border-top:1px solid var(--rule);margin:0 0 3rem;">
+
+    <!-- ─── 2. How a process fix actually gets made ─── -->
+    <div class="methodology-subsection">
+      <h3>2. How a process fix actually gets made</h3>
+
+      <p>
+        Sprint 2 scanned the top 20 AI slide and visualization tools. Sprint 3
+        went deep on Genially and AI-Scientist-v2. Both sprints presented their
+        scope as a market assessment. Both silently covered only third-party
+        consumer tools — Gamma, Tome, Genially, Flourish, Prezi — and never
+        touched foundation-model providers' own first-party capabilities:
+        Anthropic's Claude skills, OpenAI's ChatGPT Canvas, Google's Gemini Canvas,
+        Microsoft Copilot. An entire category was missing from what was presented
+        as a landscape scan.
+      </p>
+
+      <p>
+        Nobody on the team caught it during Sprint 2's review. Nobody caught it
+        during Sprint 3's review either. The founder caught it afterward, when
+        scoping Sprint 4 — because he noticed that findings about Anthropic and
+        OpenAI's own capabilities were being described as discoveries, when they
+        should have been covered in the earlier landscape work. The team did not
+        self-identify this gap.
+      </p>
+
+      <p>
+        Two fixes were made. First, a required-category checklist
+        (<code>tools/scope_checklist.py</code>): any future market-analysis sprint
+        question is checked against four mandatory categories before being proposed.
+        Second, the Reviewer's mandate was explicitly extended to include scope
+        completeness — not just evidentiary rigor of what was submitted, but whether
+        an entire category was silently absent.
+      </p>
+
+      <table class="checklist-table" aria-label="Required scope categories for market analysis sprints">
+        <thead>
+          <tr>
+            <th style="width:35%;">Category</th>
+            <th>What it covers</th>
+            <th style="width:20%;">Sprint 2 status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="cat-name">Third-party tools</td>
+            <td>Commercial products built on foundation models (Genially, Gamma, Tome, Beautiful.ai, Flourish, Prezi)</td>
+            <td><span class="verdict verdict-approved">Covered</span></td>
+          </tr>
+          <tr>
+            <td class="cat-name">Foundation-model providers' own capabilities</td>
+            <td>Native capabilities shipped by model providers themselves — not third-party products built on top of them (Anthropic skills, ChatGPT Canvas, Gemini Canvas, Copilot)</td>
+            <td><span class="checklist-gap">Silent gap</span></td>
+          </tr>
+          <tr>
+            <td class="cat-name">Open-source / research frameworks</td>
+            <td>Non-commercial frameworks or research codebases relevant to the problem (AI-Scientist-v2, RISE)</td>
+            <td><span class="checklist-gap">Deferred to Sprint 3</span></td>
+          </tr>
+          <tr>
+            <td class="cat-name">Academic / independent research</td>
+            <td>Published literature on the underlying problem, independent of any specific product or vendor</td>
+            <td><span class="verdict verdict-approved">Covered (Sprint 1)</span></td>
+          </tr>
+        </tbody>
+      </table>
+
+    </div><!-- /subsection 2 -->
+
+    <hr style="border:none;border-top:1px solid var(--rule);margin:0 0 3rem;">
+
+    <!-- ─── 3. Where we don't rely on automation ─── -->
+    <div class="methodology-subsection">
+      <h3>3. Where we are not relying on automation</h3>
+
+      <p>
+        The scope checklist ships a keyword-based pre-check function. It scans a
+        proposed sprint brief for terms associated with each required category and
+        flags apparent gaps before the brief is submitted. We tested it against the
+        real historical Sprint 2 brief to validate it. It produced an instructive
+        false positive: the foundation-model-native category showed as
+        <em>mentioned</em> because an incidental keyword matched — even though that
+        category was never actually assessed in the brief.
+      </p>
+
+      <p>
+        We are not treating this as a bug to fix. A keyword scan is a fast filter
+        for obvious omissions, not a coverage verifier. The pre-check can save a
+        researcher from forgetting a whole category accidentally; it cannot tell
+        whether a category that appears in the text was genuinely researched.
+        The Reviewer's actual judgment on scope is what matters. The pre-check
+        is upstream of that judgment, not a substitute for it.
+      </p>
+
+      <div class="methodology-note">
+        <strong>On the Reviewer gate itself:</strong> Sprint 3 surfaced an open
+        design question — whether Ingrid's review gate should eventually become
+        human-supervised or fully agent-automated. That question was deliberately
+        not resolved in Sprint 3 and was flagged for Sophie (founder) to decide
+        before Sprint 5. It is not resolved now. The gate is currently
+        human-judgment only.
+      </div>
+
+    </div><!-- /subsection 3 -->
+
+  </div><!-- /container -->
+</section>

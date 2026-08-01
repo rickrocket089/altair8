@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Progressive Spatial Disclosure — Altair8 Prototype</title>
+<style>
+  /* ── Reset & base ─────────────────────────────────────────────── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: "Inter", "Helvetica Neue", Arial, sans-serif;
+    background: #0f1117;
+    color: #e8eaf0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 24px 80px;
+  }
+
+  /* ── Header ───────────────────────────────────────────────────── */
+  .header {
+    max-width: 720px;
+    width: 100%;
+    margin-bottom: 48px;
+    border-left: 3px solid #5c6bc0;
+    padding-left: 16px;
+  }
+  .header h1 {
+    font-size: 1.15rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    color: #9fa8da;
+    text-transform: uppercase;
+  }
+  .header p {
+    margin-top: 6px;
+    font-size: 0.85rem;
+    color: #6c7293;
+    line-height: 1.5;
+  }
+
+  /* ── Stage wrapper ────────────────────────────────────────────── */
+  .stage {
+    max-width: 720px;
+    width: 100%;
+    position: relative;
+  }
+
+  /* ── The main visualization canvas ───────────────────────────── */
+  .canvas {
+    background: #161922;
+    border: 1px solid #272c3f;
+    border-radius: 12px;
+    padding: 40px;
+    position: relative;
+    min-height: 420px;
+  }
+
+  /* ── Claim nodes ──────────────────────────────────────────────── */
+  /*
+    Motivation: Naledi §2 — encode the most important signal in
+    pre-attentive channels (color hue, size). No orientation encoding
+    because Kenji §1.1 flags orientation as an acute VLM + human-under-
+    load failure mode. Relations are expressed via proximity + connector
+    lines, not angular placement.
+  */
+  .claim-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .claim-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 0;
+    position: relative;
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 0.45s ease, transform 0.45s ease;
+  }
+  .claim-row.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* Vertical connector between rows — drawn after row 1 appears */
+  .claim-row::before {
+    content: "";
+    position: absolute;
+    left: 23px;            /* center of the node circle (48px wide / 2 - 1) */
+    top: -28px;
+    width: 2px;
+    height: 28px;
+    background: linear-gradient(to bottom, transparent, #3d4466);
+    opacity: 0;
+    transition: opacity 0.3s ease 0.2s;
+  }
+  .claim-row.show-connector::before {
+    opacity: 1;
+  }
+
+  /* ── Node circle ──────────────────────────────────────────────── */
+  .node {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Color encodes category — pre-attentive hue signal */
+  .node.finding   { background: #1a237e; border: 2px solid #5c6bc0; color: #9fa8da; }
+  .node.mechanism { background: #1b2a1b; border: 2px solid #4caf50; color: #81c784; }
+  .node.implication { background: #2a1b1b; border: 2px solid #ef5350; color: #ef9a9a; }
+  .node.design    { background: #1e1a2e; border: 2px solid #ab47bc; color: #ce93d8; }
+
+  /* ── Annotation block — placed immediately right of node ──────── */
+  /*
+    Motivation: Naledi §3 spatial contiguity effect. The annotation
+    is physically attached to its node — reader never has to scan
+    to a separate legend or caption panel. No split-attention cost.
+  */
+  .annotation {
+    margin-left: 20px;
+    padding: 14px 18px;
+    background: #1c2030;
+    border-radius: 8px;
+    border-left: 3px solid transparent;
+    flex: 1;
+    position: relative;
+    top: 0;
+  }
+
+  .annotation.finding   { border-left-color: #5c6bc0; }
+  .annotation.mechanism { border-left-color: #4caf50; }
+  .annotation.implication { border-left-color: #ef5350; }
+  .annotation.design    { border-left-color: #ab47bc; }
+
+  .annotation .label {
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 5px;
+    opacity: 0.6;
+  }
+  .annotation.finding    .label { color: #5c6bc0; }
+  .annotation.mechanism  .label { color: #4caf50; }
+  .annotation.implication .label { color: #ef5350; }
+  .annotation.design     .label { color: #ab47bc; }
+
+  .annotation .title {
+    font-size: 0.95rem;
+    font-weight: 600;
+    line-height: 1.3;
+    margin-bottom: 4px;
+    color: #e8eaf0;
+  }
+  .annotation .body {
+    font-size: 0.8rem;
+    color: #8890a8;
+    line-height: 1.55;
+  }
+
+  /* Inline evidence tag — stays co-located with its claim */
+  .evidence-tag {
+    display: inline-block;
+    margin-top: 8px;
+    font-size: 0.68rem;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+  }
+  .evidence-tag.eg  { background: #1b2a1b; color: #81c784; border: 1px solid #4caf50; }
+  .evidence-tag.wsi { background: #2a2a1b; color: #fff176; border: 1px solid #f9a825; }
+  .evidence-tag.ie  { background: #2a1b1b; color: #ef9a9a; border: 1px solid #ef5350; }
+
+  /* Spacing between rows */
+  .row-spacer { height: 24px; }
+
+  /* ── Progress controls ────────────────────────────────────────── */
+  .controls {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-top: 28px;
+    justify-content: space-between;
+  }
+
+  .step-dots {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+  .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #2e3350;
+    transition: background 0.3s, transform 0.3s;
+  }
+  .dot.active {
+    background: #5c6bc0;
+    transform: scale(1.35);
+  }
+  .dot.done {
+    background: #3d4466;
+  }
+
+  .btn {
+    background: #1e2235;
+    border: 1px solid #3d4466;
+    color: #9fa8da;
+    padding: 10px 24px;
+    border-radius: 8px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    letter-spacing: 0.04em;
+    transition: background 0.2s, border-color 0.2s, color 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .btn:hover { background: #252840; border-color: #5c6bc0; color: #c5cae9; }
+  .btn:disabled { opacity: 0.3; cursor: default; }
+  .btn:disabled:hover { background: #1e2235; border-color: #3d4466; color: #9fa8da; }
+
+  .step-counter {
+    font-size: 0.75rem;
+    color: #4a5070;
+    letter-spacing: 0.05em;
+  }
+
+  /* ── Footnote ─────────────────────────────────────────────────── */
+  .footnote {
+    max-width: 720px;
+    width: 100%;
+    margin-top: 28px;
+    font-size: 0.73rem;
+    color: #3d4466;
+    line-height: 1.55;
+    border-top: 1px solid #1e2235;
+    padding-top: 14px;
+  }
+  .footnote span { color: #5c6bc0; font-weight: 600; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Altair8 — Prototype 01</h1>
+  <p>Progressive spatial disclosure &nbsp;·&nbsp; Research brief: Kenji §1.1 + Naledi §2–3</p>
+</div>
+
+<div class="stage">
+  <div class="canvas" id="canvas">
+    <div class="claim-group" id="claimGroup">
+      <!-- Rows injected by JS so appearance order is data-driven,
+           not hard-coded in markup -->
+    </div>
+  </div>
+
+  <div class="controls">
+    <button class="btn" id="btnPrev" disabled>
+      ← Prev
+    </button>
+    <div style="display:flex; flex-direction:column; align-items:center; gap:6px;">
+      <div class="step-dots" id="stepDots"></div>
+      <span class="step-counter" id="stepCounter">Step 0 / 0</span>
+    </div>
+    <button class="btn" id="btnNext">
+      Next →
+    </button>
+  </div>
+</div>
+
+<div class="footnote">
+  <span>Design note:</span> Each annotation block is rendered flush against its source node (Naledi §3 — spatial contiguity effect). Color hue carries category identity pre-attentively (Naledi §2 — Treisman). No orientation-based encoding is used; relations are expressed via vertical proximity + connector lines only (Kenji §1.1 — orientation is an acute failure mode in both VLMs and humans under cognitive load).
+</div>
+
+<script>
+  /*
+    Data: a chain of research findings rendered as a disclosure sequence.
+    Each step in the sequence is one "claim unit" — finding + co-located
+    annotation. Reader can only see what has been disclosed so far.
+
+    Motivation for sequential structure:
+    - Naledi §1: manage intrinsic load via progressive chunking
+    - Naledi §3: split-attention avoided because annotation is always
+      physically attached to node, never in a separate panel
+    - Kenji §1.1: no orientation encoding; spatial relation = vertical
+      proximity (above/below), the most reliable spatial predicate
+      (Liu et al. VSR benchmark shows above/below is among the highest-
+      performing relations even in VLMs)
+  */
+  const STEPS = [
+    {
+      kind: "finding",
+      nodeLabel: "F1",
+      label: "Finding",
+      title: "VLMs achieve ~70% on VSR vs. >95% human ceiling",
+      body: "Liu et al. (2205.00363) — 10k+ spatial relation pairs, 66 relation types, multi-model evaluation. The gap is ~25 percentage points and does not correlate with training-data frequency of the relations.",
+      evidenceKind: "eg",
+      evidenceLabel: "EG — Kenji §1.1"
+    },
+    {
+      kind: "mechanism",
+      nodeLabel: "M1",
+      label: "Mechanism",
+      title: "Orientation relations are the acute failure sub-type",
+      body: "Models that handle above/below reasonably still fail on relations requiring interpretation of an object's facing direction. Orientation encodes reference-frame shifts — egocentric vs. allocentric — that models do not track reliably.",
+      evidenceKind: "eg",
+      evidenceLabel: "EG — Kenji §1.1"
+    },
+    {
+      kind: "implication",
+      nodeLabel: "I1",
+      label: "Cognitive Parallel",
+      title: "Human orientation discrimination also degrades under cognitive load",
+      body: "Dual-task studies (Logie et al., 1990) show that humans under visuospatial load show degraded orientation discrimination — a partial parallel to the VLM failure pattern. Orientation encoding carries inherent processing cost regardless of substrate.",
+      evidenceKind: "wsi",
+      evidenceLabel: "WSI — Naledi §2"
+    },
+    {
+      kind: "design",
+      nodeLabel: "D1",
+      label: "Design Implication",
+      title: "Encode relations via proximity + color hue, not orientation",
+      body: "If orientation is unreliable for both VLMs and humans under load, a visualization engine should use pre-attentive channels that are more robust: vertical proximity (above/below) and color hue. Both are processed before focal attention is engaged.",
+      evidenceKind: "wsi",
+      evidenceLabel: "WSI — Naledi §2 + Kenji §1.1"
+    },
+    {
+      kind: "design",
+      nodeLabel: "D2",
+      label: "Design Implication",
+      title: "Co-locate every annotation with its referent — no separate legend",
+      body: "The spatial contiguity effect (Mayer, 2009 — EG) shows that separated label/referent pairs impose measurable extraneous cognitive load. This prototype enforces co-location structurally: annotations cannot be placed outside their node's immediate right.",
+      evidenceKind: "eg",
+      evidenceLabel: "EG — Naledi §3"
+    }
+  ];
+
+  /* ── State ──────────────────────────────────────────────────── */
+  let currentStep = 0; // 0-indexed; how many rows are currently visible
+
+  /* ── DOM refs ───────────────────────────────────────────────── */
+  const claimGroup  = document.getElementById("claimGroup");
+  const btnNext     = document.getElementById("btnNext");
+  const btnPrev     = document.getElementById("btnPrev");
+  const stepDots    = document.getElementById("stepDots");
+  const stepCounter = document.getElementById("stepCounter");
+
+  /* ── Build all rows (hidden initially) ─────────────────────── */
+  function buildRows() {
+    STEPS.forEach((step, i) => {
+      // Spacer between rows (except before first)
+      if (i > 0) {
+        const spacer = document.createElement("div");
+        spacer.className = "row-spacer";
+        claimGroup.appendChild(spacer);
+      }
+
+      const row = document.createElement("div");
+      row.className = `claim-row`;
+      row.id = `row-${i}`;
+      if (i > 0) row.classList.add("show-connector"); // connector shown when row appears
+
+      row.innerHTML = `
+        <div class="node ${step.kind}">${step.nodeLabel}</div>
+        <div class="annotation ${step.kind}">
+          <div class="label">${step.label}</div>
+          <div class="title">${step.title}</div>
+          <div class="body">${step.body}</div>
+          <span class="evidence-tag ${step.evidenceKind}">${step.evidenceLabel}</span>
+        </div>
+      `;
+
+      claimGroup.appendChild(row);
+    });
+
+    // Build dots
+    STEPS.forEach((_, i) => {
+      const dot = document.createElement("div");
+      dot.className = "dot";
+      dot.id = `dot-${i}`;
+      stepDots.appendChild(dot);
+    });
+  }
+
+  /* ── Render current state ───────────────────────────────────── */
+  function render() {
+    STEPS.forEach((_, i) => {
+      const row = document.getElementById(`row-${i}`);
+      const dot = document.getElementById(`dot-${i}`);
+
+      if (i < currentStep) {
+        row.classList.add("visible");
+        dot.classList.remove("active");
+        dot.classList.add("done");
+      } else if (i === currentStep) {
+        // Will be made visible on next "Next" click — this is the target
+        // Actually: currentStep = how many are visible (1-indexed feel)
+        row.classList.remove("visible");
+        dot.classList.remove("done");
+        dot.classList.add("active");
+      } else {
+        row.classList.remove("visible");
+        dot.classList.remove("active", "done");
+      }
+    });
+
+    // First row auto-shown after build; update counter
+    stepCounter.textContent = `Step ${currentStep} / ${STEPS.length}`;
+    btnPrev.disabled = currentStep === 0;
+    btnNext.disabled = currentStep === STEPS.length;
+
+    // Update dot for already-visible last row
+    if (currentStep > 0) {
+      const lastVisible = document.getElementById(`dot-${currentStep - 1}`);
+      if (lastVisible) {
+        lastVisible.classList.remove("active");
+        lastVisible.classList.add("done");
+      }
+    }
+    // Active dot = next to be revealed
+    if (currentStep < STEPS.length) {
+      const activeDot = document.getElementById(`dot-${currentStep}`);
+      if (activeDot) {
+        activeDot.classList.add("active");
+        activeDot.classList.remove("done");
+      }
+    }
+  }
+
+  /* ── Controls ───────────────────────────────────────────────── */
+  btnNext.addEventListener("click", () => {
+    if (currentStep < STEPS.length) {
+      // Reveal the row at index currentStep
+      const row = document.getElementById(`row-${currentStep}`);
+      row.classList.add("visible");
+      currentStep++;
+      render();
+    }
+  });
+
+  btnPrev.addEventListener("click", () => {
+    if (currentStep > 0) {
+      currentStep--;
+      // Hide the row at index currentStep
+      const row = document.getElementById(`row-${currentStep}`);
+      row.classList.remove("visible");
+      render();
+    }
+  });
+
+  /* ── Init ───────────────────────────────────────────────────── */
+  buildRows();
+  render(); // start with 0 visible; first Next click shows row 0
+</script>
+
+</body>
+</html>

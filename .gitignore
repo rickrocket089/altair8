@@ -5,9 +5,13 @@ __pycache__/
 .venv/
 venv/
 
-# Environment
+# Environment secrets -- never commit real keys/passwords.
+# ftp.secrets.enc.env is sops-encrypted at rest, so it's safe and re-included
+# below despite matching *.env.
 .env
 *.env
+!config/.env.example
+!config/ftp.secrets.enc.env
 
 # Docker
 *.log
@@ -20,10 +24,14 @@ venv/
 .DS_Store
 Thumbs.db
 
-# Workspace (large files, not tracked)
+# Workspace: papers/memory are runtime-populated caches, not source -- keep
+# excluded. outputs/ now holds real deliverables (website, sprint reports,
+# banners, logos) and is tracked from here on.
 workspace/papers/*
-workspace/outputs/*
 workspace/memory/*
 !workspace/papers/.gitkeep
-!workspace/outputs/.gitkeep
 !workspace/memory/.gitkeep
+
+# Sensitive personal files -- contains real PII (address, phone, birthdate),
+# never commit even to a private repo.
+workspace/workfiles/*.pdf

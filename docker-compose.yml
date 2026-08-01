@@ -1,0 +1,70 @@
+services:
+  agents:
+    build: .
+    container_name: altair8-agents
+    volumes:
+      - ./workspace:/app/workspace
+      - ./agents:/app/agents
+      - ./tools:/app/tools
+      - ./config:/app/config
+    env_file:
+      - config/.env
+    depends_on:
+      db:
+        condition: service_healthy
+      chromadb:
+        condition: service_started
+    networks:
+      - altair8-net
+
+  db:
+    image: postgres:16
+    container_name: altair8-db
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-altair8}
+      POSTGRES_USER: ${POSTGRES_USER:-altair}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-altair8pass}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./infrastructure/db/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-altair}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - altair8-net
+
+  chromadb:
+    image: chromadb/chroma:latest
+    container_name: altair8-chroma
+    volumes:
+      - chroma_data:/chroma/chroma
+    networks:
+      - altair8-net
+
+  dashboard:
+    build: .
+    container_name: altair8-dashboard
+    command: python -m dashboard.app
+    ports:
+      - "5050:5050"
+    volumes:
+      - ./dashboard:/app/dashboard
+      - ./tools:/app/tools
+      - ./config:/app/config
+    env_file:
+      - config/.env
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - altair8-net
+
+volumes:
+  postgres_data:
+  chroma_data:
+
+networks:
+  altair8-net:
+    driver: bridge

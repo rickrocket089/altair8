@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="770" height="144" viewBox="0 0 770 144" role="img" aria-label="Altair8 Labs">
+  <g transform="translate(24, 24) scale(3.4285714)">
+    <path fill="#20795b" d="M11,0.5 Q13.027,8.973 21.5,11 Q13.027,13.027 11,21.5 Q8.973,13.027 0.5,11 Q8.973,8.973 11,0.5 Z"/>
+    <path fill="#a16a17" d="M23.5,12.5 Q25.197,18.303 31,20 Q25.197,21.697 23.5,27.5 Q21.803,21.697 16,20 Q21.803,18.303 23.5,12.5 Z"/>
+  </g>
+  <text x="164.4" y="90" font-family="'Palatino Linotype', 'Iowan Old Style', Palatino, Georgia, serif"
+        font-weight="700" font-size="64" letter-spacing="10.24" fill="#14181a">ALTAIR8 LABS</text>
+</svg>

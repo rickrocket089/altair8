@@ -1,0 +1,603 @@
+<style>
+  /* ── Infrastructure-section additions ───────────────────────────────────── */
+  /* All variable references assume the host page already declares :root {}   */
+
+  .infra-code {
+    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+    font-size: 0.82em;
+    background: var(--cream-dark);
+    color: var(--ink-mid);
+    padding: 0.15em 0.4em;
+    border-radius: 3px;
+    border: 1px solid var(--rule);
+    white-space: nowrap;
+  }
+
+  /* ── Two-column topology canvas ─────────────────────────────────────────── */
+  .infra-canvas {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin: 2.5rem 0;
+    align-items: start;
+  }
+
+  @media (max-width: 640px) {
+    .infra-canvas {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* ── Group wrappers (local / external) ──────────────────────────────────── */
+  .infra-group {
+    border-radius: 6px;
+    padding: 1.25rem 1.25rem 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .infra-group--local {
+    border: 2px solid var(--accent);
+    background: #f4faf7;
+  }
+
+  .infra-group--external {
+    border: 2px solid var(--accent2);
+    background: #fdf8f0;
+  }
+
+  .infra-group__header {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-bottom: 1.1rem;
+  }
+
+  .infra-group__pip {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .infra-group--local   .infra-group__pip { background: var(--accent); }
+  .infra-group--external .infra-group__pip { background: var(--accent2); }
+
+  .infra-group__title {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-light);
+  }
+
+  .infra-group--local   .infra-group__title { color: var(--accent); }
+  .infra-group--external .infra-group__title { color: var(--accent2); }
+
+  /* ── Reusing .flow-node with infra modifiers ────────────────────────────── */
+  /* Base .flow-node assumed defined in host stylesheet; we add modifiers.    */
+
+  .flow-node--local {
+    border-color: var(--accent);
+    background: #ffffff;
+  }
+
+  .flow-node--local .flow-node__label {
+    color: var(--accent);
+  }
+
+  .flow-node--external {
+    border-color: var(--accent2);
+    background: #ffffff;
+  }
+
+  .flow-node--external .flow-node__label {
+    color: var(--accent2);
+  }
+
+  /* Standalone flow-node styling (self-contained fallback if host omits it) */
+  .flow-node {
+    border: 1.5px solid var(--rule);
+    border-radius: 5px;
+    padding: 0.65rem 0.85rem;
+    background: #fff;
+    margin-bottom: 0;
+    font-size: 0.92rem;
+    color: var(--ink);
+  }
+
+  .flow-node__label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-light);
+    display: block;
+    margin-bottom: 0.2rem;
+  }
+
+  .flow-node__name {
+    font-weight: 600;
+    color: var(--ink);
+    display: block;
+    margin-bottom: 0.15rem;
+  }
+
+  .flow-node__detail {
+    font-size: 0.82rem;
+    color: var(--ink-light);
+    display: block;
+    line-height: 1.45;
+  }
+
+  /* ── Connector between nodes inside a group ─────────────────────────────── */
+  .flow-connector {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 1.5rem;
+    position: relative;
+  }
+
+  .flow-connector::before {
+    content: '';
+    position: absolute;
+    top: 0; bottom: 0; left: 50%;
+    width: 1.5px;
+    background: var(--rule);
+    transform: translateX(-50%);
+  }
+
+  .flow-connector--local::before  { background: var(--accent);  opacity: 0.35; }
+  .flow-connector--external::before { background: var(--accent2); opacity: 0.35; }
+
+  /* ── Parallel block (sub-nodes side by side) ────────────────────────────── */
+  .parallel-block {
+    display: grid;
+    gap: 0.6rem;
+  }
+
+  .parallel-block--2col { grid-template-columns: 1fr 1fr; }
+  .parallel-block--3col { grid-template-columns: 1fr 1fr 1fr; }
+
+  @media (max-width: 640px) {
+    .parallel-block--2col,
+    .parallel-block--3col { grid-template-columns: 1fr; }
+  }
+
+  /* ── Compact detail tables (Postgres / ChromaDB) ────────────────────────── */
+  .infra-detail-tables {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin: 2.5rem 0;
+    align-items: start;
+  }
+
+  @media (max-width: 600px) {
+    .infra-detail-tables { grid-template-columns: 1fr; }
+  }
+
+  .infra-table-block__heading {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin: 0 0 0.65rem;
+  }
+
+  /* Reuse .checklist-table pattern */
+  .checklist-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.86rem;
+    color: var(--ink);
+  }
+
+  .checklist-table th {
+    text-align: left;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--ink-light);
+    border-bottom: 2px solid var(--rule);
+    padding: 0.3rem 0.6rem 0.4rem 0;
+  }
+
+  .checklist-table td {
+    padding: 0.4rem 0.6rem 0.4rem 0;
+    border-bottom: 1px solid var(--rule);
+    vertical-align: top;
+    line-height: 1.4;
+  }
+
+  .checklist-table td:last-child,
+  .checklist-table th:last-child {
+    color: var(--ink-light);
+    font-size: 0.8rem;
+  }
+
+  /* ── Security posture callout ───────────────────────────────────────────── */
+  .infra-callout {
+    border-left: 3px solid var(--accent2);
+    background: #fdf8f0;
+    padding: 1rem 1.2rem;
+    border-radius: 0 5px 5px 0;
+    margin: 2rem 0 0;
+    font-size: 0.92rem;
+    color: var(--ink-mid);
+    line-height: 1.7;
+  }
+
+  .infra-callout strong {
+    color: var(--ink);
+  }
+
+  .infra-callout__eyebrow {
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent2);
+    display: block;
+    margin-bottom: 0.4rem;
+  }
+
+  /* ── Section divider (thin rule before prose blocks) ────────────────────── */
+  .infra-rule {
+    border: none;
+    border-top: 1px solid var(--rule);
+    margin: 2.5rem 0;
+  }
+
+  /* ── Honest status badge ────────────────────────────────────────────────── */
+  .infra-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.74rem;
+    font-weight: 600;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--accent);
+    border: 1px solid var(--accent);
+    border-radius: 3px;
+    padding: 0.2em 0.6em;
+    margin-left: 0.75rem;
+    vertical-align: middle;
+  }
+
+  .infra-status::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    flex-shrink: 0;
+  }
+</style>
+
+<section id="infrastructure" aria-labelledby="infra-heading">
+  <div class="container">
+
+    <!-- Eyebrow + heading -->
+    <p class="section-label">Infrastructure</p>
+    <h2 id="infra-heading" style="font-size:1.75rem; margin:0.3rem 0 0.6rem; color:var(--ink);">
+      Our Infrastructure
+      <span class="infra-status">localhost</span>
+    </h2>
+    <p style="max-width:var(--max); color:var(--ink-mid); line-height:1.75; font-size:0.97rem; margin:0 0 0.5rem;">
+      This is the technical substrate that runs Altair8's research loop — what the
+      <a href="#methodology" style="color:var(--accent);">Methodology section</a> runs
+      <em>on top of</em>. Everything currently executes on a single developer machine
+      via <code class="infra-code">docker compose</code>. There is no cloud deployment,
+      no managed Kubernetes cluster, no distributed compute. That is an accurate
+      description of where the project is right now, not an oversight.
+    </p>
+    <p style="max-width:var(--max); color:var(--ink-light); line-height:1.75; font-size:0.88rem; margin:0;">
+      The diagram below uses the same node/connector vocabulary as the sprint-cycle
+      diagram in Methodology — same visual language, same color logic:
+      <strong style="color:var(--accent);">green = local / internal</strong>,
+      <strong style="color:var(--accent2);">ochre = external network connections</strong>.
+    </p>
+
+    <!-- ── Architecture diagram ─────────────────────────────────────────── -->
+    <div class="infra-canvas" role="img" aria-label="Architecture topology: local containers and external connections">
+
+      <!-- LEFT: LOCAL group -->
+      <div class="infra-group infra-group--local">
+        <div class="infra-group__header">
+          <span class="infra-group__pip" aria-hidden="true"></span>
+          <span class="infra-group__title">Local — localhost, docker compose</span>
+        </div>
+
+        <!-- Host machine note -->
+        <div class="flow-node flow-node--local" style="margin-bottom:0; border-style:dashed; background:var(--cream-dark);">
+          <span class="flow-node__label">Host machine</span>
+          <span class="flow-node__name">Developer laptop (Windows)</span>
+          <span class="flow-node__detail">
+            Runs <code class="infra-code">docker compose up</code>;
+            also runs the publish script and <code class="infra-code">sops</code>
+            directly (outside Docker — see Security below).
+          </span>
+        </div>
+
+        <div class="flow-connector flow-connector--local" aria-hidden="true"></div>
+
+        <!-- Shared Docker network -->
+        <div class="flow-node flow-node--local" style="margin-bottom:0; background:#edf7f2;">
+          <span class="flow-node__label">Docker network — altair8_default</span>
+          <span class="flow-node__name">4 containers, one shared bridge network</span>
+        </div>
+
+        <div class="flow-connector flow-connector--local" aria-hidden="true"></div>
+
+        <!-- Four containers as a parallel block -->
+        <div class="parallel-block parallel-block--2col">
+
+          <div class="flow-node flow-node--local">
+            <span class="flow-node__label">Container</span>
+            <span class="flow-node__name">agents</span>
+            <span class="flow-node__detail">
+              <code class="infra-code">python:3.11-slim</code><br>
+              No persistent process. Each invocation is<br>
+              <code class="infra-code">docker compose run --rm agents python -m agents.&lt;folder&gt;</code>
+              — a fresh container per run.
+            </span>
+          </div>
+
+          <div class="flow-node flow-node--local">
+            <span class="flow-node__label">Container</span>
+            <span class="flow-node__name">db</span>
+            <span class="flow-node__detail">
+              <code class="infra-code">postgres:16</code><br>
+              Relational source of truth.
+              6 tables — see detail below.
+            </span>
+          </div>
+
+          <div class="flow-node flow-node--local">
+            <span class="flow-node__label">Container</span>
+            <span class="flow-node__name">chromadb</span>
+            <span class="flow-node__detail">
+              <code class="infra-code">chromadb/chroma:latest</code><br>
+              Vector memory. 4 collections —
+              see detail below.
+            </span>
+          </div>
+
+          <div class="flow-node flow-node--local">
+            <span class="flow-node__label">Container — port 5050</span>
+            <span class="flow-node__name">dashboard</span>
+            <span class="flow-node__detail">
+              Flask app. Internal ops view:
+              KPIs, curated findings, sprint
+              timeline, open tasks.
+              <em>Not</em> this public website.
+            </span>
+          </div>
+
+        </div><!-- /parallel-block -->
+      </div><!-- /infra-group--local -->
+
+      <!-- RIGHT: EXTERNAL group -->
+      <div class="infra-group infra-group--external">
+        <div class="infra-group__header">
+          <span class="infra-group__pip" aria-hidden="true"></span>
+          <span class="infra-group__title">External — reached over the network</span>
+        </div>
+
+        <!-- LLM APIs -->
+        <div class="flow-node flow-node--external">
+          <span class="flow-node__label">LLM APIs</span>
+          <span class="flow-node__name">Anthropic — Claude Sonnet 4.6</span>
+          <span class="flow-node__detail">
+            Powers all five agent personas' reasoning:
+            research briefs, code prototypes, reviews,
+            sprint planning. Key: <code class="infra-code">ANTHROPIC_API_KEY</code>
+            in <code class="infra-code">config/.env</code> (gitignored).
+          </span>
+        </div>
+
+        <div class="flow-connector flow-connector--external" aria-hidden="true"></div>
+
+        <div class="flow-node flow-node--external">
+          <span class="flow-node__label">LLM APIs</span>
+          <span class="flow-node__name">OpenAI — gpt-image-1</span>
+          <span class="flow-node__detail">
+            One narrow use only: Mateo's team-photo
+            generation tool. Not used for any reasoning.
+            Key: <code class="infra-code">OPENAI_API_KEY</code>
+            in <code class="infra-code">config/.env</code>.
+          </span>
+        </div>
+
+        <div class="flow-connector flow-connector--external" aria-hidden="true"></div>
+
+        <!-- Literature databases as parallel block -->
+        <div class="flow-node flow-node--external" style="margin-bottom:0.6rem; background:#fdf2e2;">
+          <span class="flow-node__label">Research literature — tools/papers.py</span>
+          <span class="flow-node__name">search_all_sources() — 4 databases in parallel</span>
+          <span class="flow-node__detail">Tolerates individual source failures; the full search does not abort if one database is unavailable.</span>
+        </div>
+
+        <div class="parallel-block parallel-block--2col">
+
+          <div class="flow-node flow-node--external">
+            <span class="flow-node__label">Literature DB</span>
+            <span class="flow-node__name">arXiv</span>
+            <span class="flow-node__detail">Free, no key, preprints.</span>
+          </div>
+
+          <div class="flow-node flow-node--external">
+            <span class="flow-node__label">Literature DB</span>
+            <span class="flow-node__name">Semantic Scholar</span>
+            <span class="flow-node__detail">Free API; optional key raises rate limit above shared public pool.</span>
+          </div>
+
+          <div class="flow-node flow-node--external">
+            <span class="flow-node__label">Literature DB</span>
+            <span class="flow-node__name">OpenAlex</span>
+            <span class="flow-node__detail">Fully open, no key required, broadest coverage.</span>
+          </div>
+
+          <div class="flow-node flow-node--external">
+            <span class="flow-node__label">Literature DB</span>
+            <span class="flow-node__name">IEEE Xplore</span>
+            <span class="flow-node__detail">
+              Free developer key; metadata + abstracts only.
+              Full text requires institutional subscription.
+              Added because arXiv alone missed
+              IEEE&nbsp;VIS papers.
+            </span>
+          </div>
+
+        </div><!-- /parallel-block (literature) -->
+
+        <div class="flow-connector flow-connector--external" aria-hidden="true"></div>
+
+        <!-- Web publishing -->
+        <div class="flow-node flow-node--external">
+          <span class="flow-node__label">Web publishing</span>
+          <span class="flow-node__name">FTPS (explicit TLS) → external host</span>
+          <span class="flow-node__detail">
+            Publish script runs on the host machine
+            (not inside Docker) because it shells out
+            to a local <code class="infra-code">sops</code> binary.
+            Credentials encrypted at rest with
+            <code class="infra-code">sops + age</code> —
+            see Security note below.
+          </span>
+        </div>
+
+        <div class="flow-connector flow-connector--external" aria-hidden="true"></div>
+
+        <!-- GitHub -->
+        <div class="flow-node flow-node--external">
+          <span class="flow-node__label">Version control</span>
+          <span class="flow-node__name">GitHub — rickrocket089/altair8</span>
+          <span class="flow-node__detail">
+            Source of truth for all code: agents, tools,
+            schema migrations, and the website source files.
+          </span>
+        </div>
+
+      </div><!-- /infra-group--external -->
+    </div><!-- /infra-canvas -->
+
+    <!-- ── Postgres + ChromaDB detail tables ────────────────────────────── -->
+    <hr class="infra-rule">
+    <div class="infra-detail-tables">
+
+      <!-- Postgres -->
+      <div class="infra-table-block">
+        <p class="infra-table-block__heading">PostgreSQL 16 — tables</p>
+        <table class="checklist-table">
+          <thead>
+            <tr>
+              <th>Table</th>
+              <th>Purpose</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code class="infra-code">agent_memory</code></td>
+              <td>Key-value store per agent — status, last outputs, north_star, etc.</td>
+            </tr>
+            <tr>
+              <td><code class="infra-code">tasks</code></td>
+              <td>Every unit of work; includes <code class="infra-code">artifact_type</code> + <code class="infra-code">artifact_payload</code> JSONB columns for typed agent handoffs (adopted Sprint 3).</td>
+            </tr>
+            <tr>
+              <td><code class="infra-code">papers</code></td>
+              <td>Literature search results with <code class="infra-code">source</code> + <code class="infra-code">external_id</code> columns — one row per source per paper (arXiv / Semantic Scholar / OpenAlex / IEEE Xplore).</td>
+            </tr>
+            <tr>
+              <td><code class="infra-code">token_usage</code></td>
+              <td>Per-agent input/output token logging for cost tracking.</td>
+            </tr>
+            <tr>
+              <td><code class="infra-code">sprints</code></td>
+              <td><code class="infra-code">sprint_number</code>, <code class="infra-code">question</code>, <code class="infra-code">outcome</code>, <code class="infra-code">status</code> — the sprint timeline.</td>
+            </tr>
+            <tr>
+              <td><code class="infra-code">reviews</code></td>
+              <td>Reviewer sign-offs (<code class="infra-code">approved</code> / <code class="infra-code">rejected</code> / <code class="infra-code">needs_revision</code>). A sprint cannot close in the database unless the latest review row is <code class="infra-code">approved</code> — this is an enforced database gate, not a convention.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- ChromaDB -->
+      <div class="infra-table-block">
+        <p class="infra-table-block__heading" style="color:var(--accent);">ChromaDB — collections</p>
+        <table class="checklist-table">
+          <thead>
+            <tr>
+              <th>Collection</th>
+              <th>Scope</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code class="infra-code">researcher_memory</code></td>
+              <td>Shared by both Researchers (Kenji + Naledi). Semantic search over past literature findings and briefs.</td>
+            </tr>
+            <tr>
+              <td><code class="infra-code">developer_memory</code></td>
+              <td>Mateo's prototype history and implementation notes.</td>
+            </tr>
+            <tr>
+              <td><code class="infra-code">reviewer_memory</code></td>
+              <td>Ingrid's review decisions and rationale.</td>
+            </tr>
+            <tr>
+              <td><code class="infra-code">team_leader_memory</code></td>
+              <td>Sophie's planning context and sprint-level decisions.</td>
+            </tr>
+          </tbody>
+        </table>
+        <p style="font-size:0.8rem; color:var(--ink-light); margin:0.65rem 0 0; line-height:1.55;">
+          Embedding model: <code class="infra-code">all-MiniLM-L6-v2</code>,
+          downloaded into the container on first run.
+          One collection per agent role — not one per sprint — so
+          semantic context accumulates across the full research arc.
+        </p>
+      </div>
+
+    </div><!-- /infra-detail-tables -->
+
+    <!-- ── Agent safety layer ────────────────────────────────────────────── -->
+    <hr class="infra-rule">
+    <p class="section-label" style="margin-bottom:0.4rem;">Agent safety layer</p>
+    <p style="max-width:var(--max); color:var(--ink-mid); line-height:1.75; font-size:0.93rem; margin:0;">
+      <code class="infra-code">agents/permissions.py</code> defines an explicit, constrained list of
+      allowed actions for each agent. A <code class="infra-code">require_tool()</code> check runs at the top
+      of every agent script before any work begins. This is a hard enforcement mechanism, not
+      a coding convention — an agent that attempts an action outside its permission list will
+      fail immediately. The pattern was adopted from AI-Scientist-v2 in Sprint 3 and applied
+      to all five personas.
+    </p>
+
+    <!-- ── Security posture ──────────────────────────────────────────────── -->
+    <div class="infra-callout">
+      <span class="infra-callout__eyebrow">Security posture — why two different standards</span>
+      The FTPS publish credentials are encrypted at rest with
+      <code class="infra-code">sops + age</code> and never appear in plain text in the repository
+      or the environment. The LLM API keys (<code class="infra-code">ANTHROPIC_API_KEY</code>,
+      <code class="infra-code">OPENAI_API_KEY</code>) live in <code class="infra-code">config/.env</code>,
+      which is gitignored but not otherwise encrypted at rest.
+      <strong>This is a deliberate, risk-based distinction, not an inconsistency.</strong>
+      The FTPS credential grants write access to public-facing infrastructure — a compromise would
+      let an attacker modify every page on the public website. The LLM API keys are read-only
+      API billing credentials: a compromise is a financial exposure to Anthropic's and OpenAI's
+      billing systems, recoverable by rotating the key. The higher-consequence credential gets
+      the stricter control. Both credential files are gitignored; neither has ever been committed
+      to the repository.
+    </div>
+
+  </div><!-- /container -->
+</section>

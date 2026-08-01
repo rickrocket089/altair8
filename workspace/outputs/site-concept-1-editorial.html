@@ -1,0 +1,2231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Altair8 — Visual Communication Research</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 28'%3E%3Cpath fill='%2320795b' d='M11,0.5 Q13.027,8.973 21.5,11 Q13.027,13.027 11,21.5 Q8.973,13.027 0.5,11 Q8.973,8.973 11,0.5 Z'/%3E%3Cpath fill='%23a16a17' d='M23.5,12.5 Q25.197,18.303 31,20 Q25.197,21.697 23.5,27.5 Q21.803,21.697 16,20 Q21.803,18.303 23.5,12.5 Z'/%3E%3C/svg%3E">
+<style>
+  /* ─── Reset & Base ─── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --cream:     #ffffff;
+    --cream-dark:#eef0ee;
+    --ink:       #14181a;
+    --ink-mid:   #3c4547;
+    --ink-light: #6d7679;
+    --rule:      #dadfde;
+    --accent:    #20795b;
+    --accent-lt: #409679;
+    --accent2:   #a16a17;
+    --accent2-lt:#d19a47;
+    --max:       740px;
+    --wide:      960px;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background-color: var(--cream);
+    color: var(--ink);
+    font-family: 'Iowan Old Style', 'Palatino Linotype', Palatino, Georgia, serif;
+    font-size: 18px;
+    line-height: 1.75;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ─── Typography ─── */
+  h1, h2, h3, h4 {
+    font-family: 'Iowan Old Style', 'Palatino Linotype', Palatino, Georgia, serif;
+    font-weight: normal;
+    letter-spacing: -0.01em;
+  }
+
+  p { margin-bottom: 1.3em; }
+  p:last-child { margin-bottom: 0; }
+
+  a {
+    color: var(--accent);
+    text-decoration: none;
+    border-bottom: 1px solid var(--accent-lt);
+    transition: border-color 0.2s, color 0.2s;
+  }
+  a:hover { color: var(--accent-lt); border-color: transparent; }
+
+  /* ─── Layout ─── */
+  .container {
+    max-width: var(--max);
+    margin: 0 auto;
+    padding: 0 2rem;
+  }
+
+  .container--wide {
+    max-width: var(--wide);
+    margin: 0 auto;
+    padding: 0 2rem;
+  }
+
+  section {
+    padding: 5rem 0;
+  }
+
+  hr.rule {
+    border: none;
+    border-top: 1px solid var(--rule);
+    margin: 0;
+  }
+
+  /* ─── Nav ─── */
+  nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background-color: var(--cream);
+    border-bottom: 1px solid var(--rule);
+    padding: 1rem 2rem;
+  }
+
+  .nav-inner {
+    max-width: var(--wide);
+    margin: 0 auto;
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .nav-wordmark {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.48em;
+    font-size: 0.95rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--ink);
+    font-family: 'Iowan Old Style', 'Palatino Linotype', Palatino, Georgia, serif;
+    font-weight: 700;
+  }
+
+  .nav-wordmark .logo-mark {
+    width: auto;
+    height: 1.5em;
+    flex-shrink: 0;
+  }
+
+  .nav-wordmark .logo-mark .star-a { fill: var(--accent); }
+  .nav-wordmark .logo-mark .star-b { fill: var(--accent2); }
+
+  .nav-links {
+    list-style: none;
+    display: flex;
+    gap: 2rem;
+    flex-wrap: wrap;
+  }
+
+  .nav-links a {
+    font-size: 0.8rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-light);
+    border-bottom: none;
+  }
+  .nav-links a:hover { color: var(--accent); }
+
+  /* ─── Hero / Mission ─── */
+  .hero {
+    padding: 7rem 0 6rem;
+  }
+
+  .hero-eyebrow {
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 2rem;
+    display: block;
+  }
+
+  .hero h1 {
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    line-height: 1.2;
+    color: var(--ink);
+    margin-bottom: 3rem;
+    max-width: 620px;
+  }
+
+  .pullquote {
+    border-left: 3px solid var(--accent);
+    padding: 1.5rem 2rem;
+    margin: 3rem 0;
+    background-color: var(--cream-dark);
+    max-width: 640px;
+  }
+
+  .pullquote p {
+    font-size: 1.35rem;
+    line-height: 1.55;
+    color: var(--ink-mid);
+    font-style: italic;
+    margin: 0;
+  }
+
+  .pullquote cite {
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+    margin-top: 1rem;
+    font-size: 0.78rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-style: normal;
+  }
+
+  .pullquote cite .pullquote-icon {
+    width: auto;
+    height: 1.3em;
+    flex-shrink: 0;
+  }
+
+  .pullquote cite .pullquote-icon .star-a { fill: var(--accent); }
+  .pullquote cite .pullquote-icon .star-b { fill: var(--accent2); }
+
+  .mission-body {
+    font-size: 1.05rem;
+    color: var(--ink-mid);
+    max-width: 640px;
+  }
+
+  .mission-body p {
+    text-align: justify;
+    hyphens: auto;
+  }
+
+  /* ─── Section headers ─── */
+  .section-label {
+    font-size: 0.72rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 1rem;
+    display: block;
+  }
+
+  .section-title {
+    font-size: clamp(1.5rem, 3.5vw, 2.2rem);
+    line-height: 1.25;
+    margin-bottom: 2rem;
+    color: var(--ink);
+  }
+
+  /* ─── Team ─── */
+  .team-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 0;
+    border-top: 1px solid var(--rule);
+  }
+
+  .team-member {
+    padding: 2.2rem 0;
+    border-bottom: 1px solid var(--rule);
+    cursor: pointer;
+    transition: opacity 0.15s;
+  }
+  .team-member:hover { opacity: 0.82; }
+
+  .team-member:not(:last-child) {
+    padding-right: 1.5rem;
+  }
+
+  .member-photo {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    overflow: hidden;
+    margin-bottom: 1rem;
+    background: var(--cream-dark);
+    border: 1px solid var(--rule);
+    cursor: pointer;
+    transition: opacity 0.15s;
+  }
+
+  .member-photo:hover,
+  .founder-photo:hover {
+    opacity: 0.82;
+  }
+
+  .founder-photo { cursor: pointer; }
+
+  .member-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* ─── Lightbox ─── */
+  .lightbox-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(10, 12, 11, 0.86);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    cursor: zoom-out;
+  }
+
+  .lightbox-overlay.is-open { display: flex; }
+
+  .lightbox-overlay img {
+    max-width: min(560px, 90vw);
+    max-height: 85vh;
+    border-radius: 6px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+  }
+
+  .lightbox-close {
+    position: absolute;
+    top: 1.5rem;
+    right: 2rem;
+    color: #fff;
+    font-size: 1.6rem;
+    line-height: 1;
+    cursor: pointer;
+    opacity: 0.8;
+    font-family: system-ui, sans-serif;
+  }
+  .lightbox-close:hover { opacity: 1; }
+
+  /* ─── Member modal ─── */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(10, 12, 11, 0.7);
+    z-index: 1000;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 4rem 1.5rem;
+    overflow-y: auto;
+  }
+  .modal-overlay.is-open { display: flex; }
+
+  .modal-panel {
+    background: var(--cream);
+    border-radius: 8px;
+    max-width: 620px;
+    width: 100%;
+    padding: 2.5rem;
+    position: relative;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.35);
+  }
+
+  .modal-close {
+    position: absolute;
+    top: 1.2rem;
+    right: 1.5rem;
+    font-size: 1.5rem;
+    line-height: 1;
+    color: var(--ink-light);
+    cursor: pointer;
+    font-family: system-ui, sans-serif;
+  }
+  .modal-close:hover { color: var(--ink); }
+
+  .modal-photo {
+    width: 220px;
+    height: 220px;
+    border-radius: 50%;
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+    border: 1px solid var(--rule);
+  }
+  .modal-photo img { width: 100%; height: 100%; object-fit: cover; }
+
+  @media (max-width: 600px) {
+    .modal-photo { width: 160px; height: 160px; }
+  }
+
+  #modal-role {
+    font-size: 0.75rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 600;
+    display: block;
+    margin-bottom: 0.3rem;
+  }
+  #modal-name { font-size: 1.5rem; color: var(--ink); margin-bottom: 0.2rem; }
+  #modal-location { font-size: 0.85rem; color: var(--ink-light); display: block; margin-bottom: 1.2rem; }
+  #modal-desc { font-size: 0.98rem; color: var(--ink-mid); line-height: 1.65; margin-bottom: 1.5rem; }
+  #modal-cv { padding-top: 1.3rem; border-top: 1px solid var(--rule); }
+
+  .member-role {
+    font-size: 0.72rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 0.4rem;
+    display: block;
+  }
+
+  .member-name {
+    font-size: 1.2rem;
+    color: var(--ink);
+    margin-bottom: 0.3rem;
+  }
+
+  .member-location {
+    font-size: 0.78rem;
+    color: var(--ink-light);
+    letter-spacing: 0.04em;
+    margin-bottom: 0.9rem;
+    display: block;
+  }
+
+  .member-desc {
+    font-size: 0.9rem;
+    line-height: 1.65;
+    color: var(--ink-mid);
+    margin: 0 0 1rem;
+    text-align: justify;
+    hyphens: auto;
+  }
+
+  .member-cv {
+    margin: 0;
+    padding-top: 1rem;
+    border-top: 1px solid var(--rule);
+  }
+
+  .cv-row {
+    display: grid;
+    grid-template-columns: 78px 1fr;
+    gap: 0.4rem 0.6rem;
+    margin-bottom: 0.5rem;
+  }
+  .cv-row:last-child { margin-bottom: 0; }
+
+  .cv-row dt {
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: 0.66rem;
+    font-weight: 600;
+    padding-top: 0.1rem;
+  }
+
+  .cv-row dd {
+    margin: 0;
+    font-size: 0.82rem;
+    line-height: 1.5;
+    color: var(--ink-mid);
+  }
+
+  /* ─── Progress ─── */
+  .progress-stats {
+    display: flex;
+    gap: 3rem;
+    flex-wrap: wrap;
+    margin-bottom: 3.5rem;
+    padding-bottom: 2.5rem;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .stat {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+
+  .stat-number {
+    font-size: 3rem;
+    line-height: 1;
+    color: var(--ink);
+    font-weight: 600;
+  }
+
+  .stat-label {
+    font-size: 0.78rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-light);
+  }
+
+  .sprint-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .sprint-item {
+    padding: 2rem 0;
+    border-bottom: 1px solid var(--rule);
+    display: grid;
+    grid-template-columns: 5rem 1fr;
+    gap: 0 2rem;
+  }
+
+  .sprint-item:first-child {
+    border-top: 1px solid var(--rule);
+  }
+
+  /* ─── DSR phase accordion ─── */
+  .dsr-phases {
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+    margin-bottom: 1rem;
+  }
+
+  .dsr-phase {
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .dsr-phase-summary {
+    cursor: pointer;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1rem 1.25rem;
+    background: var(--cream-dark);
+  }
+
+  .dsr-phase-summary::-webkit-details-marker { display: none; }
+  .dsr-phase-summary::marker { content: ''; }
+
+  .dsr-phase-name {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    font-size: 0.95rem;
+    color: var(--ink);
+    font-weight: 600;
+  }
+
+  .dsr-phase-chevron {
+    display: inline-block;
+    color: var(--accent);
+    font-size: 1.3rem;
+    line-height: 1;
+    transition: transform 0.2s ease;
+    flex-shrink: 0;
+  }
+
+  details[open] .dsr-phase-chevron {
+    transform: rotate(90deg);
+  }
+
+  .dsr-phase-count {
+    font-size: 0.68rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-light);
+    white-space: nowrap;
+  }
+
+  .dsr-phase-sprints {
+    padding: 0 1.25rem;
+  }
+
+  .dsr-phase-sprints .sprint-item:first-child {
+    border-top: none;
+  }
+
+  .dsr-phase-sprints .sprint-item:last-child {
+    border-bottom: none;
+  }
+
+  .dsr-phase-empty {
+    padding: 1.1rem 0 1.4rem;
+    font-size: 0.85rem;
+    color: var(--ink-light);
+    font-style: italic;
+  }
+
+  /* ─── Process Reviews ─── */
+  .process-reviews {
+    margin-top: 2.75rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--rule);
+  }
+
+  .process-reviews h3 {
+    font-size: 1rem;
+    color: var(--ink);
+    margin-bottom: 0.4rem;
+  }
+
+  .process-reviews-intro {
+    font-size: 0.85rem;
+    color: var(--ink-light);
+    margin-bottom: 1.25rem;
+    max-width: 620px;
+    line-height: 1.6;
+  }
+
+  .process-review-card {
+    border: 1px solid var(--rule);
+    border-left: 3px solid var(--accent2);
+    border-radius: 4px;
+    padding: 1.25rem 1.5rem;
+  }
+
+  .process-review-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 0.68rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent2);
+    font-weight: 600;
+    margin-bottom: 0.9rem;
+  }
+
+  .process-review-meta .meta-sep {
+    color: var(--ink-light);
+    font-weight: 400;
+  }
+
+  .process-review-card p {
+    font-size: 0.9rem;
+    color: var(--ink-mid);
+    line-height: 1.7;
+    margin: 0 0 0.9rem;
+  }
+
+  .process-review-card ul {
+    margin: 0 0 0.9rem 1.1rem;
+    padding: 0;
+  }
+
+  .process-review-card li {
+    font-size: 0.88rem;
+    color: var(--ink-mid);
+    line-height: 1.6;
+    margin-bottom: 0.4rem;
+  }
+
+  .process-review-card p:last-child,
+  .process-review-card ul:last-child {
+    margin-bottom: 0;
+  }
+
+  .sprint-badge {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    padding-top: 0.15rem;
+  }
+
+  .sprint-number {
+    font-size: 0.72rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 600;
+  }
+
+  .sprint-status {
+    font-size: 0.68rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-light);
+    background: var(--cream-dark);
+    border: 1px solid var(--rule);
+    padding: 0.15rem 0.45rem;
+    display: inline-block;
+    width: fit-content;
+  }
+
+
+  .sprint-body h3 {
+    font-size: 1rem;
+    line-height: 1.4;
+    color: var(--ink);
+    margin-bottom: 0.8rem;
+    font-weight: 600;
+  }
+
+  .sprint-outcome {
+    font-size: 0.88rem;
+    color: var(--ink-mid);
+    line-height: 1.65;
+    margin: 0;
+    padding-left: 1rem;
+    border-left: 2px solid var(--accent-lt);
+  }
+
+  .sprint-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35em;
+    margin-top: 0.85rem;
+    margin-left: 1rem;
+    font-size: 0.78rem;
+    letter-spacing: 0.04em;
+    color: var(--accent);
+    text-decoration: none;
+    border-bottom: 1px solid var(--rule);
+    padding-bottom: 0.1em;
+  }
+  .sprint-link:hover { border-color: var(--accent); }
+
+  /* ─── Footer ─── */
+  footer {
+    background-color: var(--cream-dark);
+    border-top: 1px solid var(--rule);
+    padding: 3rem 2rem;
+  }
+
+  .footer-inner {
+    max-width: var(--wide);
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+  }
+
+  .footer-wordmark {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--ink);
+    letter-spacing: 0.05em;
+  }
+
+  .footer-meta {
+    font-size: 0.78rem;
+    color: var(--ink-light);
+    line-height: 1.6;
+    text-align: right;
+  }
+
+  /* ─── Responsive ─── */
+  @media (max-width: 600px) {
+    body { font-size: 16px; }
+
+    .hero { padding: 4rem 0 3.5rem; }
+
+    .pullquote { margin: 2rem 0; padding: 1.2rem 1.4rem; }
+    .pullquote p { font-size: 1.1rem; }
+
+    .team-grid { grid-template-columns: 1fr; }
+    .team-member:not(:last-child) { padding-right: 0; }
+
+    .sprint-item { grid-template-columns: 1fr; gap: 0.8rem; }
+    .sprint-badge { flex-direction: row; align-items: center; gap: 0.8rem; }
+
+    .progress-stats { gap: 2rem; }
+    .stat-number { font-size: 2.2rem; }
+    #accomplishments .progress-stats { flex-wrap: wrap !important; gap: 2rem !important; }
+
+    .footer-meta { text-align: left; }
+
+    nav { padding: 0.8rem 1rem; }
+    .nav-links { gap: 1.2rem; }
+  }
+
+  /* ─── Subtle scroll indicator ─── */
+  .scroll-hint {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    color: var(--ink-light);
+    font-size: 0.78rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-top: 3rem;
+  }
+
+  .scroll-line {
+    display: block;
+    width: 40px;
+    height: 1px;
+    background: var(--ink-light);
+  }
+
+  /* ─── Decorative drop cap on mission ─── */
+  .dropcap::first-letter {
+    float: left;
+    font-size: 3.8rem;
+    line-height: 0.78;
+    margin: 0.1rem 0.15rem 0 0;
+    color: var(--accent);
+    font-family: 'Iowan Old Style', 'Palatino Linotype', Palatino, Georgia, serif;
+  }
+
+  /* ─── Founder ─── */
+  .founder-card {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.4rem;
+  }
+
+  .founder-card .founder-header {
+    display: flex;
+    gap: 1.25rem;
+    align-items: center;
+  }
+
+  .founder-photo {
+    width: 128px;
+    height: 128px;
+    border-radius: 50%;
+    background: var(--cream-dark);
+    border: 1px solid var(--rule);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.2rem;
+    color: var(--accent);
+    flex-shrink: 0;
+    font-family: 'Iowan Old Style', 'Palatino Linotype', Palatino, Georgia, serif;
+  }
+
+  .founder-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+  }
+
+  .founder-name {
+    font-size: 1.3rem;
+    color: var(--ink);
+    margin-bottom: 0.2rem;
+  }
+
+  .founder-title {
+    font-size: 0.78rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 600;
+    margin-bottom: 0.9rem;
+    display: block;
+  }
+
+  .founder-bio {
+    font-size: 0.95rem;
+    color: var(--ink-mid);
+    line-height: 1.65;
+    text-align: justify;
+    hyphens: auto;
+  }
+
+  /* ─── Methodology Deep-Dive ─── */
+  .methodology-intro {
+    font-size: 1.05rem;
+    color: var(--ink-mid);
+    margin-bottom: 3rem;
+    max-width: 600px;
+    line-height: 1.7;
+  }
+
+  .methodology-subsection {
+    margin-bottom: 3.5rem;
+  }
+
+  .methodology-subsection h3 {
+    font-size: 1.05rem;
+    color: var(--ink);
+    margin-bottom: 0.75rem;
+    margin-top: 0;
+  }
+
+  .methodology-subsection p {
+    font-size: 0.9rem;
+    color: var(--ink-mid);
+    line-height: 1.7;
+    margin-bottom: 0.9rem;
+  }
+
+  .methodology-subsection p:last-child {
+    margin-bottom: 0;
+  }
+
+  .methodology-note {
+    font-size: 0.82rem;
+    color: var(--ink-light);
+    border-left: 2px solid var(--rule);
+    padding-left: 1rem;
+    margin-top: 1rem;
+    line-height: 1.6;
+  }
+
+  .methodology-note strong {
+    color: var(--ink-mid);
+  }
+
+  /* ─── Sprint Flow Diagram ─── */
+  .flow-diagram {
+    margin: 2.5rem 0 2rem;
+    font-family: 'Iowan Old Style', 'Palatino Linotype', Palatino, Georgia, serif;
+  }
+
+  .flow-diagram-inner {
+    position: relative;
+  }
+
+  /* ─── Loop-back connector: revise outcome → back to parallel work ─── */
+  .loop-back-path {
+    position: relative;
+    height: 2.75rem;
+    margin: 0.25rem 0 0.75rem;
+  }
+
+  .loop-back-path .loop-line {
+    position: absolute;
+    left: 16%;
+    right: 7%;
+    bottom: 1rem;
+    height: 1px;
+    background: var(--accent-lt);
+    opacity: 0.6;
+  }
+
+  .loop-back-path .loop-tick-left {
+    position: absolute;
+    left: 16%;
+    bottom: 1rem;
+    width: 1px;
+    height: 1rem;
+    background: var(--accent-lt);
+    opacity: 0.6;
+  }
+
+  .loop-back-path .loop-tick-left::after {
+    content: '';
+    position: absolute;
+    top: -5px;
+    left: -3.5px;
+    border-left: 4px solid transparent;
+    border-right: 4px solid transparent;
+    border-bottom: 6px solid var(--accent-lt);
+    opacity: 0.85;
+  }
+
+  .loop-back-path .loop-tick-right {
+    position: absolute;
+    right: 7%;
+    bottom: 1rem;
+    width: 1px;
+    height: 1rem;
+    background: var(--accent-lt);
+    opacity: 0.6;
+  }
+
+  .loop-back-path .loop-label {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 1.35rem;
+    font-size: 0.66rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent-lt);
+    background: var(--cream);
+    padding: 0 0.6rem;
+    white-space: nowrap;
+  }
+
+  .flow-row {
+    display: flex;
+    align-items: center;
+    gap: 0;
+  }
+
+  .flow-row.parallel-row {
+    align-items: stretch;
+  }
+
+  .flow-node {
+    border: 1px solid var(--rule);
+    border-radius: 2px;
+    padding: 0.65rem 1rem;
+    font-size: 0.8rem;
+    color: var(--ink-mid);
+    line-height: 1.45;
+    background: var(--cream);
+    flex-shrink: 0;
+  }
+
+  .flow-node.node-start {
+    background: var(--cream-dark);
+    border-color: var(--rule);
+    min-width: 11rem;
+  }
+
+  .flow-node.node-gate {
+    border-color: var(--accent);
+    border-width: 1.5px;
+    color: var(--ink);
+    min-width: 9rem;
+  }
+
+  .flow-node.node-gate .node-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 600;
+    display: block;
+    margin-bottom: 0.2rem;
+  }
+
+  .flow-node.node-close {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--cream);
+    min-width: 7rem;
+    text-align: center;
+  }
+
+  .flow-node.node-revise {
+    background: var(--cream-dark);
+    border-color: var(--rule);
+    border-style: dashed;
+    min-width: 9rem;
+    color: var(--ink-mid);
+  }
+
+  .parallel-block {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    flex-shrink: 0;
+  }
+
+  .parallel-block .flow-node {
+    min-width: 9.5rem;
+  }
+
+  .parallel-block .parallel-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-light);
+    padding: 0 0 0.1rem 0;
+  }
+
+  .flow-connector {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    color: var(--ink-light);
+    font-size: 0.75rem;
+    position: relative;
+  }
+
+  .flow-connector .arrow-line {
+    width: 2rem;
+    height: 1px;
+    background: var(--rule);
+    position: relative;
+    flex-shrink: 0;
+  }
+
+  .flow-connector .arrow-line::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: -3px;
+    border-top: 3px solid transparent;
+    border-bottom: 3px solid transparent;
+    border-left: 5px solid var(--rule);
+  }
+
+  .flow-connector.connector-gate .arrow-line {
+    background: var(--accent);
+    opacity: 0.5;
+  }
+  .flow-connector.connector-gate .arrow-line::after {
+    border-left-color: var(--accent-lt);
+  }
+
+  .parallel-connector {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    flex-shrink: 0;
+    position: relative;
+  }
+
+  .parallel-connector .v-line {
+    width: 1px;
+    flex: 1;
+    background: var(--rule);
+  }
+
+  .parallel-connector .h-cap {
+    width: 0.5rem;
+    height: 1px;
+    background: var(--rule);
+  }
+
+  .split-connector {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-shrink: 0;
+    position: relative;
+    width: 2rem;
+  }
+
+  .split-connector .v-top {
+    flex: 1;
+    width: 1px;
+    background: var(--rule);
+    min-height: 1.5rem;
+  }
+
+  .split-connector .v-mid {
+    width: 1rem;
+    height: 1px;
+    background: var(--rule);
+  }
+
+  .flow-row-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .loop-annotation {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    margin-top: 1.25rem;
+    padding: 0.85rem 1rem;
+    border: 1px dashed var(--rule);
+    border-radius: 2px;
+    background: var(--cream-dark);
+  }
+
+  .loop-annotation .loop-icon {
+    font-size: 1rem;
+    color: var(--accent-lt);
+    flex-shrink: 0;
+    margin-top: 0.05rem;
+  }
+
+  .loop-annotation p {
+    font-size: 0.8rem;
+    color: var(--ink-mid);
+    line-height: 1.55;
+    margin: 0;
+  }
+
+  .loop-annotation p strong {
+    color: var(--ink);
+  }
+
+  .verdict {
+    display: inline-block;
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-weight: 600;
+    padding: 0.1rem 0.4rem;
+    border-radius: 2px;
+    vertical-align: middle;
+  }
+
+  .verdict-approved {
+    background: rgba(32, 121, 91, 0.12);
+    color: var(--accent);
+  }
+
+  .verdict-revision {
+    background: rgba(161, 106, 23, 0.12);
+    color: var(--accent2);
+  }
+
+  .checklist-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+    margin: 1.5rem 0;
+  }
+
+  .checklist-table th {
+    text-align: left;
+    font-size: 0.68rem;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+    color: var(--ink-light);
+    font-weight: 600;
+    padding: 0.5rem 0.75rem 0.5rem 0;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .checklist-table td {
+    padding: 0.65rem 0.75rem 0.65rem 0;
+    border-bottom: 1px solid var(--rule);
+    color: var(--ink-mid);
+    line-height: 1.5;
+    vertical-align: top;
+  }
+
+  .checklist-table tr:last-child td {
+    border-bottom: none;
+  }
+
+  .checklist-table .cat-name {
+    color: var(--ink);
+    font-size: 0.82rem;
+  }
+
+  .checklist-gap {
+    color: var(--ink-light);
+    font-style: italic;
+  }
+
+  @media (max-width: 600px) {
+    .flow-diagram {
+      overflow-x: auto;
+      padding-bottom: 0.5rem;
+    }
+
+    .flow-diagram-inner {
+      min-width: 520px;
+    }
+
+    .checklist-table {
+      font-size: 0.78rem;
+    }
+  }
+
+  /* ── Infrastructure section (all rules namespaced under #infrastructure
+     to avoid colliding with the Methodology section's identically-named
+     .flow-node / .parallel-block / .checklist-table classes) ───────────── */
+  #infrastructure .infra-code {
+    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+    font-size: 0.82em;
+    background: var(--cream-dark);
+    color: var(--ink-mid);
+    padding: 0.15em 0.4em;
+    border-radius: 3px;
+    border: 1px solid var(--rule);
+    white-space: nowrap;
+  }
+
+  #infrastructure .infra-diagram {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    margin: 2.5rem auto;
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    background: #fff;
+  }
+
+  #infrastructure .infra-detail-tables {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin: 2.5rem 0;
+    align-items: start;
+  }
+
+  @media (max-width: 600px) {
+    #infrastructure .infra-detail-tables { grid-template-columns: 1fr; }
+  }
+
+  #infrastructure .infra-table-block__heading {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin: 0 0 0.65rem;
+  }
+
+  #infrastructure .checklist-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.86rem;
+    color: var(--ink);
+  }
+
+  #infrastructure .checklist-table th {
+    text-align: left;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--ink-light);
+    border-bottom: 2px solid var(--rule);
+    padding: 0.3rem 0.6rem 0.4rem 0;
+  }
+
+  #infrastructure .checklist-table td {
+    padding: 0.4rem 0.6rem 0.4rem 0;
+    border-bottom: 1px solid var(--rule);
+    vertical-align: top;
+    line-height: 1.4;
+  }
+
+  #infrastructure .checklist-table td:last-child,
+  #infrastructure .checklist-table th:last-child {
+    color: var(--ink-light);
+    font-size: 0.8rem;
+  }
+
+  #infrastructure .infra-callout {
+    border-left: 3px solid var(--accent2);
+    background: #fdf8f0;
+    padding: 1rem 1.2rem;
+    border-radius: 0 5px 5px 0;
+    margin: 2rem 0 0;
+    font-size: 0.92rem;
+    color: var(--ink-mid);
+    line-height: 1.7;
+  }
+
+  #infrastructure .infra-callout strong { color: var(--ink); }
+
+  #infrastructure .infra-callout__eyebrow {
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent2);
+    display: block;
+    margin-bottom: 0.4rem;
+  }
+
+  #infrastructure .infra-rule {
+    border: none;
+    border-top: 1px solid var(--rule);
+    margin: 2.5rem 0;
+  }
+
+  #infrastructure .infra-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.74rem;
+    font-weight: 600;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--accent);
+    border: 1px solid var(--accent);
+    border-radius: 3px;
+    padding: 0.2em 0.6em;
+    margin-left: 0.75rem;
+    vertical-align: middle;
+  }
+
+  #infrastructure .infra-status::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    flex-shrink: 0;
+  }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════ NAV -->
+<nav aria-label="Site navigation">
+  <div class="nav-inner">
+    <span class="nav-wordmark">
+      <svg class="logo-mark" viewBox="0 0 32 28" aria-hidden="true">
+        <path class="star-a" d="M11,0.5 Q13.027,8.973 21.5,11 Q13.027,13.027 11,21.5 Q8.973,13.027 0.5,11 Q8.973,8.973 11,0.5 Z"/>
+        <path class="star-b" d="M23.5,12.5 Q25.197,18.303 31,20 Q25.197,21.697 23.5,27.5 Q21.803,21.697 16,20 Q21.803,18.303 23.5,12.5 Z"/>
+      </svg>
+      Altair8 Labs
+    </span>
+    <ul class="nav-links">
+      <li><a href="#mission">Mission</a></li>
+      <li><a href="#founder">Founder</a></li>
+      <li><a href="#team">Team</a></li>
+      <li><a href="#methodology">Methodology</a></li>
+      <li><a href="#infrastructure">Infrastructure</a></li>
+      <li><a href="#progress">Progress</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- ══════════════════════════════════════════ HERO / MISSION -->
+<section class="hero" id="mission">
+  <div class="container">
+    <span class="hero-eyebrow">Altair8 &mdash; An AI-Only Research Team</span>
+    <h1>Building the visual communication layer that AI&nbsp;still doesn't have.</h1>
+
+    <div class="pullquote" role="blockquote">
+      <p>We research to deeply understand why today's LLM-generated slides and visualizations hit a ceiling. Based on our findings, we will design and build a new concept that lets humans visualize their business communication in any fashion, to any audience, together with agents.</p>
+      <cite>
+        <svg class="pullquote-icon" viewBox="0 0 26 23" aria-hidden="true">
+          <path class="star-a" d="M9,0.5 Q10.641,7.359 17.5,9 Q10.641,10.641 9,17.5 Q7.359,10.641 0.5,9 Q7.359,7.359 9,0.5 Z"/>
+          <path class="star-b" d="M19,10 Q20.358,14.642 25,16 Q20.358,17.358 19,22 Q17.642,17.358 13,16 Q17.642,14.642 19,10 Z"/>
+        </svg>
+        Our North Star
+      </cite>
+    </div>
+
+    <div class="mission-body">
+      <p class="dropcap">Today's AI tools can turn a prompt into a presentation in seconds. What comes out is always the same format: a flat, two-dimensional slide deck — the exact shape business communication has taken for thirty years. But an agent isn't limited to that shape. It could render information as almost any visualization imaginable. Nobody is asking why we still default to the one we've always used.</p>
+
+      <p>Altair8 exists to understand <em>why</em> we still default to that shape — rigorously, citing evidence, without hype — and to build toward something past it. We are a small, fully AI-native team. We do not schedule status meetings. We run focused two-day sprints, review everything critically before it surfaces, and publish what we learn.</p>
+
+      <p>The question driving us is not "can AI make slides faster?" It is whether AI can participate in the <em>communication reasoning</em> behind a visualization: who is the audience, what do they need to understand, in what order, and why does spatial arrangement matter to that understanding? Those are unsolved problems. We are working on them.</p>
+    </div>
+
+    <div class="scroll-hint" aria-hidden="true">
+      <span class="scroll-line"></span>
+      Continue reading
+    </div>
+  </div>
+</section>
+
+<hr class="rule">
+
+<!-- ══════════════════════════════════════════ ACCOMPLISHMENTS TEASER -->
+<section id="accomplishments">
+  <div class="container" style="max-width: 1140px;">
+    <div class="progress-stats" aria-label="Key numbers" style="margin-bottom: 0; padding-bottom: 0; border-bottom: none; justify-content: center; text-align: center; flex-wrap: nowrap; gap: 4.5rem;">
+      <div class="stat" style="align-items: center;">
+        <span class="stat-number">6</span>
+        <span class="stat-label">Sprints completed</span>
+      </div>
+      <div class="stat" style="align-items: center;">
+        <span class="stat-number">270</span>
+        <span class="stat-label">Science papers screened</span>
+      </div>
+      <div class="stat" style="align-items: center;">
+        <span class="stat-number">20</span>
+        <span class="stat-label">AI tools surveyed</span>
+      </div>
+      <div class="stat" style="align-items: center;">
+        <span class="stat-number">4</span>
+        <span class="stat-label">Foundation models assessed</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="rule">
+
+<!-- ══════════════════════════════════════════ FOUNDER -->
+<section id="founder">
+  <div class="container">
+    <span class="section-label">Founder</span>
+    <h2 class="section-title">Led by a human, built by agents.</h2>
+
+    <div class="founder-card">
+      <div class="founder-header">
+        <div class="founder-photo" onclick="openLightbox('team-photos/richard.jpg','Richard Meyer')">
+          <img src="team-photos/richard.jpg" alt="Richard Meyer">
+        </div>
+        <div>
+          <h3 class="founder-name">Richard Meyer</h3>
+          <span class="founder-title">Founder</span>
+        </div>
+      </div>
+      <p class="founder-bio">Richard spent twenty years bridging enterprise strategy and technology delivery, from large-scale transformation programs at Accenture to co-building and scaling insurance-industry SaaS startups. He negotiated and delivered multi-million-euro platform integrations for his clients, including Allianz, Munich Re, Siemens, BMW and others. Richard successfully completed a Master of Science in Applied Artificial Intelligence. His master thesis focused on training computer-vision models for improved underwater debris detection in NVIDIA's Omniverse simulation environment. Richard founded Altair8 Labs and brought the team to life. He defines Altair8's research direction, sits in on every sprint planning session, ensures goal-focused teamwork, and continuously works on improving infrastructure, organizational design, and processual friction.</p>
+    </div>
+  </div>
+</section>
+
+<hr class="rule">
+
+<!-- ══════════════════════════════════════════ TEAM -->
+<section id="team">
+  <div class="container">
+    <span class="section-label">The Team</span>
+    <h2 class="section-title">Five agents and growing, each equipped with special skills collaborating together towards one goal.</h2>
+  </div>
+  <div class="container--wide">
+    <div class="team-grid">
+
+      <div class="team-member" onclick="openMemberModal('sophie')">
+        <div class="member-photo"><img src="team-photos/sophie.png" alt="Sophie Marchetti"></div>
+        <span class="member-role">Team Leader</span>
+        <h3 class="member-name">Sophie Marchetti</h3>
+        <span class="member-location">Lyon, France</span>
+        <p class="member-desc">Orchestrates the team, curates findings across sprints, and runs sprint planning in direct conversation with the founder. Sophie's job is coherence: making sure individual research threads add up to something.</p>
+      </div>
+
+      <div class="team-member" onclick="openMemberModal('kenji')">
+        <div class="member-photo"><img src="team-photos/kenji.png" alt="Kenji Ochiai"></div>
+        <span class="member-role">Researcher &mdash; Literature &amp; Landscape</span>
+        <h3 class="member-name">Kenji Ochiai</h3>
+        <span class="member-location">Osaka, Japan</span>
+        <p class="member-desc">Scientific literature mining and market/product landscape scans. Kenji reads the papers, maps the tools, and produces the factual substrate that the rest of the team builds on.</p>
+      </div>
+
+      <div class="team-member" onclick="openMemberModal('naledi')">
+        <div class="member-photo"><img src="team-photos/naledi.png" alt="Dr. Naledi Mokoena"></div>
+        <span class="member-role">Researcher &mdash; Visual Cognition</span>
+        <h3 class="member-name">Dr. Naledi Mokoena</h3>
+        <span class="member-location">Cape Town, South Africa</span>
+        <p class="member-desc">Cognitive science and HCI angle on visual communication. Naledi translates research findings into design principles grounded in how human perception and working memory actually function.</p>
+      </div>
+
+      <div class="team-member" onclick="openMemberModal('mateo')">
+        <div class="member-photo"><img src="team-photos/mateo.png" alt="Mateo Fittipaldi"></div>
+        <span class="member-role">Developer</span>
+        <h3 class="member-name">Mateo Fittipaldi</h3>
+        <span class="member-location">São Paulo, Brazil</span>
+        <p class="member-desc">Builds prototypes that translate research briefs into working, inspectable interfaces. Seven years in frontend engineering, the last three focused on generative interfaces and LLM-to-rendered-component pipelines.</p>
+      </div>
+
+      <div class="team-member" onclick="openMemberModal('ingrid')">
+        <div class="member-photo"><img src="team-photos/ingrid.png" alt="Dr. Ingrid Solberg"></div>
+        <span class="member-role">Reviewer</span>
+        <h3 class="member-name">Dr. Ingrid Solberg</h3>
+        <span class="member-location">Bergen, Norway</span>
+        <p class="member-desc">Stress-tests every output before it reaches the founder. Ingrid's function is adversarial: she looks for overclaims, gaps, and conclusions that outrun the evidence. Nothing ships as final without her sign-off.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<hr class="rule">
+
+<section id="methodology">
+  <div class="container">
+
+    <p class="section-label">Methodology</p>
+    <h2>How We Actually Work</h2>
+    <p class="methodology-intro">
+      This is for other researchers who want to understand the mechanics precisely —
+      not a summary of our goals. Two things are worth explaining in detail:
+      the research paradigm we orient around, and how the review gate is enforced.
+    </p>
+
+    <!-- ─── 0. Design Science Research orientation ─── -->
+    <div class="methodology-subsection">
+      <h3>0. Our research orientation: Design Science Research</h3>
+
+      <p>
+        We informally orient our work around <strong>Design Science Research (DSR)</strong> —
+        the paradigm, associated with Hevner et al. and Peffers et al.'s process model, for
+        research that builds and evaluates an artifact to solve a real problem, rather than
+        only describing or explaining a phenomenon. It is a natural fit: we are not trying to
+        publish a theory about visual communication, we are trying to build something that
+        works, and be rigorous about why it works.
+      </p>
+
+      <p>
+        Concretely, our sprint structure already maps onto DSR's cycle, and we now name it
+        explicitly rather than leaving the correspondence implicit: Kenji and Naledi's
+        literature and landscape work is DSR's <strong>rigor cycle</strong> — grounding any
+        design in the existing knowledge base before we add to it. Mateo's prototypes are
+        <strong>design &amp; development</strong> and <strong>demonstration</strong>. Ingrid's
+        review is <strong>evaluation</strong>. This website is <strong>communication</strong>.
+        Each sprint entry in the Progress section below is tagged with the DSR phase it
+        belongs to, so the sequence is visible, not just asserted.
+      </p>
+
+      <p>
+        We are adopting this deliberately as a mental model and a shared vocabulary, not as a
+        new layer of process bureaucracy — it does not add gates beyond the review gate
+        described below. Sprints 1 through 5 all sat in DSR's
+        <strong>problem identification</strong> phase: establishing, rigorously and across
+        every category of prior art we could find, that the problem is real and unsolved.
+        Sprint 5 completed that phase. Sprint 6 is the first sprint inside
+        <strong>defining objectives of a solution</strong> — the next sprints move toward
+        actual design and development of the artifact itself.
+      </p>
+    </div>
+
+    <!-- ─── 1. Review Gate ─── -->
+    <div class="methodology-subsection">
+      <h3>1. The review gate: what it actually enforces</h3>
+
+      <p>
+        Every sprint produces deliverables from the two Researchers (Kenji and Naledi)
+        and the Developer (Mateo). Before a sprint can be marked closed, the Reviewer
+        (Ingrid) must record a verdict — <span class="verdict verdict-approved">approved</span>,
+        <span class="verdict verdict-revision">needs&nbsp;revision</span>, or rejected — in
+        a <code>reviews</code> Postgres table. A sprint-close operation fails at the
+        database level if the latest review row for that sprint does not carry
+        <code>result&nbsp;=&nbsp;'approved'</code>. This is adapted from AI-Scientist-v2's
+        non-author review pattern, identified in Sprint 3.
+      </p>
+
+      <p>
+        The diagram below shows one sprint cycle. The gate is the branch: an
+        <span class="verdict verdict-approved">approved</span> verdict closes the sprint;
+        a <span class="verdict verdict-revision">needs&nbsp;revision</span> verdict
+        routes deliverables back to the researcher(s) with specific instructions,
+        and the sprint stays open until a new review passes.
+      </p>
+
+      <!-- Flow Diagram -->
+      <div class="flow-diagram" role="img" aria-label="Sprint cycle flow: question opens sprint, parallel research and development work runs, Reviewer gate either closes sprint or routes back to revision">
+        <div class="flow-diagram-inner">
+
+          <!-- Row 1: Question → split → parallel work -->
+          <div class="flow-row" style="align-items:flex-start; margin-bottom:0;">
+
+            <!-- START: Sprint question -->
+            <div class="flow-node node-start" style="align-self:center;">
+              <span style="font-size:0.68rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);font-weight:600;display:block;margin-bottom:.2rem;">Sprint opens</span>
+              Research question<br>defined &amp; scoped
+            </div>
+
+            <!-- connector to split -->
+            <div class="flow-connector" style="align-self:center;">
+              <div class="arrow-line"></div>
+            </div>
+
+            <!-- parallel split point -->
+            <div style="display:flex;flex-direction:column;align-items:center;align-self:stretch;flex-shrink:0;width:1.2rem;">
+              <div style="flex:1;width:1px;background:var(--rule);"></div>
+              <div style="width:1rem;height:1px;background:var(--rule);"></div>
+              <div style="flex:1;width:1px;background:var(--rule);"></div>
+            </div>
+
+            <!-- parallel work block -->
+            <div class="parallel-block" style="align-self:center;">
+              <div style="font-size:0.68rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-light);margin-bottom:.15rem;">Parallel work</div>
+              <div class="flow-node" style="min-width:10rem;">
+                <strong style="color:var(--ink);font-size:0.8rem;">Researchers</strong><br>
+                Literature, landscape,<br>cognitive briefs
+              </div>
+              <div class="flow-node" style="min-width:10rem;">
+                <strong style="color:var(--ink);font-size:0.8rem;">Developer</strong><br>
+                Prototype translating<br>researcher findings
+              </div>
+            </div>
+
+            <!-- connector to merge -->
+            <div style="display:flex;flex-direction:column;align-items:center;align-self:stretch;flex-shrink:0;width:2rem;">
+              <div style="flex:1;width:1px;background:var(--rule);"></div>
+              <div style="width:1rem;height:1px;background:var(--rule);"></div>
+              <div style="flex:1;width:1px;background:var(--rule);"></div>
+            </div>
+
+            <!-- GATE -->
+            <div class="flow-node node-gate" style="align-self:center;">
+              <span class="node-label">Review gate</span>
+              Ingrid reviews<br>all deliverables
+            </div>
+
+            <!-- connector to outcomes -->
+            <div style="display:flex;flex-direction:column;align-items:center;align-self:stretch;flex-shrink:0;width:2rem;">
+              <div style="flex:1;width:1px;background:var(--rule);opacity:.4;"></div>
+              <div style="width:1rem;height:1px;background:var(--rule);"></div>
+              <div style="flex:1;width:1px;background:var(--rule);opacity:.4;"></div>
+            </div>
+
+            <!-- outcomes: approved / needs revision -->
+            <div style="display:flex;flex-direction:column;gap:.5rem;align-self:center;flex-shrink:0;">
+              <div class="flow-node node-close" style="font-size:0.8rem;">
+                Sprint closes
+              </div>
+              <div style="font-size:0.7rem;color:var(--ink-light);text-align:center;padding:.1rem 0;">or</div>
+              <div class="flow-node node-revise" style="font-size:0.8rem;">
+                Revise + re-submit<br>
+                <span style="font-size:0.72rem;color:var(--ink-light);">per specific instructions</span>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Loop-back connector: needs-revision routes back to parallel work -->
+          <div class="loop-back-path" aria-hidden="true">
+            <div class="loop-line"></div>
+            <div class="loop-tick-left"></div>
+            <div class="loop-tick-right"></div>
+            <div class="loop-label">needs revision</div>
+          </div>
+
+          <!-- Loop annotation -->
+          <div class="loop-annotation">
+            <div class="loop-icon">↩</div>
+            <p>
+              <strong>The loop is not symbolic.</strong> Sprint 4 (completed 2026-07-23)
+              received a <span class="verdict verdict-revision">needs&nbsp;revision</span>
+              verdict from Ingrid first. The sprint-close operation was refused by the gate.
+              Both Kenji and Mateo revised their deliverables against six specific instructions
+              from Ingrid's review. Ingrid spot-checked the revisions; the sprint then closed.
+              The gate was not bypassed or waived.
+            </p>
+          </div>
+
+        </div><!-- /flow-diagram-inner -->
+      </div><!-- /flow-diagram -->
+
+      <p style="margin-top: 1.5rem; font-size: 0.88rem; color: var(--ink-light); font-style: italic;">Several of the engineering patterns behind this process — constrained roles per agent, typed handoffs between them, and review as a hard gate rather than a comment — are adapted from <a href="https://github.com/SakanaAI/AI-Scientist-v2" style="color: inherit;">AI-Scientist-v2</a> (SakanaAI), an automated research system whose team has been running AI agents on real research longer than we have. We looked at how they organize their agents, not at their research itself, and credit them accordingly.</p>
+
+    </div><!-- /subsection 1 -->
+
+    <!-- Subsections 2 and 3 hidden 2026-07-30 per founder request (kept in
+         source, not deleted, in case they come back). -->
+    <!--
+    <hr style="border:none;border-top:1px solid var(--rule);margin:0 0 3rem;">
+
+    <div class="methodology-subsection">
+      <h3>2. How a process fix actually gets made</h3>
+
+      <p>
+        Sprint 2 scanned the top 20 AI slide and visualization tools. Sprint 3
+        went deep on Genially and AI-Scientist-v2. Both sprints presented their
+        scope as a market assessment. Both silently covered only third-party
+        consumer tools — Gamma, Tome, Genially, Flourish, Prezi — and never
+        touched foundation-model providers' own first-party capabilities:
+        Anthropic's Claude skills, OpenAI's ChatGPT Canvas, Google's Gemini Canvas,
+        Microsoft Copilot. An entire category was missing from what was presented
+        as a landscape scan.
+      </p>
+
+      <p>
+        Nobody on the team caught it during Sprint 2's review. Nobody caught it
+        during Sprint 3's review either. The founder caught it afterward, when
+        scoping Sprint 4 — because he noticed that findings about Anthropic and
+        OpenAI's own capabilities were being described as discoveries, when they
+        should have been covered in the earlier landscape work. The team did not
+        self-identify this gap.
+      </p>
+
+      <p>
+        Two fixes were made. First, a required-category checklist
+        (<code>tools/scope_checklist.py</code>): any future market-analysis sprint
+        question is checked against four mandatory categories before being proposed.
+        Second, the Reviewer's mandate was explicitly extended to include scope
+        completeness — not just evidentiary rigor of what was submitted, but whether
+        an entire category was silently absent.
+      </p>
+
+      <table class="checklist-table" aria-label="Required scope categories for market analysis sprints">
+        <thead>
+          <tr>
+            <th style="width:35%;">Category</th>
+            <th>What it covers</th>
+            <th style="width:20%;">Sprint 2 status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="cat-name">Third-party tools</td>
+            <td>Commercial products built on foundation models (Genially, Gamma, Tome, Beautiful.ai, Flourish, Prezi)</td>
+            <td><span class="verdict verdict-approved">Covered</span></td>
+          </tr>
+          <tr>
+            <td class="cat-name">Foundation-model providers' own capabilities</td>
+            <td>Native capabilities shipped by model providers themselves — not third-party products built on top of them (Anthropic skills, ChatGPT Canvas, Gemini Canvas, Copilot)</td>
+            <td><span class="checklist-gap">Silent gap</span></td>
+          </tr>
+          <tr>
+            <td class="cat-name">Open-source / research frameworks</td>
+            <td>Non-commercial frameworks or research codebases relevant to the problem (AI-Scientist-v2, RISE)</td>
+            <td><span class="checklist-gap">Deferred to Sprint 3</span></td>
+          </tr>
+          <tr>
+            <td class="cat-name">Academic / independent research</td>
+            <td>Published literature on the underlying problem, independent of any specific product or vendor</td>
+            <td><span class="verdict verdict-approved">Covered (Sprint 1)</span></td>
+          </tr>
+        </tbody>
+      </table>
+
+    </div>
+
+    <hr style="border:none;border-top:1px solid var(--rule);margin:0 0 3rem;">
+
+    <div class="methodology-subsection">
+      <h3>3. Where we are not relying on automation</h3>
+
+      <p>
+        The scope checklist ships a keyword-based pre-check function. It scans a
+        proposed sprint brief for terms associated with each required category and
+        flags apparent gaps before the brief is submitted. We tested it against the
+        real historical Sprint 2 brief to validate it. It produced an instructive
+        false positive: the foundation-model-native category showed as
+        <em>mentioned</em> because an incidental keyword matched — even though that
+        category was never actually assessed in the brief.
+      </p>
+
+      <p>
+        We are not treating this as a bug to fix. A keyword scan is a fast filter
+        for obvious omissions, not a coverage verifier. The pre-check can save a
+        researcher from forgetting a whole category accidentally; it cannot tell
+        whether a category that appears in the text was genuinely researched.
+        The Reviewer's actual judgment on scope is what matters. The pre-check
+        is upstream of that judgment, not a substitute for it.
+      </p>
+
+      <div class="methodology-note">
+        <strong>On the Reviewer gate itself:</strong> Sprint 3 surfaced an open
+        design question — whether Ingrid's review gate should eventually become
+        human-supervised or fully agent-automated. That question was deliberately
+        not resolved in Sprint 3 and was flagged for Sophie (founder) to decide
+        before Sprint 5. It is not resolved now. The gate is currently
+        human-judgment only.
+      </div>
+
+    </div>
+    -->
+
+  </div><!-- /container -->
+</section>
+
+<hr class="rule">
+
+<section id="infrastructure" aria-labelledby="infra-heading">
+  <div class="container">
+
+    <!-- Eyebrow + heading -->
+    <p class="section-label">Infrastructure</p>
+    <h2 id="infra-heading" style="font-size:1.75rem; margin:0.3rem 0 0.6rem; color:var(--ink);">
+      Our Infrastructure
+      <span class="infra-status">localhost</span>
+    </h2>
+    <p style="max-width:var(--max); color:var(--ink-mid); line-height:1.75; font-size:0.97rem; margin:0 0 0.5rem;">
+      This is the technical substrate that runs Altair8's research loop — what the
+      <a href="#methodology" style="color:var(--accent);">Methodology section</a> runs
+      <em>on top of</em>. Everything currently executes on a single developer machine
+      via <code class="infra-code">docker compose</code>. There is no cloud deployment,
+      no managed Kubernetes cluster, no distributed compute. That is an accurate
+      description of where the project is right now, not an oversight.
+    </p>
+    <p style="max-width:var(--max); color:var(--ink-light); line-height:1.75; font-size:0.88rem; margin:0;">
+      Diagram: the local Docker Compose stack (green), the two places the team
+      pushes to (public website via FTPS, GitHub via SSH), and the two external
+      API dependencies (LLM providers, science literature databases).
+    </p>
+
+    <!-- ── Architecture diagram ─────────────────────────────────────────── -->
+    <img
+      class="infra-diagram"
+      src="infrastructure-diagram.png"
+      alt="Altair8 infrastructure diagram: a localhost AI workstation runs a Docker Compose stack (agent research team, chromaDB, PostgreSQL, dashboard), connected via FTPS to the public website, via SSH to a private GitHub repository, and via API to external LLMs (Anthropic Claude, OpenAI) and external science databases (Semantic Scholar, arXiv, OpenAlex, IEEE)."
+    >
+
+    <!-- ── Postgres + ChromaDB detail tables ────────────────────────────── -->
+    <hr class="infra-rule">
+    <div class="infra-detail-tables">
+
+      <!-- Postgres -->
+      <div class="infra-table-block">
+        <p class="infra-table-block__heading">PostgreSQL 16 — tables</p>
+        <table class="checklist-table">
+          <thead>
+            <tr>
+              <th>Table</th>
+              <th>Purpose</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code class="infra-code">agent_memory</code></td>
+              <td>Key-value store per agent — status, last outputs, north_star, etc.</td>
+            </tr>
+            <tr>
+              <td><code class="infra-code">tasks</code></td>
+              <td>Every unit of work; includes <code class="infra-code">artifact_type</code> + <code class="infra-code">artifact_payload</code> JSONB columns for typed agent handoffs (adopted Sprint 3).</td>
+            </tr>
+            <tr>
+              <td><code class="infra-code">papers</code></td>
+              <td>Literature search results with <code class="infra-code">source</code> + <code class="infra-code">external_id</code> columns — one row per source per paper (arXiv / Semantic Scholar / OpenAlex / IEEE Xplore).</td>
+            </tr>
+            <tr>
+              <td><code class="infra-code">token_usage</code></td>
+              <td>Per-agent input/output token logging for cost tracking.</td>
+            </tr>
+            <tr>
+              <td><code class="infra-code">sprints</code></td>
+              <td><code class="infra-code">sprint_number</code>, <code class="infra-code">question</code>, <code class="infra-code">outcome</code>, <code class="infra-code">status</code> — the sprint timeline.</td>
+            </tr>
+            <tr>
+              <td><code class="infra-code">reviews</code></td>
+              <td>Reviewer sign-offs (<code class="infra-code">approved</code> / <code class="infra-code">rejected</code> / <code class="infra-code">needs_revision</code>). A sprint cannot close in the database unless the latest review row is <code class="infra-code">approved</code> — this is an enforced database gate, not a convention.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- ChromaDB -->
+      <div class="infra-table-block">
+        <p class="infra-table-block__heading" style="color:var(--accent);">ChromaDB — collections</p>
+        <table class="checklist-table">
+          <thead>
+            <tr>
+              <th>Collection</th>
+              <th>Scope</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code class="infra-code">researcher_memory</code></td>
+              <td>Shared by both Researchers (Kenji + Naledi). Semantic search over past literature findings and briefs.</td>
+            </tr>
+            <tr>
+              <td><code class="infra-code">developer_memory</code></td>
+              <td>Mateo's prototype history and implementation notes.</td>
+            </tr>
+            <tr>
+              <td><code class="infra-code">reviewer_memory</code></td>
+              <td>Ingrid's review decisions and rationale.</td>
+            </tr>
+            <tr>
+              <td><code class="infra-code">team_leader_memory</code></td>
+              <td>Sophie's planning context and sprint-level decisions.</td>
+            </tr>
+          </tbody>
+        </table>
+        <p style="font-size:0.8rem; color:var(--ink-light); margin:0.65rem 0 0; line-height:1.55;">
+          Embedding model: <code class="infra-code">all-MiniLM-L6-v2</code>,
+          downloaded into the container on first run.
+          One collection per agent role — not one per sprint — so
+          semantic context accumulates across the full research arc.
+        </p>
+      </div>
+
+    </div><!-- /infra-detail-tables -->
+
+    <!-- ── Agent safety layer ────────────────────────────────────────────── -->
+    <hr class="infra-rule">
+    <p class="section-label" style="margin-bottom:0.4rem;">Agent safety layer</p>
+    <p style="max-width:var(--max); color:var(--ink-mid); line-height:1.75; font-size:0.93rem; margin:0;">
+      <code class="infra-code">agents/permissions.py</code> defines an explicit, constrained list of
+      allowed actions for each agent. A <code class="infra-code">require_tool()</code> check runs at the top
+      of every agent script before any work begins. This is a hard enforcement mechanism, not
+      a coding convention — an agent that attempts an action outside its permission list will
+      fail immediately. The pattern was adopted from AI-Scientist-v2 in Sprint 3 and applied
+      to all five personas.
+    </p>
+
+    <!-- ── Security posture ──────────────────────────────────────────────── -->
+    <div class="infra-callout">
+      <span class="infra-callout__eyebrow">Security posture — why two different standards</span>
+      The FTPS publish credentials are encrypted at rest with
+      <code class="infra-code">sops + age</code> and never appear in plain text in the repository
+      or the environment. The LLM API keys (<code class="infra-code">ANTHROPIC_API_KEY</code>,
+      <code class="infra-code">OPENAI_API_KEY</code>) live in <code class="infra-code">config/.env</code>,
+      which is gitignored but not otherwise encrypted at rest.
+      <strong>This is a deliberate, risk-based distinction, not an inconsistency.</strong>
+      The FTPS credential grants write access to public-facing infrastructure — a compromise would
+      let an attacker modify every page on the public website. The LLM API keys are read-only
+      API billing credentials: a compromise is a financial exposure to Anthropic's and OpenAI's
+      billing systems, recoverable by rotating the key. The higher-consequence credential gets
+      the stricter control. Both credential files are gitignored; neither has ever been committed
+      to the repository.
+    </div>
+
+  </div><!-- /container -->
+</section>
+
+<hr class="rule">
+
+<!-- ══════════════════════════════════════════ PROGRESS -->
+<section id="progress">
+  <div class="container">
+    <span class="section-label">Progress</span>
+    <h2 class="section-title">What we have established so&nbsp;far.</h2>
+
+    <p style="color: var(--ink-mid); font-size: 1rem; margin-bottom: 2.5rem; max-width: 580px;">Below is a public summary of completed sprints and their reviewed outcomes. We publish what we have confirmed, not what we suspect.</p>
+
+    <div class="progress-stats" aria-label="Key numbers">
+      <div class="stat">
+        <span class="stat-number">6</span>
+        <span class="stat-label">Sprints completed</span>
+      </div>
+      <div class="stat">
+        <span class="stat-number">270</span>
+        <span class="stat-label">Science papers screened</span>
+      </div>
+      <div class="stat">
+        <span class="stat-number">20</span>
+        <span class="stat-label">AI tools surveyed</span>
+      </div>
+    </div>
+
+    <div class="dsr-phases">
+
+      <details class="dsr-phase">
+        <summary class="dsr-phase-summary">
+          <span class="dsr-phase-name"><span class="dsr-phase-chevron">&#9656;</span> Problem Identification &amp; Motivation</span>
+          <span class="dsr-phase-count">5 sprints</span>
+        </summary>
+        <div class="dsr-phase-sprints sprint-list">
+
+          <article class="sprint-item">
+            <div class="sprint-badge">
+              <span class="sprint-number">Sprint 1</span>
+              <span class="sprint-status">Completed</span>
+            </div>
+            <div class="sprint-body">
+              <h3>What are the most significant documented failure modes when LLMs attempt to reason about visual layout and spatial semantics, and what approaches have shown any traction against them?</h3>
+              <p class="sprint-outcome">Kenji documented LLM spatial and orientation-reasoning failure modes from arXiv-sourced literature; Naledi translated findings into cognitive-load design principles; Mateo built an HTML prototype demonstrating them. Ingrid's review confirmed the core findings and required revision of overclaims and incomplete drafts before the sprint was closed.</p>
+            </div>
+          </article>
+
+          <article class="sprint-item">
+            <div class="sprint-badge">
+              <span class="sprint-number">Sprint 2</span>
+              <span class="sprint-status">Completed</span>
+            </div>
+            <div class="sprint-body">
+              <h3>What does the current landscape of AI-generated slide and visualization tools look like, and where do they visibly hit the ceiling we are trying to get past?</h3>
+              <p class="sprint-outcome">Kenji surveyed the top 20 AI slide and visualization tools and confirmed that none have solved AI-reasoned, non-linear communication structure — production is automated, communication reasoning is not. Ingrid's review required revision; following revision, Genially was flagged for immediate follow-up as the closest existing analog, Flourish's SDK was flagged as a build-vs-buy question, and Prezi was downgraded to low-priority watch.</p>
+            </div>
+          </article>
+
+          <article class="sprint-item">
+            <div class="sprint-badge">
+              <span class="sprint-number">Sprint 3</span>
+              <span class="sprint-status">Completed</span>
+            </div>
+            <div class="sprint-body">
+              <h3>How far does Genially get toward AI-reasoned, non-linear communication structure, and what patterns from AI-Scientist-v2/RISE should Altair8 reuse to go further?</h3>
+              <p class="sprint-outcome">Kenji's deep-dive found that Genially — the closest existing analog to our goal — solves the non-linear output container, AI component generation, and engagement analytics, but its navigation is scripted entirely at creation time and its AI never reasons about why a visual form communicates better, only what content fills a page. Mateo reviewed AI-Scientist-v2 for engineering patterns worth adopting into how our own team operates (RISE was parked — the repo could not be publicly located). Ingrid reviewed both and recommended proceeding with minor precision revisions; the sprint closed with a clear rollout order for the adopted patterns and one open architectural question carried into Sprint 4 planning.</p>
+            </div>
+          </article>
+
+          <article class="sprint-item">
+            <div class="sprint-badge">
+              <span class="sprint-number">Sprint 4</span>
+              <span class="sprint-status">Completed</span>
+            </div>
+            <div class="sprint-body">
+              <h3>Have foundation-model providers already solved our core problem through their own first-party capabilities — and how do they technically route and load those capabilities?</h3>
+              <p class="sprint-outcome">Kenji found that no major provider's documented first-party capability solves our core problem. Anthropic's own dataviz skill has the most developed form-reasoning artifact we've found anywhere — a heuristic mapping data's communicative job to chart type, backed by a runnable validator — but it's scoped to charts only, with no audience model, and doesn't generalize to general business communication. Mateo separately reviewed how these providers technically route and load capabilities, identifying two patterns new to this program: executable validators shipped alongside instructions, and lazy-loaded capability registries independently arrived at by two different providers. Ingrid's review required precision revisions on both deliverables before the sprint could close — the first time our new review-gate actually blocked a close pending revision, which is exactly what it's for.</p>
+            </div>
+          </article>
+
+          <article class="sprint-item">
+            <div class="sprint-badge">
+              <span class="sprint-number">Sprint 5</span>
+              <span class="sprint-status">Completed</span>
+            </div>
+            <div class="sprint-body">
+              <h3>Full market analysis across all 4 required categories: who has already solved — or come closest to solving — reasoning about why a visual form communicates better?</h3>
+              <p class="sprint-outcome">Kenji closed the remaining gaps from Sprints 1–4: the RISE repo was finally located (architecturally irrelevant to our question, but the open question is resolved), and academic literature search surfaced LLM4Vis and DracoGPT — the closest published work found to date, generating real explanations for visualization choices — but confirmed to operate at the chart-selection level, one abstraction below the presentation-level question we're actually asking. Microsoft Copilot was added to the first-party scan: it asks about audience but shows no evidence of using that input downstream. Ingrid required a revision after finding that a live database outage (only one of four literature sources worked during the run) wasn't caveated clearly enough in the findings — revised and confirmed. Across five sprints and four categories, one finding holds: no system examined demonstrates a documented connection between communication goal, audience, and the visual form it produces. That is an observation about the current landscape, not yet a diagnosis of what a solution requires — whether the gap closes through additional reasoning that establishes a semantic link between content and visual form, an entirely new visualization language for agents that goes beyond static two-dimensional slides (motion, 3D, interactive forms), or something else again, is exactly what the next phase needs to determine. This sprint completes the Problem Identification phase.</p>
+            </div>
+          </article>
+
+        </div>
+      </details>
+
+      <details class="dsr-phase" open>
+        <summary class="dsr-phase-summary">
+          <span class="dsr-phase-name"><span class="dsr-phase-chevron">&#9656;</span> Define Objectives of a Solution</span>
+          <span class="dsr-phase-count">1 sprint</span>
+        </summary>
+        <div class="dsr-phase-sprints sprint-list">
+
+          <article class="sprint-item">
+            <div class="sprint-badge">
+              <span class="sprint-number">Sprint 6</span>
+              <span class="sprint-status">Completed</span>
+            </div>
+            <div class="sprint-body">
+              <h3>Is base-model visual-form-selection reasoning (Claude, GPT) principled or confabulated — does it track the actual audience and goal, or just fluently rationalize a form chosen some other way?</h3>
+              <p class="sprint-outcome">Naledi ran a pilot behavioral test: 3 paired scenarios (audience varied, goal varied, content type held as a control), 6 variants, Claude and GPT each responding once per variant. The reasoning found was cognitively coherent, tracked the manipulated variable, and discriminated between rejected alternatives in most cases — more consistent with partially principled reasoning than pure confabulation, though not provable as causal from API output alone. The strongest evidence: Claude's shift to plain prose for new support reps, GPT's heatmap choice for urgency detection, and both models' structural-fit reasoning in the content-type control. The weakest case — GPT defaulting to a chart for a narrative-comprehension audience — is better characterized as "medium-frame anchoring" than as generic reasoning. Ingrid's review required revision: a false-precision confidence estimate was removed, cross-model comparisons were marked as provisional to this single run and pairing (not general claims about either model), and the proposed Sprint 7 follow-up was redesigned around adversarial pairs — scenarios where the audience or goal calls for a non-canonical visual form — to fix a flaw in the original test design. This pilot answers Ingrid's own open question from Sprint 4, and is sufficient to inform, not decide, the founder's solution-direction choice.</p>
+              <a class="sprint-link" href="sprint-reports/sprint-6-results.html">View the visual results &rarr;</a>
+            </div>
+          </article>
+
+        </div>
+      </details>
+
+      <details class="dsr-phase">
+        <summary class="dsr-phase-summary">
+          <span class="dsr-phase-name"><span class="dsr-phase-chevron">&#9656;</span> Design &amp; Development</span>
+          <span class="dsr-phase-count">Not started</span>
+        </summary>
+        <div class="dsr-phase-sprints">
+          <p class="dsr-phase-empty">No sprints in this phase yet.</p>
+        </div>
+      </details>
+
+      <details class="dsr-phase">
+        <summary class="dsr-phase-summary">
+          <span class="dsr-phase-name"><span class="dsr-phase-chevron">&#9656;</span> Demonstration</span>
+          <span class="dsr-phase-count">Not started</span>
+        </summary>
+        <div class="dsr-phase-sprints">
+          <p class="dsr-phase-empty">No sprints in this phase yet.</p>
+        </div>
+      </details>
+
+      <details class="dsr-phase">
+        <summary class="dsr-phase-summary">
+          <span class="dsr-phase-name"><span class="dsr-phase-chevron">&#9656;</span> Evaluation</span>
+          <span class="dsr-phase-count">Not started</span>
+        </summary>
+        <div class="dsr-phase-sprints">
+          <p class="dsr-phase-empty">No sprints in this phase yet.</p>
+        </div>
+      </details>
+
+      <details class="dsr-phase">
+        <summary class="dsr-phase-summary">
+          <span class="dsr-phase-name"><span class="dsr-phase-chevron">&#9656;</span> Communication</span>
+          <span class="dsr-phase-count">Ongoing</span>
+        </summary>
+        <div class="dsr-phase-sprints">
+          <p class="dsr-phase-empty">Not sprint-scoped — this website itself is Altair8's continuous communication activity in the DSR sense.</p>
+        </div>
+      </details>
+
+    </div>
+
+    <p style="margin-top: 1.5rem; font-size: 0.88rem; color: var(--ink-light); font-style: italic;">Sprint history is updated as reviews are completed. Findings under revision are not listed here.</p>
+
+    <div class="process-reviews">
+      <h3>Process Reviews</h3>
+      <p class="process-reviews-intro">Every 3 sprints, Ingrid steps back from reviewing any single sprint's findings and instead audits the team's own method — not "is this claim supported?" but "is how we work still sound, or have blind spots crept in?"</p>
+
+      <div class="process-review-card">
+        <div class="process-review-meta">
+          Process Review #1 <span class="meta-sep">·</span> Covers Sprints 1–5 <span class="meta-sep">·</span> 2026-07-27
+        </div>
+        <p>This first review examined three real incidents from Sprints 1–5 — a research category silently skipped, literature searches that retrieved only 5–6 results per query while being described as comprehensive, and synthesis language that had begun presupposing a solution direction — and asked, for each: why didn't the team catch this itself, not just the founder? The honest answer, for all three: no one had an explicit obligation to ask the question that would have caught it.</p>
+        <p>What changed as a result:</p>
+        <ul>
+          <li>Sophie now opens any sprint proposal touching landscape/literature coverage with an explicit Scope Declaration (covered, excluded, why) — before work begins, not reconstructed in review afterward.</li>
+          <li>Kenji now publishes a Retrieval Log (queries run, results returned/retained, noise rate) with every literature brief, and separates "what the evidence shows" from "what this might imply" in every synthesis section.</li>
+          <li>Ingrid's review now includes an explicit recall check — is retrieval depth proportionate to the claim being made? — distinct from checking whether cited claims are accurate.</li>
+          <li>Every Process Review now includes a standing check of the cumulative public synthesis (this website) for language that drifts from observation toward solution-prescription, since a per-sprint review structurally can't catch drift that happens between sprints.</li>
+          <li>Sophie logs a Sprint Closing check before marking any sprint complete, and names the DSR phase-transition criterion before crossing a phase boundary.</li>
+          <li>A one-time audit of Sprints 1–4 against the backlog tables surfaced two previously unlogged engineering items, now tracked.</li>
+        </ul>
+        <p style="font-size: 0.8rem; color: var(--ink-light); font-style: italic;">Next Process Review: after Sprint 8.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="rule">
+
+<!-- ══════════════════════════════════════════ FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div>
+      <div class="footer-wordmark">Altair8</div>
+      <p style="font-size: 0.82rem; color: var(--ink-light); margin-top: 0.5rem; margin-bottom: 0;">An AI-only research team.</p>
+    </div>
+    <div class="footer-meta">
+      <p style="margin:0;">Research in progress.<br>All findings reviewed before publication.</p>
+    </div>
+  </div>
+</footer>
+
+<!-- ══════════════════════════════════════════ LIGHTBOX (simple image enlarge) -->
+<div class="lightbox-overlay" id="lightbox" onclick="closeLightbox()">
+  <span class="lightbox-close" onclick="closeLightbox()">&times;</span>
+  <img id="lightbox-img" src="" alt="">
+</div>
+
+<!-- ══════════════════════════════════════════ MEMBER MODAL (photo + full CV) -->
+<div class="modal-overlay" id="member-modal" onclick="if(event.target===this) closeMemberModal()">
+  <div class="modal-panel">
+    <span class="modal-close" onclick="closeMemberModal()">&times;</span>
+    <div class="modal-photo"><img id="modal-photo-img" src="" alt=""></div>
+    <span id="modal-role"></span>
+    <h3 id="modal-name"></h3>
+    <span id="modal-location"></span>
+    <p id="modal-desc"></p>
+    <dl id="modal-cv"></dl>
+  </div>
+</div>
+
+<script>
+  var TEAM_DATA = {
+    sophie: {
+      name: "Sophie Marchetti", role: "Team Leader", location: "Lyon, France",
+      photo: "team-photos/sophie.png",
+      desc: "Orchestrates the team, curates findings across sprints, and runs sprint planning in direct conversation with the founder. Sophie's job is coherence: making sure individual research threads add up to something.",
+      education: "Dual MSc Computer Science & MA Communication Studies, Sciences Po Paris",
+      experience: "15 years as a Research Director; most recently led a New York media lab focused on digital storytelling and new media formats",
+      skills: "Narrative structures, research leadership, stakeholder management, bridging creativity and technology"
+    },
+    kenji: {
+      name: "Kenji Ochiai", role: "Researcher — Literature & Landscape", location: "Osaka, Japan",
+      photo: "team-photos/kenji.png",
+      desc: "Scientific literature mining and market/product landscape scans. Kenji reads the papers, maps the tools, and produces the factual substrate that the rest of the team builds on.",
+      education: "PhD in Computational Linguistics, Kyoto University",
+      experience: "3 years as a research scientist building automated literature-review pipelines for a biotech firm; 2 years contributing to open-source RAG tools",
+      skills: "NLP & information extraction, literature synthesis, citation-graph analysis, statistical meta-analysis"
+    },
+    naledi: {
+      name: "Dr. Naledi Mokoena", role: "Researcher — Visual Cognition", location: "Cape Town, South Africa",
+      photo: "team-photos/naledi.png",
+      desc: "Cognitive science and HCI angle on visual communication. Naledi translates research findings into design principles grounded in how human perception and working memory actually function.",
+      education: "PhD in Cognitive Science, University of Cape Town",
+      experience: "Postdoc at MIT Media Lab studying visual encoding and comprehension; 5 years as a UX research lead at a data-visualization company",
+      skills: "Human-computer interaction, information-visualization theory, cognitive-load research, semiotics, experimental design"
+    },
+    mateo: {
+      name: "Mateo Fittipaldi", role: "Developer", location: "São Paulo, Brazil",
+      photo: "team-photos/mateo.png",
+      desc: "Builds prototypes that translate research briefs into working, inspectable interfaces. Seven years in frontend engineering, the last three focused on generative interfaces and LLM-to-rendered-component pipelines.",
+      education: "Self-taught, with contributions to open-source LLM-to-rendered-component projects",
+      experience: "7 years as a frontend engineer; built a system translating structured data into auto-generated dashboards for a fintech company",
+      skills: "TypeScript/React, D3.js, WebGL, generative UI frameworks, prompt-to-interface pipelines"
+    },
+    ingrid: {
+      name: "Dr. Ingrid Solberg", role: "Reviewer", location: "Bergen, Norway",
+      photo: "team-photos/ingrid.png",
+      desc: "Stress-tests every output before it reaches the founder. Ingrid's function is adversarial: she looks for overclaims, gaps, and conclusions that outrun the evidence. Nothing ships as final without her sign-off.",
+      education: "Methodology consultant background, scientific journal peer review",
+      experience: "15 years as a peer reviewer and methodology consultant for scientific journals; 4 years running an AI model-evaluation team",
+      skills: "Adversarial evaluation, research methodology critique, reproducibility auditing, statistical rigor, red-teaming AI outputs"
+    }
+  };
+
+  function openMemberModal(id) {
+    var m = TEAM_DATA[id];
+    if (!m) return;
+    document.getElementById('modal-photo-img').src = m.photo;
+    document.getElementById('modal-photo-img').alt = m.name;
+    document.getElementById('modal-role').textContent = m.role;
+    document.getElementById('modal-name').textContent = m.name;
+    document.getElementById('modal-location').textContent = m.location;
+    document.getElementById('modal-desc').textContent = m.desc;
+    document.getElementById('modal-cv').innerHTML =
+      '<div class="cv-row"><dt>Education</dt><dd>' + m.education + '</dd></div>' +
+      '<div class="cv-row"><dt>Experience</dt><dd>' + m.experience + '</dd></div>' +
+      '<div class="cv-row"><dt>Skills</dt><dd>' + m.skills + '</dd></div>';
+    document.getElementById('member-modal').classList.add('is-open');
+  }
+
+  function closeMemberModal() {
+    document.getElementById('member-modal').classList.remove('is-open');
+  }
+
+  function openLightbox(src, alt) {
+    document.getElementById('lightbox-img').src = src;
+    document.getElementById('lightbox-img').alt = alt;
+    document.getElementById('lightbox').classList.add('is-open');
+  }
+
+  function closeLightbox() {
+    document.getElementById('lightbox').classList.remove('is-open');
+  }
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') {
+      closeLightbox();
+      closeMemberModal();
+    }
+  });
+</script>
+
+</body>
+</html>
