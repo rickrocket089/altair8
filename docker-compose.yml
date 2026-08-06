@@ -7,6 +7,7 @@ services:
       - ./agents:/app/agents
       - ./tools:/app/tools
       - ./config:/app/config
+      - ./prototype:/app/prototype
     env_file:
       - config/.env
     depends_on:
