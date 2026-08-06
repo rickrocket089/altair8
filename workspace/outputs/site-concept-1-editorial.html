@@ -1404,7 +1404,7 @@
   <div class="container" style="max-width: 1140px;">
     <div class="progress-stats" aria-label="Key numbers" style="margin-bottom: 0; padding-bottom: 0; border-bottom: none; justify-content: center; text-align: center; flex-wrap: nowrap; gap: 4.5rem;">
       <div class="stat" style="align-items: center;">
-        <span class="stat-number">6</span>
+        <span class="stat-number">7</span>
         <span class="stat-label">Sprints completed</span>
       </div>
       <div class="stat" style="align-items: center;">
@@ -1941,7 +1941,7 @@
 
     <div class="progress-stats" aria-label="Key numbers">
       <div class="stat">
-        <span class="stat-number">6</span>
+        <span class="stat-number">7</span>
         <span class="stat-label">Sprints completed</span>
       </div>
       <div class="stat">
@@ -2024,7 +2024,7 @@
       <details class="dsr-phase" open>
         <summary class="dsr-phase-summary">
           <span class="dsr-phase-name"><span class="dsr-phase-chevron">&#9656;</span> Define Objectives of a Solution</span>
-          <span class="dsr-phase-count">1 sprint</span>
+          <span class="dsr-phase-count">2 sprints</span>
         </summary>
         <div class="dsr-phase-sprints sprint-list">
 
@@ -2037,6 +2037,17 @@
               <h3>Is base-model visual-form-selection reasoning (Claude, GPT, Gemini) principled or confabulated — does it track the actual audience and goal, or just fluently rationalize a form chosen some other way?</h3>
               <p class="sprint-outcome">Naledi ran a pilot behavioral test: 3 paired scenarios (audience varied, goal varied, content type held as a control), 6 variants, each model responding once per variant. The reasoning found was cognitively coherent, tracked the manipulated variable, and discriminated between rejected alternatives in most cases — more consistent with partially principled reasoning than pure confabulation, though not provable as causal from API output alone. Each model showed a distinct signature: Claude's shift to plain prose for new support reps and GPT's heatmap choice for urgency detection were the strongest evidence of tracking the manipulated variable; GPT's chart-default for a narrative-comprehension audience is better characterized as "medium-frame anchoring" than generic reasoning; Gemini showed a candidate (single-pair, hedged) form-conservatism pattern — adapting within a preferred chart form rather than switching forms when the goal warranted it. Ingrid's review required revision twice: first on the original Claude/GPT pilot (removed a false-precision confidence estimate, marked cross-model comparisons as provisional, redesigned the Sprint 7 follow-up around adversarial pairs), then again after Gemini was added as a third model in a follow-up step once a Google API key became available (fixed a drafting artifact, an underspecified failure-mode label, an incomplete appendix, and an inconsistently-hedged claim). This pilot answers Ingrid's own open question from Sprint 4, and is sufficient to inform, not decide, the founder's solution-direction choice.</p>
               <a class="sprint-link" href="sprint-reports/sprint-6-results.html">View the visual results &rarr;</a>
+            </div>
+          </article>
+
+          <article class="sprint-item">
+            <div class="sprint-badge">
+              <span class="sprint-number">Sprint 7</span>
+              <span class="sprint-status">Completed</span>
+            </div>
+            <div class="sprint-body">
+              <h3>Two gated tracks: an adversarial-pairs behavioral test fixing Sprint 6's probe design, and the founder's own read of TVIR to inform — not yet decide — the solution direction.</h3>
+              <p class="sprint-outcome">Research track: Naledi ran 6 adversarial pairs (12 variants) across Claude, GPT, and Gemini — scenarios where the textbook-obvious visual form is wrong because the audience or goal calls for a categorical medium switch, not just a different chart. Claude's clean Sprint 6 performance held and strengthened; GPT's "medium-frame anchoring" showed up only as a residual tendency; Gemini's "form-conservatism" concern from Sprint 6 did not strongly replicate under adversarial pressure. Naledi flagged the sharpest limitation herself: some scenarios (a finance audit, a VP status check) are recognizable professional scripts models could pattern-match on rather than genuinely reasoning from context — the least-scripted pairs produced the most diagnostic evidence. Ingrid's review found a real construction gap in one pair's canonical-form claim plus four framing issues; all fixed and approved. Decision track: the founder read TVIR and found it the closest existing analog to Altair8's goal, but explicitly declined to commit to a solution direction on that basis — a more fundamental question is still open and unaddressed by any research so far: what the target output medium even is (a polished static report, as TVIR produces, versus something like a dynamic HTML5 experience, versus another format entirely). His decision: don't commit early. Keep TVIR as one candidate alongside the others already catalogued, and iteratively prototype multiple approaches — including new ones — rather than settling the direction on paper first. This closes the two-part "define objectives" question this team opened after Sprint 5, and replaces it with a sharper, more concrete one: resolve the output-medium question and build the first prototype.</p>
             </div>
           </article>
 

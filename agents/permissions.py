@@ -15,7 +15,7 @@ space, enforced at the executor) is borrowed.
 PERMITTED_TOOLS = {
     "team_leader": {
         "advance_sprint_phase", "route_task", "read_all",
-        "set_north_star", "log_sprint", "write_backlog",
+        "set_north_star", "set_design_principles", "log_sprint", "write_backlog",
     },
     "kenji": {"search_vectorstore", "write_brief", "web_search"},
     "naledi": {"read_brief", "search_vectorstore", "write_cognitive_annotation"},
