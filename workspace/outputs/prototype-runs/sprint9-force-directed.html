@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8">
+<title>Real Collaboration Network — Force-Directed Prototype</title>
+<script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+<style>
+  body { margin:0; font-family: Georgia, serif; color:#14181a; background:#fff; max-width:900px; margin:0 auto; padding:3rem 2rem; }
+  h1 { font-size:1.5rem; }
+  .rationale { background:#f4f1ea; border-left:3px solid #20795b; padding:1rem 1.3rem; font-size:0.95rem; color:#3c4547; margin-bottom:2rem; }
+  #graph { border:1px solid #dadfde; border-radius:6px; }
+  .link { stroke:#c8cccb; }
+  .node text { font-size:10px; fill:#3c4547; }
+</style></head>
+<body>
+<h1>Real Collaboration Network</h1>
+<div class="rationale"><strong>Why this is relational:</strong> This is fundamentally a relational problem because the insight lives in the connections between teams, not in any single team's output volume — a bar chart could show how many projects each team shipped, but it would completely hide which teams work together, who bridges clusters, and which teams are isolated islands despite appearing adjacent on the org chart.</div>
+<svg id="graph" width="820" height="520"></svg>
+<script>
+  const data = {"nodes": [{"id": "Frontend", "group": "Product Engineering"}, {"id": "Backend Platform", "group": "Product Engineering"}, {"id": "Mobile", "group": "Product Engineering"}, {"id": "Data Engineering", "group": "Data & AI"}, {"id": "ML / AI", "group": "Data & AI"}, {"id": "Analytics", "group": "Data & AI"}, {"id": "DevOps / Infra", "group": "Platform"}, {"id": "Security", "group": "Platform"}, {"id": "QA / Testing", "group": "Platform"}, {"id": "Design", "group": "Product"}, {"id": "Product Management", "group": "Product"}, {"id": "Growth Engineering", "group": "Product Engineering"}, {"id": "Compliance / Legal Eng", "group": "Platform"}, {"id": "Customer Success Tech", "group": "GTM Engineering"}], "links": [{"source": "Frontend", "target": "Backend Platform", "weight": 10}, {"source": "Frontend", "target": "Design", "weight": 9}, {"source": "Frontend", "target": "Product Management", "weight": 8}, {"source": "Frontend", "target": "QA / Testing", "weight": 7}, {"source": "Backend Platform", "target": "DevOps / Infra", "weight": 9}, {"source": "Backend Platform", "target": "Data Engineering", "weight": 6}, {"source": "Backend Platform", "target": "Security", "weight": 5}, {"source": "Backend Platform", "target": "QA / Testing", "weight": 6}, {"source": "Mobile", "target": "Backend Platform", "weight": 7}, {"source": "Mobile", "target": "Design", "weight": 8}, {"source": "Mobile", "target": "QA / Testing", "weight": 5}, {"source": "Data Engineering", "target": "ML / AI", "weight": 9}, {"source": "Data Engineering", "target": "Analytics", "weight": 8}, {"source": "ML / AI", "target": "Backend Platform", "weight": 4}, {"source": "ML / AI", "target": "Growth Engineering", "weight": 3}, {"source": "Analytics", "target": "Product Management", "weight": 5}, {"source": "Growth Engineering", "target": "Frontend", "weight": 6}, {"source": "Growth Engineering", "target": "Product Management", "weight": 7}, {"source": "DevOps / Infra", "target": "Security", "weight": 7}, {"source": "Security", "target": "Compliance / Legal Eng", "weight": 6}, {"source": "Compliance / Legal Eng", "target": "Backend Platform", "weight": 2}, {"source": "Customer Success Tech", "target": "Analytics", "weight": 3}, {"source": "Customer Success Tech", "target": "Backend Platform", "weight": 2}, {"source": "Design", "target": "Product Management", "weight": 9}]};
+  const groups = [...new Set(data.nodes.map(n => n.group))];
+  const color = d3.scaleOrdinal().domain(groups).range(["#20795b","#a16a17","#4a6fa5","#8a5fb5","#c2564a","#5a9e7a"]);
+  const svg = d3.select("#graph");
+  const width = 820, height = 520;
+  const sim = d3.forceSimulation(data.nodes)
+    .force("link", d3.forceLink(data.links).id(d => d.id).distance(d => 140 - d.weight * 6))
+    .force("charge", d3.forceManyBody().strength(-180))
+    .force("center", d3.forceCenter(width/2, height/2))
+    .force("collide", d3.forceCollide(28));
+  const link = svg.append("g").selectAll("line").data(data.links).join("line")
+    .attr("class","link").attr("stroke-width", d => Math.max(1, d.weight/2));
+  const node = svg.append("g").selectAll("g").data(data.nodes).join("g").attr("class","node")
+    .call(d3.drag().on("start", dragstarted).on("drag", dragged).on("end", dragended));
+  node.append("circle").attr("r", 16).attr("fill", d => color(d.group)).attr("stroke","#fff").attr("stroke-width",1.5);
+  node.append("text").text(d => d.id).attr("text-anchor","middle").attr("dy", 30);
+  sim.on("tick", () => {
+    link.attr("x1", d=>d.source.x).attr("y1", d=>d.source.y).attr("x2", d=>d.target.x).attr("y2", d=>d.target.y);
+    node.attr("transform", d => `translate(${d.x},${d.y})`);
+  });
+  function dragstarted(e,d){ if(!e.active) sim.alphaTarget(0.3).restart(); d.fx=d.x; d.fy=d.y; }
+  function dragged(e,d){ d.fx=e.x; d.fy=e.y; }
+  function dragended(e,d){ if(!e.active) sim.alphaTarget(0); d.fx=null; d.fy=null; }
+</script>
+</body></html>

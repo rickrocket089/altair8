@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8">
+<title>Support Ticket Shift — Scrollytelling Prototype</title>
+<style>
+  body { margin:0; font-family: Georgia, serif; color:#14181a; background:#fff; }
+  .layout { display:flex; max-width:1000px; margin:0 auto; }
+  .pinned { position:sticky; top:0; width:45%; height:100vh; display:flex; flex-direction:column;
+             justify-content:center; padding:2rem; box-sizing:border-box; background:#f4f1ea; }
+  .headline { font-size:1.6rem; font-weight:700; color:#20795b; margin-bottom:1rem; min-height:2.4rem; transition:opacity 0.3s; }
+  svg { width:100%; height:300px; }
+  .bar { fill:#dadfde; transition:fill 0.4s; }
+  .bar.active { fill:#20795b; }
+  .bar-label { font-size:9px; fill:#6d7679; text-anchor:middle; }
+  .beats { width:55%; padding:2rem; box-sizing:border-box; }
+  .beat { min-height:70vh; display:flex; align-items:center; font-size:1.3rem; line-height:1.6;
+           color:#3c4547; border-left:3px solid #dadfde; padding-left:1.5rem; opacity:0.35; transition:opacity 0.4s; }
+  .beat.in-view { opacity:1; border-left-color:#20795b; }
+</style></head>
+<body>
+<div class="layout">
+  <div class="pinned">
+    <div class="headline" id="headline"></div>
+    <svg viewBox="0 0 100 300" preserveAspectRatio="none"><rect class="bar" data-name="Core Platform" x="1.0%" y="178.39080459770116" width="18.0%" height="101.60919540229885" rx="3"></rect>
+<text class="bar-label" x="10.0%" y="296">Core Platform</text>
+<rect class="bar" data-name="Mobile App" x="21.0%" y="20.0" width="18.0%" height="260.0" rx="3"></rect>
+<text class="bar-label" x="30.0%" y="296">Mobile App</text>
+<rect class="bar" data-name="Analytics Suite" x="41.0%" y="217.24137931034483" width="18.0%" height="62.758620689655174" rx="3"></rect>
+<text class="bar-label" x="50.0%" y="296">Analytics Suite</text>
+<rect class="bar" data-name="API & Integrations" x="61.0%" y="103.67816091954023" width="18.0%" height="176.32183908045977" rx="3"></rect>
+<text class="bar-label" x="70.0%" y="296">API & Integrations</text>
+<rect class="bar" data-name="Admin Console" x="81.0%" y="233.67816091954023" width="18.0%" height="46.321839080459775" rx="3"></rect>
+<text class="bar-label" x="90.0%" y="296">Admin Console</text>
+</svg>
+  </div>
+  <div class="beats" id="beats"><div class="beat" data-highlight=null data-headline="+61% total ticket volume post-release">After the v4.0 release last quarter, total support ticket volume surged 61% across all five product lines — a signal that the launch, while successful, created real friction for customers.</div>
+<div class="beat" data-highlight="Mobile App" data-headline="870 tickets — 40% of all volume">The Mobile App alone accounts for 870 tickets — more than double any other product line — driven largely by a breaking change in the authentication flow that affected millions of active users.</div>
+<div class="beat" data-highlight="API & Integrations" data-headline="590 tickets — 27% of all volume">API & Integrations is the second-highest pain point at 590 tickets, with partners and enterprise customers struggling to remap webhooks after endpoint deprecations in the new release.</div>
+<div class="beat" data-highlight="Core Platform" data-headline="340 tickets — manageable with current staff">Core Platform sits at 340 tickets — meaningful volume, but largely routine billing and account questions that existing staff are already equipped to handle efficiently.</div>
+<div class="beat" data-highlight="Analytics Suite" data-headline="365 tickets combined — trending down">Analytics Suite and Admin Console together generate only 365 tickets combined, and both trend downward week-over-week as users self-serve through the new documentation hub.</div>
+<div class="beat" data-highlight=null data-headline="67% of volume concentrated in 2 product lines">The case is clear: Mobile App and API & Integrations represent 67% of all post-release tickets — these two lines are where new support headcount will have the highest immediate impact next quarter.</div>
+</div>
+</div>
+<script>
+  const beats = document.querySelectorAll('.beat');
+  const bars = document.querySelectorAll('.bar');
+  const headline = document.getElementById('headline');
+  function setState(el) {
+    const hc = el.dataset.highlight;
+    bars.forEach(b => b.classList.toggle('active', hc !== 'null' && b.dataset.name === hc));
+    headline.textContent = el.dataset.headline || '';
+  }
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      e.target.classList.toggle('in-view', e.isIntersecting);
+      if (e.isIntersecting) setState(e.target);
+    });
+  }, { threshold: 0.6 });
+  beats.forEach(b => io.observe(b));
+  if (beats.length) setState(beats[0]);
+</script>
+</body></html>
