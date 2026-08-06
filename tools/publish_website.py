@@ -22,11 +22,15 @@ SITE_HTML = os.path.join(REPO_ROOT, "workspace", "outputs", "site-concept-1-edit
 TEAM_PHOTOS_DIR = os.path.join(REPO_ROOT, "workspace", "outputs", "team-photos")
 SPRINT_REPORTS_DIR = os.path.join(REPO_ROOT, "workspace", "outputs", "sprint-reports")
 INFRA_DIAGRAM = os.path.join(REPO_ROOT, "workspace", "outputs", "infrastructure-diagram.png")
+IMPRESSUM_HTML = os.path.join(REPO_ROOT, "workspace", "outputs", "impressum.html")
+PRIVACY_HTML = os.path.join(REPO_ROOT, "workspace", "outputs", "privacy.html")
 
 REMOTE_HTML_NAME = "index.html"
 REMOTE_PHOTOS_DIR = "team-photos"
 REMOTE_SPRINT_REPORTS_DIR = "sprint-reports"
 REMOTE_INFRA_DIAGRAM_NAME = "infrastructure-diagram.png"
+REMOTE_IMPRESSUM_NAME = "impressum.html"
+REMOTE_PRIVACY_NAME = "privacy.html"
 
 
 def load_ftp_secrets() -> dict:
@@ -72,6 +76,12 @@ def run() -> None:
 
     upload_file(ftps, INFRA_DIAGRAM, REMOTE_INFRA_DIAGRAM_NAME)
     print(f"Uploaded {INFRA_DIAGRAM} -> {REMOTE_INFRA_DIAGRAM_NAME}")
+
+    upload_file(ftps, IMPRESSUM_HTML, REMOTE_IMPRESSUM_NAME)
+    print(f"Uploaded {IMPRESSUM_HTML} -> {REMOTE_IMPRESSUM_NAME}")
+
+    upload_file(ftps, PRIVACY_HTML, REMOTE_PRIVACY_NAME)
+    print(f"Uploaded {PRIVACY_HTML} -> {REMOTE_PRIVACY_NAME}")
 
     ensure_remote_dir(ftps, REMOTE_PHOTOS_DIR)
     ftps.cwd(REMOTE_PHOTOS_DIR)

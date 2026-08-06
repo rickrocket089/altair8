@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Sprint 6 — Principled Reasoning or Confabulation? | Altair8 Labs</title>
-<meta name="description" content="Altair8 Sprint 6: a behavioral pilot testing whether Claude and GPT reason about visual-form selection, or just confabulate a justification after the fact.">
+<meta name="description" content="Altair8 Sprint 6: a behavioral pilot testing whether Claude, GPT, and Gemini reason about visual-form selection, or just confabulate a justification after the fact.">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 28'%3E%3Cpath fill='%2320795b' d='M11,0.5 Q13.027,8.973 21.5,11 Q13.027,13.027 11,21.5 Q8.973,13.027 0.5,11 Q8.973,8.973 11,0.5 Z'/%3E%3Cpath fill='%23a16a17' d='M23.5,12.5 Q25.197,18.303 31,20 Q25.197,21.697 23.5,27.5 Q21.803,21.697 16,20 Q21.803,18.303 23.5,12.5 Z'/%3E%3C/svg%3E">
 <style>
   :root {
@@ -16,8 +16,10 @@
     --rule:       #dadfde;
     --accent:     #20795b;
     --accent2:    #a16a17;
+    --gemini:     #4a6fa5;
     --claude-tint:#eaf5ef;
     --gpt-tint:   #f7efe2;
+    --gemini-tint:#eaf0f7;
     --max:        740px;
     --wide:       1000px;
   }
@@ -107,6 +109,7 @@
     font-size: 0.88rem; color: var(--ink-light);
   }
   .insight-caveat strong { color: var(--accent2); }
+  .insight-caveat + .insight-caveat { margin-top: 1rem; padding-top: 0; border-top: none; }
 
   /* ─── Verdict ─── */
   .verdict-card {
@@ -124,11 +127,12 @@
   .verdict-card p { margin: 0.4rem 0 0; font-size: 0.95rem; color: var(--ink-mid); }
 
   /* ─── Legend ─── */
-  .legend { display: flex; gap: 1.5rem; margin: 0 0 1rem; font-size: 0.78rem; color: var(--ink-mid); }
+  .legend { display: flex; gap: 1.5rem; margin: 0 0 1rem; font-size: 0.78rem; color: var(--ink-mid); flex-wrap: wrap; }
   .legend span { display: flex; align-items: center; gap: 0.4rem; }
   .legend .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
   .dot.claude { background: var(--accent); }
   .dot.gpt    { background: var(--accent2); }
+  .dot.gemini { background: var(--gemini); }
 
   /* ─── Pairs ─── */
   .pair-block { margin-bottom: 3.5rem; }
@@ -152,17 +156,20 @@
   .model-row:last-child { border-bottom: none; }
   .model-row.claude { background: var(--claude-tint); }
   .model-row.gpt { background: var(--gpt-tint); }
+  .model-row.gemini { background: var(--gemini-tint); }
   .model-name {
     font-size: 0.68rem; letter-spacing: 0.08em; text-transform: uppercase; font-weight: 700;
     margin-bottom: 0.6rem; display: flex; align-items: center; gap: 0.4rem;
   }
   .model-row.claude .model-name { color: var(--accent); }
   .model-row.gpt .model-name { color: var(--accent2); }
+  .model-row.gemini .model-name { color: var(--gemini); }
 
   .mock { height: 92px; display: flex; align-items: flex-end; gap: 4px; margin-bottom: 0.6rem; }
   .mock-bar { flex: 1; border-radius: 2px 2px 0 0; }
   .mock-bar.claude-fill { background: var(--accent); }
   .mock-bar.gpt-fill { background: var(--accent2); }
+  .mock-bar.gemini-fill { background: var(--gemini); }
   .mock-bar.muted { background: var(--rule); }
 
   .mock-headline { font-size: 1.9rem; font-weight: 600; color: var(--accent); line-height: 1; margin-bottom: 0.5rem; }
@@ -176,6 +183,11 @@
   .mock-heatmap { display: grid; grid-template-columns: repeat(6,1fr); gap: 2px; height: 70px; margin-bottom: 0.6rem; }
   .hm-cell { border-radius: 1px; }
 
+  .mock-flow { height: 70px; display: flex; align-items: center; gap: 3px; margin-bottom: 0.6rem; }
+  .mock-flow .node { flex: 1; height: 30px; border-radius: 3px; }
+  .mock-flow .node.gemini-fill { background: var(--gemini); }
+  .mock-flow .arrow { color: var(--ink-light); font-size: 0.75rem; }
+
   .verdict-line { font-size: 0.82rem; color: var(--ink-mid); margin: 0; }
   .verdict-tag {
     display: inline-block; font-size: 0.65rem; font-weight: 700; letter-spacing: 0.06em;
@@ -183,6 +195,7 @@
   }
   .verdict-tag.strong { background: rgba(32,121,91,0.13); color: var(--accent); }
   .verdict-tag.weak { background: rgba(161,106,23,0.16); color: var(--accent2); }
+  .verdict-tag.candidate { background: rgba(74,111,165,0.14); color: var(--gemini); }
 
   /* ─── Footer ─── */
   .report-footer {
@@ -190,6 +203,7 @@
     font-size: 0.88rem; color: var(--ink-light);
   }
   .report-footer strong { color: var(--ink-mid); }
+  .report-footer p + p { margin-top: 1rem; }
   .footer-links { margin-top: 1.5rem; display: flex; gap: 1.5rem; flex-wrap: wrap; }
   .footer-links a {
     font-size: 0.8rem; letter-spacing: 0.04em; color: var(--accent);
@@ -218,8 +232,8 @@
   <header class="report-header">
     <span class="breadcrumb">Define Objectives of a Solution <span class="sep">/</span> Sprint 6</span>
     <h1>Principled Reasoning, or Confabulation?</h1>
-    <p class="report-intro">Naledi's pilot test: give Claude and GPT the same content, then change only the audience or the goal. Does the visual form they choose — and the reasoning they give for it — actually shift to track that change, or does it stay templated regardless?</p>
-    <p class="report-meta"><span class="status">Reviewed &amp; approved</span> — revised once by Ingrid before being marked usable. Answers Ingrid's own open question from Sprint 4.</p>
+    <p class="report-intro">Naledi's pilot test: give Claude, GPT, and Gemini the same content, then change only the audience or the goal. Does the visual form each model chooses — and the reasoning it gives for it — actually shift to track that change, or does it stay templated regardless?</p>
+    <p class="report-meta"><span class="status">Reviewed &amp; approved</span> — revised twice by Ingrid before being marked usable (once on the original Claude/GPT pilot, once again after Gemini was added). Answers Ingrid's own open question from Sprint 4.</p>
   </header>
 
   <section class="insights" aria-label="Key insights">
@@ -227,33 +241,35 @@
     <ol class="insight-list">
       <li>
         <span class="insight-num">01</span>
-        <p><strong>Partially principled, not confabulated — but directional, not quantifiable.</strong> Both models produced reasoning that tracked the manipulated variable, named specific rejected alternatives, and invoked real cognitive-science mechanisms rather than generic boilerplate. Six data points can generate this hypothesis; they can't put a number on how often it holds.</p>
+        <p><strong>Partially principled, not confabulated — but directional, not quantifiable.</strong> All three models produced reasoning that tracked the manipulated variable, named specific rejected alternatives, and invoked real cognitive-science mechanisms rather than generic boilerplate. Six data points per model can generate this hypothesis; they can't put a number on how often it holds.</p>
       </li>
       <li>
         <span class="insight-num">02</span>
-        <p><strong>The strongest signal was a categorical medium switch, not a chart tweak.</strong> Claude dropped charts entirely for new support reps who needed context, not a decision — and explicitly reasoned that a chart "would imply a need to analyze," which wasn't the goal.</p>
+        <p><strong>Each model showed a distinct signature, not a shared one.</strong> Claude dropped charts entirely for new support reps who needed context, not a decision. GPT reasoned audience-sensitively but never questioned whether a chart was the right medium at all — <strong>"medium-frame anchoring."</strong> Gemini showed a candidate, single-pair pattern of staying within conventional chart forms even when switching chart sub-type.</p>
       </li>
       <li>
         <span class="insight-num">03</span>
-        <p><strong>The weakest signal has a name now: "medium-frame anchoring."</strong> GPT reasoned audience-sensitively about chart complexity for the same scenario, but never exited the "which chart" frame to ask whether any chart was the right medium at all.</p>
+        <p><strong>Gemini was added in a second, separate step — not part of the original pilot.</strong> No Google API key existed when Sprint 6 first ran; the gap was explicitly flagged, then closed once a key became available. Documented here under Sprint 6 since it resolves a gap Sprint 6 itself raised, with the two-step timeline disclosed rather than hidden.</p>
       </li>
       <li>
         <span class="insight-num">04</span>
         <p><strong>This pilot informs, not decides.</strong> It's one input into the founder's solution-direction call (an added reasoning layer vs. a genuinely new visualization language) — not sufficient on its own to make that call, or any architecture decision.</p>
       </li>
     </ol>
-    <p class="insight-caveat"><strong>Design caveat, found after publishing:</strong> Pairs A and B don't isolate a single variable as cleanly as intended — changing the audience (Pair A) naturally changes the implied goal too, and vice versa for Pair B. Only Pair C holds a variable (audience wording) literally identical. Not a flaw in the finding, but a reason to read "audience varies" / "goal varies" as bundled, realistic scenario pairs rather than a strict factorial design. Sprint 7's adversarial-pairs test is designed to isolate this more cleanly.</p>
+    <p class="insight-caveat"><strong>Design caveat, found after publishing:</strong> Pairs A and B don't isolate a single variable as cleanly as intended — changing the audience (Pair A) naturally changes the implied goal too, and vice versa for Pair B. Only Pair C holds a variable (audience wording) literally identical. Not a flaw in the finding, but a reason to read "audience varies" / "goal varies" as bundled, realistic scenario pairs rather than a strict factorial design. Sprint 7's adversarial-pairs test — now spanning all three models — is designed to isolate this more cleanly.</p>
+    <p class="insight-caveat"><strong>Review cycle, for the record:</strong> Ingrid's first pass on the Gemini addition required revision — a leftover drafting artifact, an underspecified Claude failure-mode label, an incomplete appendix, and one inconsistently-hedged claim. All four were fixed and Ingrid approved the revision. Recorded here rather than smoothed over, consistent with how every prior sprint revision has been documented.</p>
   </section>
 
   <div class="legend">
     <span><span class="dot claude"></span> Claude Sonnet 4.6</span>
     <span><span class="dot gpt"></span> GPT</span>
+    <span><span class="dot gemini"></span> Gemini</span>
   </div>
 
   <!-- PAIR A -->
   <div class="pair-block">
     <div class="pair-header"><h2>Pair A — same content, audience varies</h2><span class="pair-tag">Board vs. new hires</span></div>
-    <p class="pair-note">Quarterly revenue, down 15%, APAC supply-chain delays. Same data both times — only the audience changes (and, as a natural consequence, the implied goal). <em>Provisional — single run, this exact model pairing only.</em></p>
+    <p class="pair-note">Quarterly revenue, down 15%, APAC supply-chain delays. Same data every time — only the audience changes (and, as a natural consequence, the implied goal). <em>Provisional — single run per model.</em></p>
     <div class="variant-grid">
       <div class="variant-card">
         <div class="variant-scenario"><strong>A1 — Board of directors.</strong> Needs a fast go/no-go on emergency budget.</div>
@@ -268,6 +284,11 @@
           <div class="model-name"><span class="dot gpt"></span>GPT</div>
           <div class="mock" style="margin-top:0.4rem;"><div class="mock-bar muted" style="height:55%"></div><div class="mock-bar gpt-fill" style="height:38%"></div></div>
           <p class="verdict-line">Combo column chart + callout — similar intent, slightly more chart-forward.</p>
+        </div>
+        <div class="model-row gemini">
+          <div class="model-name"><span class="dot gemini"></span>Gemini</div>
+          <div class="mock" style="margin-top:0.4rem;"><div class="mock-bar muted" style="height:35%"></div><div class="mock-bar gemini-fill" style="height:60%"></div><div class="mock-bar muted" style="height:80%"></div></div>
+          <p class="verdict-line">Waterfall chart + problem-solution callout card — isolates the drop into one segment, pairs it with the budget ask as the direct fix.</p>
         </div>
       </div>
       <div class="variant-card">
@@ -284,6 +305,12 @@
           <span class="verdict-tag weak">Medium-frame anchoring</span>
           <p class="verdict-line">Still reached for a line chart. Reasons audience-sensitively about chart complexity, but never exits the "find the right chart" frame to ask whether any chart is right.</p>
         </div>
+        <div class="model-row gemini">
+          <div class="model-name"><span class="dot gemini"></span>Gemini</div>
+          <div class="mock-flow"><div class="node gemini-fill"></div><span class="arrow">→</span><div class="node gemini-fill"></div><span class="arrow">→</span><div class="node gemini-fill"></div></div>
+          <span class="verdict-tag candidate">Milder version, same pattern</span>
+          <p class="verdict-line">A cause-and-effect flowchart. Correctly exits the financial-chart frame, but lands in a form with its own interpretive burden (reading node-link structure) the reasoning doesn't acknowledge.</p>
+        </div>
       </div>
     </div>
   </div>
@@ -291,7 +318,7 @@
   <!-- PAIR B -->
   <div class="pair-block">
     <div class="pair-header"><h2>Pair B — same content, goal varies</h2><span class="pair-tag">Diagnose vs. celebrate</span></div>
-    <p class="pair-note">Employee satisfaction across 5 departments, 2 years. Same data both times — only the communication goal changes (and, as a natural consequence, the audience framing). <em>Provisional — single run, this exact model pairing only.</em></p>
+    <p class="pair-note">Employee satisfaction across 5 departments, 2 years. Same data every time — only the communication goal changes (and, as a natural consequence, the audience framing). <em>Provisional — single run per model.</em></p>
     <div class="variant-grid">
       <div class="variant-card">
         <div class="variant-scenario"><strong>B1 — Identify the department that needs urgent intervention.</strong></div>
@@ -313,6 +340,14 @@
           <span class="verdict-tag strong">Most sophisticated response</span>
           <p class="verdict-line">A heatmap — encodes severity <em>and</em> duration in one view. Naledi's top-rated single response in the whole dataset.</p>
         </div>
+        <div class="model-row gemini">
+          <div class="model-name"><span class="dot gemini"></span>Gemini</div>
+          <div class="mock-line"><svg viewBox="0 0 100 40" width="100%" height="100%" preserveAspectRatio="none">
+            <polyline points="0,10 20,14 40,12 60,16 80,14 100,15" fill="none" stroke="var(--rule)" stroke-width="1.5"/>
+            <polyline points="0,15 20,18 40,20 60,30 80,34 100,36" fill="none" stroke="var(--gemini)" stroke-width="2.5"/>
+          </svg></div>
+          <p class="verdict-line">Multi-line with targeted color highlighting — same categorical form as Claude, nearly identical reasoning logic (trajectory over snapshot).</p>
+        </div>
       </div>
       <div class="variant-card">
         <div class="variant-scenario"><strong>B2 — Celebrate company-wide culture improvement.</strong></div>
@@ -327,16 +362,22 @@
             <polyline points="0,32 20,28 40,24 60,20 80,15 100,10" fill="none" stroke="var(--accent2)" stroke-width="2.5"/>
             <polyline points="0,28 20,25 40,22 60,19 80,16 100,13" fill="none" stroke="var(--rule)" stroke-width="1.5" stroke-dasharray="2 2"/>
           </svg></div>
-          <p class="verdict-line">Line chart with bold average — goal-appropriate, but thinner reasoning than the B1 heatmap.</p>
+          <p class="verdict-line">Line chart with bold average — goal-appropriate, but thinner reasoning than the B1 heatmap, and the least goal-differentiated of the six B responses.</p>
+        </div>
+        <div class="model-row gemini">
+          <div class="model-name"><span class="dot gemini"></span>Gemini</div>
+          <div class="mock" style="height:70px;"><div class="mock-bar gemini-fill" style="height:50%"></div><div class="mock-bar gemini-fill" style="height:78%"></div><div class="mock-bar muted" style="height:38%"></div><div class="mock-bar muted" style="height:60%"></div></div>
+          <p class="verdict-line">Grouped bars — converges with Claude, diverges from GPT. "Visual impact at a single glance" reasoning matches the celebration framing.</p>
         </div>
       </div>
     </div>
+    <p class="pair-note" style="margin-top:0.9rem;"><em>Pair B verdict:</em> all three models shift form substantively between B1 and B2. GPT's B1 heatmap remains the single most sophisticated individual response in the dataset. Claude and Gemini converge on line chart (B1) → grouped bar (B2); a candidate pattern worth probing in Sprint 7 is that both variants stayed within conventional chart forms even while switching chart sub-type — hedged, one pair only, not a finding.</p>
   </div>
 
   <!-- PAIR C -->
   <div class="pair-block">
     <div class="pair-header"><h2>Pair C — control: content type varies</h2><span class="pair-tag">Trend vs. process</span></div>
-    <p class="pair-note">Same audience wording both times ("general internal update, mixed roles") — only whether the content is a numeric trend or a causal sequence changes. Both models should (and do) pick the canonical form here; the test is whether the <em>reasoning</em> shows real structural understanding.</p>
+    <p class="pair-note">Same audience wording every time ("general internal update, mixed roles") — only whether the content is a numeric trend or a causal sequence changes. All three models should (and do) pick the canonical form here; the test is whether the <em>reasoning</em> shows real structural understanding.</p>
     <div class="variant-grid">
       <div class="variant-card">
         <div class="variant-scenario"><strong>C1 — Monthly active users, steadily climbing.</strong></div>
@@ -348,7 +389,12 @@
         <div class="model-row gpt">
           <div class="model-name"><span class="dot gpt"></span>GPT</div>
           <div class="mock-line"><svg viewBox="0 0 100 40" width="100%" height="100%" preserveAspectRatio="none"><polyline points="0,35 25,28 50,20 75,12 100,5" fill="none" stroke="var(--accent2)" stroke-width="2.5"/></svg></div>
-          <p class="verdict-line">Same form. Both pass the control.</p>
+          <p class="verdict-line">Same form. All three pass the control.</p>
+        </div>
+        <div class="model-row gemini">
+          <div class="model-name"><span class="dot gemini"></span>Gemini</div>
+          <div class="mock-line"><svg viewBox="0 0 100 40" width="100%" height="100%" preserveAspectRatio="none"><polyline points="0,35 25,28 50,20 75,12 100,5" fill="none" stroke="var(--gemini)" stroke-width="2.5"/></svg></div>
+          <p class="verdict-line">Line chart — "instantly recognizable trajectory" reasoning, converges with both other models.</p>
         </div>
       </div>
       <div class="variant-card">
@@ -361,7 +407,12 @@
         <div class="model-row gpt">
           <div class="model-name"><span class="dot gpt"></span>GPT</div>
           <div class="mock" style="height:36px; gap:2px;"><div class="mock-bar gpt-fill" style="width:16%;height:100%;border-radius:2px;"></div><div class="mock-bar muted" style="width:8%;height:2px;align-self:center;"></div><div class="mock-bar gpt-fill" style="width:16%;height:100%;border-radius:2px;"></div><div class="mock-bar muted" style="width:8%;height:2px;align-self:center;"></div><div class="mock-bar gpt-fill" style="width:16%;height:100%;border-radius:2px;"></div></div>
-          <p class="verdict-line">Swimlane flow — explicitly rejected a timeline "to avoid suggesting trends over time." Both pass.</p>
+          <p class="verdict-line">Swimlane flow — explicitly rejected a timeline "to avoid suggesting trends over time." All three pass.</p>
+        </div>
+        <div class="model-row gemini">
+          <div class="model-name"><span class="dot gemini"></span>Gemini</div>
+          <div class="mock-flow"><div class="node gemini-fill"></div><span class="arrow">→</span><div class="node gemini-fill"></div><span class="arrow">→</span><div class="node gemini-fill"></div></div>
+          <p class="verdict-line">Horizontal process flow with delay callouts — same structural logic, no anomaly. No form-conservatism signal here either.</p>
         </div>
       </div>
     </div>
@@ -369,11 +420,12 @@
 
   <div class="verdict-card">
     <span class="label">Naledi's direct answer to Ingrid's Sprint 4 question</span>
-    <p>Partially principled reasoning, not pure confabulation — but this is directional evidence, not a quantifiable probability. Six data points can generate this hypothesis; they can't quantify how often it holds. That's what Sprint 7's adversarial-pairs test is for.</p>
+    <p>Partially principled reasoning across all three models, not pure confabulation — but this remains directional evidence, not a quantifiable probability. Six data points per model can generate hypotheses; they can't quantify how often any of them hold. That's what Sprint 7's adversarial-pairs test, now spanning Claude, GPT, and Gemini, is for.</p>
   </div>
 
   <footer class="report-footer">
-    <p>Pilot only: 3 pairs, 6 variants, one run each, scored by Naledi herself (not blind — a flagged bias risk). Reviewed by Ingrid: <strong>revise before use, not block</strong> — the original form-prediction probe had a flaw (specific, internally-consistent reasoning could predict the form even if generated post-hoc). Sprint 7's redesigned test is <strong>adversarial pairs</strong>: scenarios where the obvious/canonical form is wrong for the stated audience or goal. If a model picks the non-canonical form <em>and</em> its reasoning explicitly overrides content convention for audience/goal reasons, that's real evidence the reasoning does causal work — not just retroactive description. Gemini is not in this dataset — no API key yet — flagged as required before any cross-model claim.</p>
+    <p>Pilot only: 3 pairs, 6 variants, one run per model, scored by Naledi herself (not blind — a flagged bias risk). Reviewed by Ingrid: <strong>revise before use, not block</strong> — twice. The first pass (Claude/GPT only) found the original form-prediction probe had a flaw (specific, internally-consistent reasoning could predict the form even if generated post-hoc) and required removing a false-precision confidence estimate. The second pass, after Gemini was added as a third model in a separate follow-up step once a Google API key became available, found and fixed a drafting artifact, an underspecified failure-mode label, an incomplete appendix, and one inconsistently-hedged claim.</p>
+    <p>Sprint 7's redesigned test is <strong>adversarial pairs</strong>, run across all three models: scenarios where the obvious/canonical form is wrong for the stated audience or goal. If a model picks the non-canonical form <em>and</em> its reasoning explicitly overrides content convention for audience/goal reasons, that's real evidence the reasoning does causal work — not just retroactive description.</p>
     <div class="footer-links">
       <a href="../index.html#progress">← All sprints</a>
     </div>
