@@ -58,14 +58,15 @@ def render(data: dict, title: str) -> str:
     beats = data["beats"]
 
     bars_svg = ""
+    labels_html = ""
     bar_w = 100 / len(categories)
     for i, c in enumerate(categories):
         h = (c["value"] / max_val) * 260
         bars_svg += (
             f'<rect class="bar" data-name="{c["name"]}" '
             f'x="{i*bar_w + 1}%" y="{280-h}" width="{bar_w-2}%" height="{h}" rx="3"></rect>\n'
-            f'<text class="bar-label" x="{i*bar_w + bar_w/2}%" y="296">{c["name"]}</text>\n'
         )
+        labels_html += f'<div class="bar-label" style="width:{bar_w}%">{c["name"]}</div>\n'
 
     beats_html = ""
     for i, b in enumerate(beats):
@@ -82,10 +83,11 @@ def render(data: dict, title: str) -> str:
   .pinned {{ position:sticky; top:0; width:45%; height:100vh; display:flex; flex-direction:column;
              justify-content:center; padding:2rem; box-sizing:border-box; background:#f4f1ea; }}
   .headline {{ font-size:1.6rem; font-weight:700; color:#20795b; margin-bottom:1rem; min-height:2.4rem; transition:opacity 0.3s; }}
-  svg {{ width:100%; height:300px; }}
+  svg {{ width:100%; height:280px; display:block; }}
   .bar {{ fill:#dadfde; transition:fill 0.4s; }}
   .bar.active {{ fill:#20795b; }}
-  .bar-label {{ font-size:9px; fill:#6d7679; text-anchor:middle; }}
+  .bar-labels {{ display:flex; }}
+  .bar-label {{ width:auto; font-size:0.68rem; color:#6d7679; text-align:center; line-height:1.25; padding:0 2px; box-sizing:border-box; }}
   .beats {{ width:55%; padding:2rem; box-sizing:border-box; }}
   .beat {{ min-height:70vh; display:flex; align-items:center; font-size:1.3rem; line-height:1.6;
            color:#3c4547; border-left:3px solid #dadfde; padding-left:1.5rem; opacity:0.35; transition:opacity 0.4s; }}
@@ -95,7 +97,8 @@ def render(data: dict, title: str) -> str:
 <div class="layout">
   <div class="pinned">
     <div class="headline" id="headline"></div>
-    <svg viewBox="0 0 100 300" preserveAspectRatio="none">{bars_svg}</svg>
+    <svg viewBox="0 0 100 280" preserveAspectRatio="none">{bars_svg}</svg>
+    <div class="bar-labels">{labels_html}</div>
   </div>
   <div class="beats" id="beats">{beats_html}</div>
 </div>

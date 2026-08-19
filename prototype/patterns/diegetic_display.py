@@ -68,6 +68,22 @@ _ICONS = {
 _TRUCK = '<path d="M-14,10 L-14,-4 L4,-4 L4,10 M4,2 L14,2 L14,10 L4,10" fill="currentColor" stroke="#14181a" stroke-width="0.5"/><circle cx="-9" cy="12" r="3" fill="#14181a"/><circle cx="8" cy="12" r="3" fill="#14181a"/>'
 
 
+def _wrap_label(text: str, max_chars: int = 30) -> list:
+    words = text.split()
+    lines, cur = [], ""
+    for w in words:
+        trial = f"{cur} {w}".strip()
+        if len(trial) <= max_chars:
+            cur = trial
+        else:
+            if cur:
+                lines.append(cur)
+            cur = w
+    if cur:
+        lines.append(cur)
+    return lines
+
+
 def render(result: dict, title: str) -> str:
     v = result["values"]
     legend = result.get("legend", {})
@@ -87,9 +103,14 @@ def render(result: dict, title: str) -> str:
     for e in ("factory", "warehouse", "store"):
         s = scale(e, 1.6)
         x = positions[e]
+        desc_lines = _wrap_label(legend.get(e, ""), max_chars=26)
+        tspans = f'<tspan x="{x}" font-weight="700" fill="#14181a">{e.capitalize()}</tspan>'
+        for i, line in enumerate(desc_lines):
+            dy = 16 if i == 0 else 13
+            tspans += f'<tspan x="{x}" dy="{dy}" font-size="10.5" fill="#6d7679">{line}</tspan>'
         entity_svgs += (
             f'<g transform="translate({x},220) scale({s})" style="color:{color(e)}">{_ICONS[e]}</g>'
-            f'<text x="{x}" y="270" text-anchor="middle" font-size="12" fill="#3c4547">{e} — {legend.get(e, "")}</text>'
+            f'<text x="{x}" y="270" text-anchor="middle" font-size="12">{tspans}</text>'
         )
 
     c1, c2 = v.get("connector_1", 0.5), v.get("connector_2", 0.5)
@@ -114,7 +135,7 @@ def render(result: dict, title: str) -> str:
 <body>
 <h1>{title}</h1>
 <div class="note">Scene (factory/truck/warehouse/store) is fixed and hand-authored, not generated. The agent only decided: {legend.get('connector_1','')} (route 1 flow), {legend.get('connector_2','')} (route 2 flow), and the size/intensity mapping for each stop.</div>
-<svg viewBox="0 0 720 300">
+<svg viewBox="0 0 720 380">
   {connectors}
   {entity_svgs}
 </svg>

@@ -8,6 +8,7 @@ UNTESTED assumption per Ingrid's review -- see visual_asset_generator.py's
 reliability log, which is meant to validate or overturn this default during
 real v1 runs, not just assert it.
 """
+import base64
 import os
 
 from anthropic import Anthropic
@@ -50,6 +51,42 @@ def complete(provider: str, model: str, system: str, prompt: str, max_tokens: in
         return response.choices[0].message.content
     else:
         raise ValueError(f"Unknown provider '{provider}' -- expected 'anthropic' or 'openai'")
+
+
+def complete_with_image(
+    provider: str, model: str, system: str, prompt: str, image_path: str, max_tokens: int = 2000
+) -> str:
+    """Single-turn completion with one image attached (vision input).
+
+    Anthropic only for now -- this is a new capability added for the
+    template-reproduction test, not a general pipeline stage yet. Extending
+    to GPT-5.2/Gemini vision is a natural follow-up, not done here (same
+    kind of explicit scope-narrowing Ingrid has required elsewhere, applied
+    up front instead of after the fact).
+    """
+    if provider != "anthropic":
+        raise ValueError("complete_with_image currently only supports provider='anthropic'")
+    ext = os.path.splitext(image_path)[1].lower()
+    media_type = {".png": "image/png", ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".webp": "image/webp"}.get(
+        ext, "image/png"
+    )
+    with open(image_path, "rb") as f:
+        image_b64 = base64.standard_b64encode(f.read()).decode("utf-8")
+    response = _anthropic().messages.create(
+        model=model,
+        max_tokens=max_tokens,
+        system=system,
+        messages=[
+            {
+                "role": "user",
+                "content": [
+                    {"type": "image", "source": {"type": "base64", "media_type": media_type, "data": image_b64}},
+                    {"type": "text", "text": prompt},
+                ],
+            }
+        ],
+    )
+    return "\n".join(b.text for b in response.content if b.type == "text")
 
 
 # Per-stage default config. Change a stage's model here, not in the stage's
