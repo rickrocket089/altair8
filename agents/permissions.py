@@ -24,6 +24,13 @@ PERMITTED_TOOLS = {
         "write_prototype_file", "write_task_artifact", "web_search",
     },
     "ingrid": {"read_prototype_file", "read_task_artifact", "write_review"},
+    # Deliberately has no `web_search`: novelty verification belongs to Kenji, so
+    # the concept author cannot self-certify the originality of their own concept.
+    # Added 2026-08-19 with the Concept Designer role.
+    "priya": {
+        "read_brief", "read_cognitive_annotation",
+        "search_vectorstore", "write_concept_scenario",
+    },
 }
 
 

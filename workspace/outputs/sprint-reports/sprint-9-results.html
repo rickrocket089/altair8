@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sprint 9 — Four New Visual Primitives | Altair8 Labs</title>
+<meta name="description" content="Altair8 Sprint 9: a survey of visual-communication patterns from data journalism, motion graphics, spatial interfaces, game UI and scientific visualization — and four working prototypes built from it.">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 28'%3E%3Cpath fill='%2320795b' d='M11,0.5 Q13.027,8.973 21.5,11 Q13.027,13.027 11,21.5 Q8.973,13.027 0.5,11 Q8.973,8.973 11,0.5 Z'/%3E%3Cpath fill='%23a16a17' d='M23.5,12.5 Q25.197,18.303 31,20 Q25.197,21.697 23.5,27.5 Q21.803,21.697 16,20 Q21.803,18.303 23.5,12.5 Z'/%3E%3C/svg%3E">
+<style>
+  :root {
+    --cream:      #ffffff;
+    --cream-dark: #eef0ee;
+    --ink:        #14181a;
+    --ink-mid:    #3c4547;
+    --ink-light:  #6d7679;
+    --rule:       #dadfde;
+    --accent:     #20795b;
+    --accent2:    #a16a17;
+    --steel:      #4a6fa5;
+    --accent-tint:#eaf5ef;
+    --accent2-tint:#f7efe2;
+    --steel-tint: #eaf0f7;
+    --max:        740px;
+    --wide:       1000px;
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background-color: var(--cream);
+    color: var(--ink);
+    font-family: 'Iowan Old Style', 'Palatino Linotype', Palatino, Georgia, serif;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; }
+
+  .container--wide{ max-width: var(--wide); margin: 0 auto; padding: 0 2rem; }
+
+  /* ─── Nav ─── */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background-color: var(--cream);
+    border-bottom: 1px solid var(--rule);
+    padding: 1rem 2rem;
+  }
+  .nav-inner {
+    max-width: var(--wide); margin: 0 auto;
+    display: flex; align-items: baseline; justify-content: space-between; gap: 1rem;
+    flex-wrap: wrap;
+  }
+  .nav-wordmark {
+    display: inline-flex; align-items: center; gap: 0.48em;
+    font-size: 0.95rem; letter-spacing: 0.16em; text-transform: uppercase;
+    font-weight: 700; text-decoration: none; color: var(--ink);
+  }
+  .nav-wordmark .logo-mark { width: auto; height: 1.5em; flex-shrink: 0; }
+  .nav-wordmark .logo-mark .star-a { fill: var(--accent); }
+  .nav-wordmark .logo-mark .star-b { fill: var(--accent2); }
+  .nav-back {
+    font-size: 0.8rem; letter-spacing: 0.06em; color: var(--ink-light);
+    text-decoration: none; border-bottom: 1px solid var(--rule);
+  }
+  .nav-back:hover { color: var(--accent); border-color: var(--accent); }
+
+  /* ─── Header ─── */
+  .report-header { padding: 3.5rem 0 2.5rem; }
+  .breadcrumb {
+    font-size: 0.72rem; letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--accent); margin-bottom: 1rem; display: block;
+  }
+  .breadcrumb .sep { color: var(--ink-light); margin: 0 0.5em; letter-spacing: 0; }
+  h1 {
+    font-size: clamp(1.9rem, 4vw, 2.7rem);
+    line-height: 1.2; margin: 0 0 1rem; letter-spacing: -0.01em; font-weight: 500;
+  }
+  .report-intro { color: var(--ink-mid); font-size: 1.05rem; max-width: 680px; margin: 0 0 0.5rem; }
+  .report-meta { font-size: 0.82rem; color: var(--ink-light); }
+  .report-meta .status { color: var(--accent); font-weight: 600; }
+
+  /* ─── Key Insights ─── */
+  .insights {
+    background: var(--cream-dark);
+    border-radius: 6px;
+    padding: 2rem 2.2rem 2.2rem;
+    margin: 0.5rem 0 3.5rem;
+  }
+  .insights .section-label {
+    font-size: 0.72rem; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--accent); font-weight: 700; margin: 0 0 1.2rem; display: block;
+  }
+  .insight-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 1.1rem; }
+  .insight-list li { display: grid; grid-template-columns: 1.6rem 1fr; gap: 0.9rem; align-items: start; }
+  .insight-num { font-size: 0.85rem; font-weight: 700; color: var(--accent); font-variant-numeric: tabular-nums; }
+  .insight-list p { margin: 0; font-size: 0.98rem; color: var(--ink-mid); }
+  .insight-list strong { color: var(--ink); }
+  .insight-caveat {
+    margin-top: 1.6rem; padding-top: 1.3rem; border-top: 1px solid var(--rule);
+    font-size: 0.88rem; color: var(--ink-light);
+  }
+  .insight-caveat strong { color: var(--accent2); }
+  .insight-caveat + .insight-caveat { margin-top: 1rem; padding-top: 0; border-top: none; }
+
+  /* ─── Verdict ─── */
+  .verdict-card {
+    border: 1px solid var(--rule);
+    border-left: 3px solid var(--accent);
+    background: var(--cream);
+    border-radius: 4px;
+    padding: 1.3rem 1.6rem;
+    margin: 0 0 3.5rem;
+  }
+  .verdict-card .label {
+    font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--accent); font-weight: 700; margin-bottom: 0.5rem; display: block;
+  }
+  .verdict-card p { margin: 0.4rem 0 0; font-size: 0.95rem; color: var(--ink-mid); }
+
+  /* ─── Pattern blocks ─── */
+  .pattern-block { margin-bottom: 4rem; }
+  .pattern-header { display: flex; align-items: baseline; gap: 0.8rem; margin-bottom: 0.4rem; flex-wrap: wrap; }
+  .pattern-header h2 { font-size: 1.35rem; margin: 0; font-weight: 500; }
+  .pattern-tag {
+    font-size: 0.68rem; letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--ink-light); border: 1px solid var(--rule); border-radius: 2px; padding: 0.15em 0.5em;
+  }
+  .pattern-source { font-size: 0.78rem; color: var(--ink-light); margin: 0 0 1rem; }
+  .pattern-desc { font-size: 0.95rem; color: var(--ink-mid); max-width: 720px; margin: 0 0 1rem; }
+
+  .agent-note {
+    border-left: 3px solid var(--accent2);
+    background: var(--accent2-tint);
+    padding: 0.9rem 1.2rem;
+    font-size: 0.86rem;
+    color: var(--ink-mid);
+    margin: 0 0 1.2rem;
+    border-radius: 0 4px 4px 0;
+  }
+  .agent-note strong { color: var(--ink); }
+  .pattern-block.steel .agent-note { border-left-color: var(--steel); background: var(--steel-tint); }
+  .pattern-block.accent .agent-note { border-left-color: var(--accent); background: var(--accent-tint); }
+
+  .demo-frame-wrap {
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    overflow: hidden;
+    background: var(--cream);
+  }
+  .demo-frame-wrap iframe { display: block; width: 100%; border: none; background: #fff; }
+  .demo-scroll-hint {
+    font-size: 0.72rem; letter-spacing: 0.04em; color: var(--ink-light);
+    text-align: center; padding: 0.5rem 0 0;
+  }
+  .demo-links { margin-top: 0.6rem; display: flex; gap: 1.2rem; }
+  .demo-links a {
+    font-size: 0.78rem; color: var(--accent); text-decoration: none;
+    border-bottom: 1px solid var(--rule); padding-bottom: 0.1em;
+  }
+  .demo-links a:hover { border-color: var(--accent); }
+
+  .pattern-verdict { font-size: 0.87rem; color: var(--ink-mid); margin: 1rem 0 0; max-width: 720px; }
+  .pattern-verdict strong { color: var(--ink); }
+
+  /* ─── Footer ─── */
+  .report-footer { margin-top: 3rem; padding: 2rem 0 4rem; font-size: 0.88rem; color: var(--ink-light); }
+  .report-footer strong { color: var(--ink-mid); }
+  .report-footer p + p { margin-top: 1rem; }
+  .footer-links { margin-top: 1.5rem; display: flex; gap: 1.5rem; flex-wrap: wrap; }
+  .footer-links a {
+    font-size: 0.8rem; letter-spacing: 0.04em; color: var(--accent);
+    text-decoration: none; border-bottom: 1px solid var(--rule); padding-bottom: 0.1em;
+  }
+  .footer-links a:hover { border-color: var(--accent); }
+</style>
+</head>
+<body>
+
+<nav aria-label="Site navigation">
+  <div class="nav-inner">
+    <a class="nav-wordmark" href="../index.html">
+      <svg class="logo-mark" viewBox="0 0 32 28" aria-hidden="true">
+        <path class="star-a" d="M11,0.5 Q13.027,8.973 21.5,11 Q13.027,13.027 11,21.5 Q8.973,13.027 0.5,11 Q8.973,8.973 11,0.5 Z"/>
+        <path class="star-b" d="M23.5,12.5 Q25.197,18.303 31,20 Q25.197,21.697 23.5,27.5 Q21.803,21.697 16,20 Q21.803,18.303 23.5,12.5 Z"/>
+      </svg>
+      Altair8 Labs
+    </a>
+    <a class="nav-back" href="../index.html#progress">← Back to Progress</a>
+  </div>
+</nav>
+
+<div class="container--wide">
+
+  <header class="report-header">
+    <span class="breadcrumb">Design &amp; Development <span class="sep">/</span> Sprint 9</span>
+    <h1>Beyond the Chart: Four New Visual Primitives</h1>
+    <p class="report-intro">Naledi surveyed data journalism, motion graphics, spatial interfaces, game UI, and scientific visualization for patterns that already demonstrate real generative and structural ambition — but were never applied to business communication. Mateo then built four working prototypes, each one deliberately designed so the agent has to make the real generative decision, not just fill in text around hand-built scaffolding.</p>
+    <p class="report-meta"><span class="status">Reviewed &amp; approved</span> — Ingrid's review set explicit build conditions before Phase B started, not just text revisions. Founder-reviewed live in browser: functional, with known rough edges. Closed as a proof of concept, not a production artifact. <strong>Updated 2026-08-17</strong> with a fifth prototype (template reproduction) — not yet formally reviewed, see below.</p>
+  </header>
+
+  <section class="insights" aria-label="Key insights">
+    <span class="section-label">Key insights</span>
+    <ol class="insight-list">
+      <li>
+        <span class="insight-num">01</span>
+        <p><strong>The interesting part usually isn't a new chart shape — it's a new relationship between the reader and the artifact.</strong> Who controls pacing, what gets disclosed and when, whether the data lives inside a depiction of its subject rather than beside it. Naledi's own framing, though Ingrid scoped it down: only about half of the 11 surveyed patterns actually support this claim — carried forward as a partial finding, not a proven generalization.</p>
+      </li>
+      <li>
+        <span class="insight-num">02</span>
+        <p><strong>Every prototype forces the real generative decision, not a fake version of it.</strong> Ingrid flagged a concrete risk before any code was written: it's easy to build something that looks generative — hand-author the interesting part, have the agent only fill in text — without testing the capability that actually matters. Each of the four below is structured so that decision is unavoidable for the model.</p>
+      </li>
+      <li>
+        <span class="insight-num">03</span>
+        <p><strong>Diegetic display was re-risked, not dropped.</strong> Generating a full "world model" of a subject (what its entities are, what they look like) is a categorically harder problem than the other three, which only need to sequence, interpret, or classify content the agent already has. Ingrid's fix: pre-specify the scene by hand, and only let the agent decide the data-to-visual-property mapping — a deliberately narrower test of a real but smaller capability.</p>
+      </li>
+      <li>
+        <span class="insight-num">04</span>
+        <p><strong>These are demonstrations of feasibility, not evidence they communicate better.</strong> All four run end-to-end on real generated content below. Whether any of them actually outperforms a conventional chart for a given audience and goal is untested — and still is. That validation, using the same paired-scenario method as Sprints 6 through 8, was originally planned as Sprint 10; it has been deferred (see the note below).</p>
+      </li>
+    </ol>
+    <p class="insight-caveat"><strong>Known limitation:</strong> not independently re-verified in a browser beyond the founder's own pass — the same class of rendering gap that caused a silent container-autosize bug in Sprint 8. Founder's verdict on this round: functional, some rough edges, closed as a working proof of concept rather than debugged to production quality.</p>
+  </section>
+
+  <!-- SCROLLYTELLING -->
+  <div class="pattern-block accent">
+    <div class="pattern-header"><h2>1. Scrollytelling with a pinned visual</h2><span class="pattern-tag">Data journalism</span></div>
+    <p class="pattern-source">Reader controls pacing by scrolling; a pinned chart updates in response, instead of a presenter advancing static slides.</p>
+    <p class="pattern-desc">Content: support-ticket volume across five product lines after a release. The agent had to identify which single insight each narrative beat should surface and which bar the pinned chart should highlight at that moment — not just write prose alongside a static chart.</p>
+    <div class="demo-frame-wrap">
+      <iframe src="sprint9-scrollytelling.html" height="640" title="Scrollytelling prototype — support ticket shift" loading="lazy"></iframe>
+    </div>
+    <p class="demo-scroll-hint">Scroll inside the frame above to advance the narrative — the chart highlight updates with each beat.</p>
+    <div class="demo-links"><a href="sprint9-scrollytelling.html" target="_blank" rel="noopener">Open standalone →</a></div>
+    <p class="pattern-verdict"><strong>What this tests:</strong> whether the model can sequence a narrative and bind each beat to the correct visual state, rather than a human hand-authoring the highlight logic.</p>
+  </div>
+
+  <!-- ANNOTATION-LED -->
+  <div class="pattern-block accent2">
+    <div class="pattern-header"><h2>2. Annotation-led reading path</h2><span class="pattern-tag">Data journalism / editorial</span></div>
+    <p class="pattern-source">The chart commits to one insight and annotates it directly, instead of presenting all the data and describing it separately underneath.</p>
+    <p class="pattern-desc">Content: monthly churn rate, one anomalous month. The agent had to identify the single data point that actually needs explaining and generate a real annotation layer around it (callout, reference line, comparison average) — a genuine single-insight identification and justification task, not a templated chart.</p>
+    <div class="demo-frame-wrap">
+      <iframe src="sprint9-annotation-led.html" height="970" title="Annotation-led prototype — churn rate" loading="lazy"></iframe>
+    </div>
+    <div class="demo-links"><a href="sprint9-annotation-led.html" target="_blank" rel="noopener">Open standalone →</a></div>
+    <p class="pattern-verdict"><strong>What this tests:</strong> whether the model can pick the one thing that matters and justify it, instead of rendering a complete, undifferentiated chart.</p>
+  </div>
+
+  <!-- FORCE-DIRECTED -->
+  <div class="pattern-block">
+    <div class="pattern-header"><h2>3. Force-directed relationship graph</h2><span class="pattern-tag">Scientific visualization</span></div>
+    <p class="pattern-source">Business communication has no standard slot for network-shaped questions — they get forced into bar charts or org charts even when the actual insight lives in the connections.</p>
+    <p class="pattern-desc">Content: real engineering-team collaboration structure. The agent had to first argue why this specific question is relational rather than a magnitude comparison, then extract the actual node/edge structure from the content itself — draggable, force-simulated below.</p>
+    <div class="demo-frame-wrap">
+      <iframe src="sprint9-force-directed.html" height="970" title="Force-directed prototype — collaboration network" loading="lazy"></iframe>
+    </div>
+    <p class="demo-scroll-hint">Nodes are draggable — the simulation responds live.</p>
+    <div class="demo-links"><a href="sprint9-force-directed.html" target="_blank" rel="noopener">Open standalone →</a></div>
+    <p class="pattern-verdict"><strong>What this tests:</strong> whether the model correctly classifies a question as relational versus magnitude-based before committing to a form, then extracts a coherent graph structure from prose.</p>
+  </div>
+
+  <!-- DIEGETIC DISPLAY -->
+  <div class="pattern-block steel">
+    <div class="pattern-header"><h2>4. Diegetic information display</h2><span class="pattern-tag">Game UI</span></div>
+    <p class="pattern-source">Data embedded directly into a depiction of its own subject — borrowed from game interfaces, where a fuel gauge is part of the dashboard, not a separate chart next to it.</p>
+    <p class="pattern-desc">Content: supply-chain flow across a factory, transit, warehouse, and store. Per Ingrid's narrowed scope, the scene itself (the four icons and their layout) is fixed and hand-authored — the agent only decided which metric maps to which stop, and how flow volume and stop intensity should scale visually.</p>
+    <div class="demo-frame-wrap">
+      <iframe src="sprint9-diegetic-display.html" height="970" title="Diegetic display prototype — supply chain" loading="lazy"></iframe>
+    </div>
+    <div class="demo-links"><a href="sprint9-diegetic-display.html" target="_blank" rel="noopener">Open standalone →</a></div>
+    <p class="pattern-verdict"><strong>What this tests:</strong> the narrower, re-risked question only — can the model correctly map data onto pre-existing visual properties (line weight, opacity, icon scale)? Full agent-generated scene construction ("world modeling") remains a separate, harder open question for later.</p>
+  </div>
+
+  <!-- TEMPLATE REPRODUCTION -->
+  <div class="pattern-block accent2">
+    <div class="pattern-header"><h2>5. Template reproduction <span style="font-weight:400;color:var(--ink-light);font-size:0.85em;">(added 2026-08-17)</span></h2><span class="pattern-tag">Generative fidelity</span></div>
+    <p class="pattern-source">A different question from the four patterns above: not "can the agent choose or invent a new visual form," but "given an existing image, can the agent reconstruct it as vector code at all." A prerequisite capability check, not a form-selection test.</p>
+    <p class="pattern-desc">The agent sees only the original image and writes SVG markup from scratch to reproduce it — enforced in code: the output is rejected if it re-embeds the source image instead of reconstructing it as vector shapes. Two images, same subject (a rocket), deliberately different difficulty: a flat vector icon, and a tilted monochrome illustration with fine linework.</p>
+    <p class="pattern-desc"><strong>Includes a real review cycle:</strong> the first attempt (v1) was compared directly against the original, zoomed in side by side, and specific gaps were written up — same review-then-revise pattern used throughout this project. That critique, plus the original image again, went back to the agent for a second attempt (v2). Both versions are pure vector reconstructions.</p>
+    <div class="demo-frame-wrap">
+      <iframe src="sprint9-template-reproduction.html" height="1220" title="Template reproduction test — v1 vs v2 review cycle" loading="lazy"></iframe>
+    </div>
+    <div class="demo-links"><a href="sprint9-template-reproduction.html" target="_blank" rel="noopener">Open standalone →</a></div>
+    <p class="pattern-verdict"><strong>v1 result:</strong> the flat icon was reproduced with reasonably close proportions, colors, and composition. The complex illustration was not — it kept the general rocket-with-fins-and-window gestalt but lost the tilted pose (came out upright) and collapsed the fine linework into a heavy black silhouette.</p>
+    <p class="pattern-verdict"><strong>v2 result, after review feedback:</strong> the simple icon's specific issues (off-center window, a stray rendering artifact, an unclosed seam near the flame) were fixed. The complex illustration improved substantially on the two biggest gaps — it now sits at roughly the right diagonal tilt, and shifted from a solid black fill toward the source's line-and-white-space style — but is still not a faithful match: the cockpit reads as a gauge-like icon rather than the source's lens shape, and the lower-body silhouette still diverges. One review cycle measurably closed part of the gap; it did not close all of it.</p>
+    <p class="pattern-verdict"><strong>What this tests:</strong> raw generative-reproduction fidelity, independent of audience or goal. Says nothing about whether the agent picks the right form for a situation (Sprint 6-8) or invents a genuinely new one (patterns 1-4 above) — a third, separate axis. Pilot only: one image pair per difficulty level, one review cycle, judged by visual comparison, not a scoring rubric. <strong>Not yet formally reviewed by Ingrid</strong> — flagged openly rather than treated as approved by default.</p>
+  </div>
+
+  <div class="verdict-card">
+    <span class="label">What this validates, and what it doesn't</span>
+    <p>All four patterns are demonstrated feasible with real generated content, not placeholders — a genuine expansion of what Altair8's pipeline can produce beyond flat 2D chart-and-prose, directly in service of design principle #4 (don't constrain output to legacy formats). None of this is evidence any of them communicates better than a conventional chart for a given audience and goal. That question remains untested.</p>
+  </div>
+
+  <div class="verdict-card">
+    <span class="label">Correction — the validation named here has been deferred (2026-08-19)</span>
+    <p>This page originally stated that the paired-scenario validation of these four patterns would be Sprint 10. It will not be. Sprint 10 was re-scoped, at the founder's direction, to design competing concepts for the communication layer before building or validating any further — the team had never put rival answers side by side, only rival implementations of one answer.</p>
+    <p>The cost of that decision is named rather than carried silently: <strong>the four patterns above remain unvalidated claims, and Sprint 10's concepts are being generated against them in that state.</strong> If the validation eventually shows one of these patterns is wrong or context-limited, concepts that depend on it will need revising. The validation is deferred, not dropped, and it is still owed.</p>
+  </div>
+
+  <footer class="report-footer">
+    <p>Reviewed by Ingrid before Phase B was built, not just after: the review set real scoping conditions on the build itself (diegetic display narrowed to a pre-specified scene, every prototype required to force a genuine generative decision) rather than only checking the finished text. Naledi's own meta-finding — that the most interesting innovations are about reader-artifact relationship, not chart shape — was found to generalize from roughly half the 11 surveyed patterns, and is carried forward scoped down accordingly.</p>
+    <p>Closed by the founder directly reviewing the four running prototypes: <strong>functional, with known rough edges</strong> — accepted as a working proof of concept rather than debugged to production quality, since these are exploratory prototypes, not shipped artifacts.</p>
+    <div class="footer-links">
+      <a href="../index.html#progress">← All sprints</a>
+    </div>
+  </footer>
+
+</div>
+
+</body>
+</html>

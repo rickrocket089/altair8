@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8">
+<title>Template Reproduction Test — v1 vs v2</title>
+<style>
+  body { margin:0; font-family: Georgia, serif; color:#14181a; background:#fff; max-width:1100px; margin:0 auto; padding:3rem 2rem; }
+  h1 { font-size:1.5rem; }
+  h2 { font-size:1.1rem; margin: 2rem 0 1rem; }
+  .note { background:#f4f1ea; border-left:3px solid #a16a17; padding:1rem 1.3rem; font-size:0.88rem; color:#3c4547; margin-bottom:1rem; }
+  .repro-cols { display:flex; gap:1.2rem; flex-wrap:wrap; }
+  .repro-col { flex:1; min-width:220px; }
+  .repro-tag { display:block; font-size:0.72rem; letter-spacing:0.04em; text-transform:uppercase; color:#6d7679; margin-bottom:0.5rem; }
+  .repro-frame { border:1px solid #dadfde; border-radius:6px; padding:1rem; display:flex; align-items:center; justify-content:center; min-height:260px; background:#fafafa; }
+  .repro-frame img, .repro-frame svg { max-width:100%; max-height:300px; }
+  .repro-critique { margin-top:1rem; font-size:0.85rem; color:#3c4547; background:#f9f9f8; border:1px solid #dadfde; border-radius:6px; padding:0.8rem 1.1rem; }
+  .repro-critique summary { cursor:pointer; font-weight:700; color:#a16a17; }
+</style></head>
+<body>
+<h1>Template Reproduction Test — Review Cycle</h1>
+<div class="note">v1 was the agent's first, unassisted attempt. Between v1 and v2, the original image and the v1 SVG were compared directly (side by side, zoomed) and specific gaps were written up -- the same review-then-revise pattern used throughout this project. v2 is the agent's second attempt, given the original image again plus that written critique. Both versions remain pure vector reconstructions -- no source pixels used in either.</div>
+
+<div class="repro-pair">
+  <h2>Simple — flat vector icon</h2>
+  <div class="repro-cols">
+    <div class="repro-col">
+      <span class="repro-tag">Original</span>
+      <div class="repro-frame"><img src="rocket_simple.png" alt="Simple — flat vector icon original"></div>
+    </div>
+    <div class="repro-col">
+      <span class="repro-tag">v1 &mdash; first attempt</span>
+      <div class="repro-frame"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 580">
+  <defs>
+    <!-- Body gradient -->
+    <linearGradient id="bodyGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#e8e8e8;stop-opacity:1"/>
+      <stop offset="45%" style="stop-color:#ffffff;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#d0d0d0;stop-opacity:1"/>
+    </linearGradient>
+    <!-- Nose gradient -->
+    <linearGradient id="noseGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#cc0000;stop-opacity:1"/>
+      <stop offset="50%" style="stop-color:#ff2222;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#cc0000;stop-opacity:1"/>
+    </linearGradient>
+    <!-- Window gradient -->
+    <radialGradient id="windowGrad" cx="40%" cy="35%" r="60%">
+      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:1"/>
+      <stop offset="30%" style="stop-color:#aee8f5;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#5cc8e8;stop-opacity:1"/>
+    </radialGradient>
+    <!-- Flame outer -->
+    <linearGradient id="flameOuter" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#ff8800;stop-opacity:1"/>
+      <stop offset="60%" style="stop-color:#ff6600;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#ff9900;stop-opacity:1"/>
+    </linearGradient>
+    <!-- Flame inner -->
+    <linearGradient id="flameInner" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#ffee00;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#ffcc00;stop-opacity:1"/>
+    </linearGradient>
+    <!-- Left fin gradient -->
+    <linearGradient id="leftFinGrad" x1="100%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#ff2222;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#aa0000;stop-opacity:1"/>
+    </linearGradient>
+    <!-- Right fin gradient -->
+    <linearGradient id="rightFinGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ff2222;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#aa0000;stop-opacity:1"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Outer flame -->
+  <path d="M220,490 Q200,540 215,575 Q260,545 305,575 Q320,540 300,490 Q280,520 260,530 Q240,520 220,490 Z" fill="url(#flameOuter)"/>
+
+  <!-- Inner flame -->
+  <path d="M235,488 Q228,520 238,550 Q260,538 282,550 Q292,520 285,488 Q270,508 260,515 Q250,508 235,488 Z" fill="url(#flameInner)"/>
+
+  <!-- Left fin -->
+  <path d="M195,350 L145,420 L175,430 L185,400 L210,460 L240,460 L230,340 Z" fill="url(#leftFinGrad)"/>
+  <!-- Left fin shadow -->
+  <path d="M210,380 L185,400 L175,430 L145,420 L155,440 L185,435 L215,390 Z" fill="#aa0000" opacity="0.5"/>
+
+  <!-- Right fin -->
+  <path d="M325,350 L375,420 L345,430 L335,400 L310,460 L280,460 L290,340 Z" fill="url(#rightFinGrad)"/>
+  <!-- Right fin shadow -->
+  <path d="M310,380 L335,400 L345,430 L375,420 L365,440 L335,435 L305,390 Z" fill="#aa0000" opacity="0.5"/>
+
+  <!-- Center fin left dark -->
+  <path d="M245,340 L230,460 L260,470 L260,340 Z" fill="#cc0000"/>
+  <!-- Center fin right dark -->
+  <path d="M275,340 L290,460 L260,470 L260,340 Z" fill="#dd0000"/>
+
+  <!-- Rocket body -->
+  <ellipse cx="260" cy="270" rx="95" ry="210" fill="url(#bodyGrad)"/>
+
+  <!-- Body shadow right -->
+  <path d="M320,100 Q355,160 355,270 Q355,370 320,440 Q340,430 345,270 Q345,160 320,100 Z" fill="#bbbbbb" opacity="0.6"/>
+
+  <!-- Nose cone -->
+  <path d="M175,155 Q180,80 260,30 Q340,80 345,155 Q310,120 260,115 Q210,120 175,155 Z" fill="url(#noseGrad)"/>
+  <!-- Nose cone shadow -->
+  <path d="M290,35 Q340,80 345,155 Q320,125 295,118 Q310,90 290,35 Z" fill="#cc0000" opacity="0.5"/>
+
+  <!-- Window outer ring dark -->
+  <circle cx="248" cy="200" r="52" fill="#222222"/>
+  <!-- Window ring -->
+  <circle cx="248" cy="200" r="46" fill="#333333"/>
+  <!-- Window glass -->
+  <circle cx="248" cy="200" r="40" fill="url(#windowGrad)"/>
+  <!-- Window highlight -->
+  <ellipse cx="237" cy="188" rx="14" ry="10" fill="white" opacity="0.7"/>
+  <circle cx="244" cy="192" r="5" fill="white" opacity="0.5"/>
+</svg></div>
+    </div>
+    <div class="repro-col">
+      <span class="repro-tag">v2 &mdash; after review</span>
+      <div class="repro-frame"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 600">
+  <defs>
+    <linearGradient id="bodyGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#d8d8d8;stop-opacity:1"/>
+      <stop offset="40%" style="stop-color:#f8f8f8;stop-opacity:1"/>
+      <stop offset="75%" style="stop-color:#ffffff;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#c8c8c8;stop-opacity:1"/>
+    </linearGradient>
+    <linearGradient id="noseGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#cc0000;stop-opacity:1"/>
+      <stop offset="45%" style="stop-color:#ff3333;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#bb0000;stop-opacity:1"/>
+    </linearGradient>
+    <radialGradient id="windowGrad" cx="38%" cy="35%" r="65%">
+      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:1"/>
+      <stop offset="25%" style="stop-color:#ccf0ff;stop-opacity:1"/>
+      <stop offset="70%" style="stop-color:#7dd8f0;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#4ab8d8;stop-opacity:1"/>
+    </radialGradient>
+    <linearGradient id="flameOuter" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#ff7700;stop-opacity:1"/>
+      <stop offset="50%" style="stop-color:#ff5500;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#ff9900;stop-opacity:1"/>
+    </linearGradient>
+    <linearGradient id="flameInner" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#ffee00;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#ffcc00;stop-opacity:1"/>
+    </linearGradient>
+    <linearGradient id="leftFinGrad" x1="100%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#ff2222;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#aa0000;stop-opacity:1"/>
+    </linearGradient>
+    <linearGradient id="rightFinGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ff2222;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#aa0000;stop-opacity:1"/>
+    </linearGradient>
+    <clipPath id="leftFinClip">
+      <path d="M155,340 L100,430 L170,445 L210,470 L235,360 Z"/>
+    </clipPath>
+    <clipPath id="rightFinClip">
+      <path d="M365,340 L420,430 L350,445 L310,470 L285,360 Z"/>
+    </clipPath>
+  </defs>
+
+  <!-- Outer flame -->
+  <path d="M222,488 Q195,545 210,585 Q260,555 310,585 Q325,545 298,488 Q278,518 260,528 Q242,518 222,488 Z" fill="url(#flameOuter)"/>
+
+  <!-- Inner flame -->
+  <path d="M237,486 Q228,522 240,555 Q260,542 280,555 Q292,522 283,486 Q270,506 260,514 Q250,506 237,486 Z" fill="url(#flameInner)"/>
+
+  <!-- Center fin / nozzle dark strips -->
+  <path d="M242,360 L228,470 L260,480 L260,360 Z" fill="#cc0000"/>
+  <path d="M278,360 L292,470 L260,480 L260,360 Z" fill="#dd1111"/>
+
+  <!-- Left fin -->
+  <path d="M155,340 L100,430 L170,445 L210,470 L235,360 Z" fill="url(#leftFinGrad)"/>
+  <!-- Left fin inner shadow -->
+  <path d="M210,370 L175,410 L162,440 L130,428 L140,445 L172,448 L218,395 Z" fill="#990000" opacity="0.4" clip-path="url(#leftFinClip)"/>
+
+  <!-- Right fin -->
+  <path d="M365,340 L420,430 L350,445 L310,470 L285,360 Z" fill="url(#rightFinGrad)"/>
+  <!-- Right fin inner shadow -->
+  <path d="M310,370 L345,410 L358,440 L390,428 L380,445 L348,448 L302,395 Z" fill="#990000" opacity="0.4" clip-path="url(#rightFinClip)"/>
+
+  <!-- Rocket body -->
+  <ellipse cx="260" cy="290" rx="105" ry="200" fill="url(#bodyGrad)"/>
+
+  <!-- Body shadow right -->
+  <path d="M330,120 Q365,185 365,290 Q365,385 330,455 L345,445 Q362,375 362,290 Q362,185 338,118 Z" fill="#aaaaaa" opacity="0.45"/>
+
+  <!-- Nose cone - wide gentle curve blending into body -->
+  <path d="M160,175 Q162,90 260,38 Q358,90 360,175 Q330,148 295,138 Q278,134 260,133 Q242,134 225,138 Q190,148 160,175 Z" fill="url(#noseGrad)"/>
+  <!-- Nose cone right shadow -->
+  <path d="M310,45 Q355,95 360,175 Q338,152 318,142 Q328,108 310,45 Z" fill="#aa0000" opacity="0.4"/>
+
+  <!-- Window outer ring -->
+  <circle cx="255" cy="235" r="50" fill="#1a1a1a"/>
+  <!-- Window ring inner -->
+  <circle cx="255" cy="235" r="44" fill="#2a2a2a"/>
+  <!-- Window glass -->
+  <circle cx="255" cy="235" r="38" fill="url(#windowGrad)"/>
+  <!-- Window highlight blobs -->
+  <ellipse cx="243" cy="222" rx="13" ry="9" fill="white" opacity="0.75"/>
+  <circle cx="251" cy="228" r="5" fill="white" opacity="0.5"/>
+</svg></div>
+    </div>
+  </div>
+  <details class="repro-critique">
+    <summary>Review feedback given between v1 and v2</summary>
+    <p>1. Nose cone: reproduce a smoother, rounder-shouldered cone (wide gentle curve down into the body), not a sharp narrow triangle. Remove the stray reddish sliver currently visible poking out past the right edge of the nose -- it reads as a rendering glitch, not a highlight.<br>2. Window: move it fully inside the body, centered a bit lower (currently it straddles the nose/body seam) and slightly smaller relative to body width.<br>3. Fins: there is a stray light-gray triangular sliver overlapping the right fin (a shadow shape rendering outside the fin's silhouette) -- remove or contain it. Close the visible gap between the bottom of the center fin and the top of the flame so the silhouette reads as continuous, like the original.<br>4. Overall proportions: the original body is a bit more compact/rounded (shorter and wider); the reproduction is more slender and elongated -- widen the body slightly relative to its height.</p>
+  </details>
+</div>
+
+<div class="repro-pair">
+  <h2>Complex — monochrome illustration, tilted</h2>
+  <div class="repro-cols">
+    <div class="repro-col">
+      <span class="repro-tag">Original</span>
+      <div class="repro-frame"><img src="rocket_complex.png" alt="Complex — monochrome illustration, tilted original"></div>
+    </div>
+    <div class="repro-col">
+      <span class="repro-tag">v1 &mdash; first attempt</span>
+      <div class="repro-frame"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 541 591" width="541" height="591">
+  <rect width="541" height="591" fill="white"/>
+
+  <!-- Main rocket body - large black silhouette -->
+  <path d="M320 15 C340 20, 390 60, 410 120 C430 180, 430 250, 420 310 C410 370, 390 420, 370 460 C350 500, 320 530, 300 550 C280 570, 260 580, 250 575 C240 570, 230 555, 220 535 C200 500, 185 460, 175 420 C160 370, 155 310, 155 260 C155 200, 165 140, 185 90 C205 40, 240 15, 265 10 C280 7, 310 12, 320 15 Z" fill="black"/>
+
+  <!-- Rocket body outline/highlight on left side -->
+  <path d="M265 10 C250 15, 225 35, 205 70 C185 105, 168 155, 160 210 C152 265, 155 320, 162 370 C170 420, 185 465, 200 500 C215 535, 235 560, 250 570 C240 555, 225 530, 210 495 C195 460, 180 415, 172 365 C164 315, 162 260, 168 205 C174 150, 190 100, 210 65 C230 30, 255 15, 265 10 Z" fill="#333"/>
+
+  <!-- Left fin/wing -->
+  <path d="M175 430 C150 440, 100 460, 60 490 C40 505, 20 520, 15 535 C10 550, 25 555, 50 545 C80 535, 110 515, 140 500 C160 490, 175 480, 180 470 C175 455, 175 440, 175 430 Z" fill="black"/>
+
+  <!-- Left fin inner shape -->
+  <path d="M170 435 C150 445, 110 465, 75 490 C55 503, 35 518, 32 530 C45 522, 65 510, 85 498 C110 483, 140 468, 162 455 C168 448, 170 442, 170 435 Z" fill="white" opacity="0.3"/>
+
+  <!-- Left small fin/thruster at bottom left -->
+  <path d="M170 540 C155 545, 125 555, 100 565 C80 572, 65 575, 60 570 C65 562, 80 555, 100 547 C120 540, 145 535, 160 530 C165 535, 168 538, 170 540 Z" fill="black"/>
+
+  <!-- Right fin/wing -->
+  <path d="M380 420 C400 425, 440 435, 470 450 C490 460, 510 475, 520 490 C525 500, 515 510, 495 515 C470 520, 445 510, 420 498 C400 488, 385 475, 380 460 C378 445, 378 432, 380 420 Z" fill="black"/>
+
+  <!-- Right small thruster -->
+  <path d="M390 530 C405 535, 425 545, 440 555 C455 565, 462 572, 458 578 C450 575, 435 568, 418 558 C400 548, 388 538, 385 530 C387 528, 388 529, 390 530 Z" fill="black"/>
+
+  <!-- Bottom engine/exhaust area -->
+  <path d="M245 565 C255 575, 270 585, 285 585 C300 585, 315 575, 320 565 C310 560, 295 558, 280 558 C265 558, 252 561, 245 565 Z" fill="black"/>
+
+  <!-- Window/cockpit area - white oval -->
+  <ellipse cx="290" cy="175" rx="55" ry="70" fill="white" stroke="black" stroke-width="3"/>
+
+  <!-- Window inner dark -->
+  <ellipse cx="295" cy="175" rx="40" ry="55" fill="black"/>
+
+  <!-- Window highlight -->
+  <ellipse cx="280" cy="158" rx="15" ry="20" fill="white" opacity="0.4"/>
+
+  <!-- Panel/window squares on left side -->
+  <rect x="195" y="330" width="18" height="12" rx="2" fill="black" stroke="white" stroke-width="1.5"/>
+  <rect x="195" y="348" width="18" height="12" rx="2" fill="black" stroke="white" stroke-width="1.5"/>
+  <rect x="195" y="366" width="18" height="12" rx="2" fill="black" stroke="white" stroke-width="1.5"/>
+  <rect x="195" y="384" width="18" height="12" rx="2" fill="black" stroke="white" stroke-width="1.5"/>
+
+  <!-- Sketch lines on rocket body suggesting detail -->
+  <path d="M295 25 C310 35, 355 80, 380 150" stroke="white" stroke-width="1.5" fill="none" opacity="0.5"/>
+  <path d="M305 25 C320 40, 360 90, 385 160" stroke="white" stroke-width="1" fill="none" opacity="0.3"/>
+  <path d="M255 20 C240 40, 210 100, 195 165" stroke="white" stroke-width="1.5" fill="none" opacity="0.5"/>
+
+  <!-- Horizontal band lines suggesting rocket segments -->
+  <path d="M200 240 C230 248, 280 252, 330 248 C360 245, 380 240, 385 238" stroke="white" stroke-width="2" fill="none" opacity="0.6"/>
+  <path d="M195 270 C225 278, 275 282, 325 278 C355 275, 378 270, 383 268" stroke="white" stroke-width="1" fill="none" opacity="0.4"/>
+
+  <!-- Left wing inner highlight -->
+  <path d="M60 492 C80 482, 110 470, 140 462 C155 458, 168 455, 172 452" stroke="white" stroke-width="2" fill="none" opacity="0.5"/>
+
+  <!-- Right wing detail -->
+  <path d="M430 455 C450 460, 470 468, 490 478 C505 486, 515 494, 516 502" stroke="white" stroke-width="2" fill="none" opacity="0.5"/>
+
+  <!-- Nose cone tip -->
+  <path d="M295 12 C305 8, 320 15, 330 28 C320 22, 308 15, 295 12 Z" fill="#555"/>
+
+  <!-- Engine glow area at bottom -->
+  <ellipse cx="280" cy="560" rx="35" ry="12" fill="white" opacity="0.2"/>
+
+  <!-- Additional detail lines on body -->
+  <path d="M230 300 L240 500" stroke="white" stroke-width="1.5" fill="none" opacity="0.4"/>
+  <path d="M350 290 L345 480" stroke="white" stroke-width="1.5" fill="none" opacity="0.4"/>
+
+  <!-- Small highlights suggesting metallic sheen -->
+  <path d="M310 50 C318 70, 340 110, 355 160 C365 200, 368 240, 362 280" stroke="white" stroke-width="3" fill="none" opacity="0.3" stroke-dasharray="8,6"/>
+
+  <!-- Lower body highlight -->
+  <path d="M245 380 C252 400, 258 430, 260 460 C262 490, 260 520, 255 545" stroke="white" stroke-width="2" fill="none" opacity="0.3"/>
+</svg></div>
+    </div>
+    <div class="repro-col">
+      <span class="repro-tag">v2 &mdash; after review</span>
+      <div class="repro-frame"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 541 591" width="541" height="591">
+  <rect width="541" height="591" fill="white"/>
+  
+  <g transform="rotate(-25, 270, 295)">
+    
+    <!-- Main rocket body outline - elongated bullet shape, mostly white interior -->
+    <path d="M270 30 C285 30, 310 55, 325 95 C340 135, 345 185, 343 235 C341 285, 335 335, 325 375 C315 415, 300 450, 288 475 C280 492, 272 500, 265 500 C258 500, 250 492, 242 475 C230 450, 215 415, 205 375 C195 335, 189 285, 187 235 C185 185, 190 135, 205 95 C220 55, 248 30, 265 30 Z" 
+          fill="white" stroke="black" stroke-width="2.5"/>
+    
+    <!-- Nose cone tip accent -->
+    <path d="M267 30 C272 28, 278 30, 282 35 C275 32, 268 31, 267 30 Z" fill="black"/>
+    
+    <!-- Right side shading strokes on upper body -->
+    <path d="M310 60 C318 80, 330 115, 336 155" stroke="black" stroke-width="1.5" fill="none"/>
+    <path d="M316 70 C323 90, 334 125, 339 165" stroke="black" stroke-width="1" fill="none"/>
+    <path d="M320 85 C326 105, 336 140, 340 180" stroke="black" stroke-width="1" fill="none"/>
+    <path d="M323 105 C328 125, 336 158, 339 195" stroke="black" stroke-width="1" fill="none"/>
+    
+    <!-- Left side edge line -->
+    <path d="M215 80 C208 110, 200 155, 198 205" stroke="black" stroke-width="1.5" fill="none"/>
+    <path d="M210 90 C204 118, 197 162, 195 210" stroke="black" stroke-width="1" fill="none"/>
+    
+    <!-- Cross-hatch shading on right side mid-body -->
+    <path d="M315 210 C320 230, 322 260, 320 285" stroke="black" stroke-width="1.2" fill="none"/>
+    <path d="M320 215 C325 238, 326 265, 323 290" stroke="black" stroke-width="1" fill="none"/>
+    <path d="M325 220 C329 245, 330 272, 327 296" stroke="black" stroke-width="1" fill="none"/>
+    
+    <!-- Dark shaded patch right side upper -->
+    <path d="M298 55 C310 58, 330 80, 340 115 C342 130, 342 148, 338 162 C325 140, 315 110, 305 85 C300 72, 298 60, 298 55 Z" 
+          fill="black" opacity="0.85"/>
+    
+    <!-- Dark shaded patch lower right body -->
+    <path d="M310 300 C318 320, 322 350, 318 380 C314 400, 305 420, 295 438 C290 420, 288 400, 290 378 C293 355, 300 328, 310 300 Z"
+          fill="black" opacity="0.8"/>
+    
+    <!-- Center body shadow stripe -->
+    <path d="M275 120 C278 160, 278 210, 275 255 C272 300, 268 340, 265 375" stroke="black" stroke-width="2" fill="none" stroke-dasharray="5,4"/>
+    
+    <!-- Cockpit window - lens/porthole shape -->
+    <ellipse cx="268" cy="185" rx="38" ry="50" fill="white" stroke="black" stroke-width="2"/>
+    <!-- Inner porthole ring -->
+    <ellipse cx="268" cy="185" rx="30" ry="40" fill="white" stroke="black" stroke-width="1.2"/>
+    <!-- Vertical dividing line in cockpit -->
+    <line x1="268" y1="148" x2="268" y2="222" stroke="black" stroke-width="1.5"/>
+    <!-- Horizontal dividing line -->
+    <line x1="238" y1="182" x2="298" y2="182" stroke="black" stroke-width="1"/>
+    <!-- Cockpit shading top right quadrant -->
+    <path d="M270 148 C285 152, 296 165, 298 182 C290 172, 280 160, 270 152 Z" fill="black" opacity="0.7"/>
+    <!-- Cockpit shading bottom right -->
+    <path d="M270 185 C284 188, 296 200, 297 215 C289 208, 280 196, 270 188 Z" fill="black" opacity="0.5"/>
+    <!-- Cockpit highlight left -->
+    <path d="M240 165 C244 158, 252 153, 262 150 C256 158, 248 165, 244 175 Z" fill="white" stroke="none"/>
+    
+    <!-- Horizontal band line below cockpit -->
+    <path d="M200 248 C225 252, 255 254, 280 253 C305 252, 325 248, 338 245" stroke="black" stroke-width="2" fill="none"/>
+    <path d="M202 255 C226 259, 256 261, 281 260 C306 259, 326 255, 337 252" stroke="black" stroke-width="1" fill="none"/>
+    
+    <!-- Panel windows row - sketch linework style -->
+    <rect x="208" y="310" width="14" height="10" rx="1" fill="none" stroke="black" stroke-width="1.5"/>
+    <rect x="208" y="326" width="14" height="10" rx="1" fill="none" stroke="black" stroke-width="1.5"/>
+    <rect x="208" y="342" width="14" height="10" rx="1" fill="none" stroke="black" stroke-width="1.5"/>
+    <rect x="208" y="358" width="14" height="10" rx="1" fill="none" stroke="black" stroke-width="1.5"/>
+    <!-- Panel shading -->
+    <rect x="209" y="311" width="6" height="9" rx="0" fill="black" opacity="0.5"/>
+    <rect x="209" y="327" width="6" height="9" rx="0" fill="black" opacity="0.5"/>
+    <rect x="209" y="343" width="6" height="9" rx="0" fill="black" opacity="0.5"/>
+    <rect x="209" y="359" width="6" height="9" rx="0" fill="black" opacity="0.5"/>
+    
+    <!-- Right side panel detail -->
+    <rect x="308" y="318" width="12" height="9" rx="1" fill="none" stroke="black" stroke-width="1.2"/>
+    <rect x="308" y="333" width="12" height="9" rx="1" fill="none" stroke="black" stroke-width="1.2"/>
+    <rect x="308" y="348" width="12" height="9" rx="1" fill="none" stroke="black" stroke-width="1.2"/>
+    
+    <!-- Cross-hatch below cockpit band -->
+    <path d="M205 270 L210 310" stroke="black" stroke-width="1" fill="none"/>
+    <path d="M213 272 L218 312" stroke="black" stroke-width="1" fill="none" opacity="0.6"/>
+    <path d="M330 268 L325 305" stroke="black" stroke-width="1" fill="none"/>
+    <path d="M322 270 L317 308" stroke="black" stroke-width="1" fill="none" opacity="0.6"/>
+    
+    <!-- Lower body cross-hatch shading center -->
+    <path d="M240 390 L248 430" stroke="black" stroke-width="1.2" fill="none"/>
+    <path d="M250 395 L257 435" stroke="black" stroke-width="1.2" fill="none"/>
+    <path d="M260 396 L266 436" stroke="black" stroke-width="1.2" fill="none"/>
+    <path d="M270 395 L274 433" stroke="black" stroke-width="1.2" fill="none"/>
+    <path d="M280 393 L282 428" stroke="black" stroke-width="1.2" fill="none"/>
+    <path d="M290 388 L290 422" stroke="black" stroke-width="1.2" fill="none"/>
+    
+    <!-- Left main fin - swept back angular blade -->
+    <path d="M205 400 C190 415, 155 445, 115 470 C90 485, 65 495, 50 498 C55 488, 75 475, 100 462 C125 448, 158 432, 178 420 C190 412, 200 405, 205 400 Z" 
+          fill="white" stroke="black" stroke-width="2"/>
+    <!-- Left fin inner lines -->
+    <path d="M190 415 C170 428, 140 445, 110 462 C88 475, 68 485, 58 492" stroke="black" stroke-width="1.2" fill="none"/>
+    <path d="M178 422 C158 435, 128 452, 98 467" stroke="black" stroke-width="1" fill="none"/>
+    <!-- Left fin shading -->
+    <path d="M200 405 C185 418, 162 432, 138 446 C158 436, 180 420, 200 408 Z" fill="black" opacity="0.3"/>
+    
+    <!-- Left small rear thruster pod -->
+    <path d="M195 478 C178 482, 148 492, 118 502 C100 508, 82 512, 72 510 C76 503, 92 497, 112 490 C135 483, 162 478, 182 474 Z"
+          fill="white" stroke="black" stroke-width="1.8"/>
+    <path d="M185 480 C165 486, 135 493, 108 500" stroke="black" stroke-width="1" fill="none"/>
+    <!-- Thruster tip roundel -->
+    <ellipse cx="78" cy="509" rx="12" ry="7" fill="white" stroke="black" stroke-width="1.5"/>
+    <path d="M67 508 C70 504, 76 502, 82 504" stroke="black" stroke-width="1" fill="none"/>
+    
+    <!-- Right main fin - swept back angular blade -->
+    <path d="M325 390 C338 400, 368 418, 398 435 C422 448, 448 458, 465 462 C460 452, 440 440, 416 428 C392 415, 360 402, 340 392 Z"
+          fill="white" stroke="black" stroke-width="2"/>
+    <!-- Right fin inner lines -->
+    <path d="M335 397 C358 410, 388 425, 418 440 C440 452, 455 460, 462 466" stroke="black" stroke-width="1.2" fill="none"/>
+    <path d="M342 394 C365 408, 394 424, 422 438" stroke="black" stroke-width="1" fill="none"/>
+    <!-- Right fin shading edge -->
+    <path d="M460 462 C448 458, 432 448, 415 440 C435 444, 450 454, 462 463 Z" fill="black" opacity="0.3"/>
+    
+    <!-- Right small rear thruster pod -->
+    <path d="M332 462 C348 466, 370 474, 392 482 C408 488, 422 492, 432 490 C428 483, 414 477, 398 471 C378 464, 356 460, 340 458 Z"
+          fill="white" stroke="black" stroke-width="1.8"/>
+    <path d="M342 463 C362 468, 385 476, 408 484" stroke="black" stroke-width="1" fill="none"/>
+    <!-- Right thruster tip roundel -->
+    <ellipse cx="428" cy="489" rx="10" ry="6" fill="white" stroke="black" stroke-width="1.5"/>
+    <path d="M419 490 C422 486, 428 484, 434 487" stroke="black" stroke-width="1" fill="none"/>
+    
+    <!-- Bottom engine nozzle area -->
+    <path d="M242 490 C248 496, 258 502, 267 504 C276 506, 286 503, 293 497 C285 495, 276 494, 267 493 C258 492, 249 491, 242 490 Z"
+          fill="black"/>
+    <!-- Nozzle outline -->
+    <path d="M238 488 C245 495, 257 504, 268 506 C279 508, 292 502, 298 494" stroke="black" stroke-width="1.5" fill="none"/>
+    
+    <!-- Rocket body lower edge shading stripes -->
+    <path d="M225 435 C232 448, 240 462, 245 475" stroke="black" stroke-width="1.5" fill="none"/>
+    <path d="M235 440 C242 453, 249 466, 253 478" stroke="black" stroke-width="1.2" fill="none"/>
+    <path d="M302 432 C296 446, 290 460, 286 474" stroke="black" stroke-width="1.5" fill="none"/>
+    <path d="M293 436 C287 450, 282 463, 279 476" stroke="black" stroke-width="1.2" fill="none"/>
+    
+    <!-- Additional sketch lines on nose -->
+    <path d="M280 42 C292 60, 308 90, 318 125" stroke="black" stroke-width="1" fill="none" opacity="0.7"/>
+    <path d="M287 38 C298 58, 313 88, 322 123" stroke="black" stroke-width="1" fill="none" opacity="0.5"/>
+    
+    <!-- Dashed highlight line on left body edge -->
+    <path d="M228 75 C218 108, 210 150, 206 200 C202 250, 203 300, 208 345" stroke="black" stroke-width="1" fill="none" stroke-dasharray="4,5" opacity="0.6"/>
+    
+  </g>
+</svg></div>
+    </div>
+  </div>
+  <details class="repro-critique">
+    <summary>Review feedback given between v1 and v2</summary>
+    <p>1. BIGGEST ISSUE -- orientation: the original rocket is tilted dramatically, roughly 20-30 degrees off vertical, nose pointing up and to the right, like it's captured mid-flight at an angle. The reproduction is upright/vertical. Redraw the whole composition rotated to match that diagonal tilt.<br>2. Overall rendering style: the original is a black-line engraving/sketch on white -- thin-to-medium black strokes and cross-hatching, with a LOT of white showing through the body. The reproduction instead fills almost the entire body as one solid black silhouette with a few thin white lines on top, making it much heavier and darker than the source. Rework it to be predominantly white/line-based with black used for strokes and select shaded patches, not as a dominant fill.<br>3. Cockpit window: in the original it's an integrated lens/porthole shape with a visible internal dividing line, drawn as part of the sketch -- not a thick white ring around a dark oval. Make it read as a technical viewport, not a cartoon eye: thinner outline, more lens-shaped, less circular.<br>4. Fins: the original's fins are thin, swept-back, angular blades trailing behind the body in the direction of the tilt -- not the current chunky, symmetric, almond/leaf-shaped black blobs. Redraw them as thin angular trailing blades, oriented consistently with the new tilted pose.<br>5. Panel/window details: keep the small rectangular panel row, but render it as light sketch linework integrated into the body, not as a boxed icon-like cluster that reads as UI rather than illustration.<br>6. Reduce the amount of solid black fill overall in favor of outline and cross-hatch strokes, to better match the "engraving" impression of the source image.</p>
+  </details>
+</div>
+
+</body></html>

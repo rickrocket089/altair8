@@ -56,6 +56,19 @@ TEAM = [
         ),
     },
     {
+        "name": "Priya Raghunathan",
+        "role": "Concept Designer",
+        "origin": "London, UK",
+        "blurb": "Generates and specifies rival concepts for the communication layer.",
+        "photo": "priya.png",
+        "portrait_prompt": (
+            "Professional corporate headshot photo of a 41-year-old British Indian "
+            "woman, thoughtful confident expression, dark blazer, neutral soft-grey "
+            "studio background, natural lighting, shot on a DSLR with an 85mm "
+            "portrait lens, shallow depth of field, photorealistic."
+        ),
+    },
+    {
         "name": "Dr. Ingrid Solberg",
         "role": "Reviewer",
         "origin": "Bergen, Norway",
