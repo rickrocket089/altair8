@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sprint 10 — Six Concepts for a Communication Layer | Altair8 Labs</title>
+<meta name="description" content="Altair8 Sprint 10: six rival concepts for an agent-generated communication layer, generated blind, then reviewed against prior art. None survived verification unqualified.">
+<meta name="robots" content="index">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 28'%3E%3Cpath fill='%2320795b' d='M11,0.5 Q13.027,8.973 21.5,11 Q13.027,13.027 11,21.5 Q8.973,13.027 0.5,11 Q8.973,8.973 11,0.5 Z'/%3E%3Cpath fill='%23a16a17' d='M23.5,12.5 Q25.197,18.303 31,20 Q25.197,21.697 23.5,27.5 Q21.803,21.697 16,20 Q21.803,18.303 23.5,12.5 Z'/%3E%3C/svg%3E">
+<style>
+  :root {
+    --cream:      #ffffff;
+    --cream-dark: #eef0ee;
+    --ink:        #14181a;
+    --ink-mid:    #3c4547;
+    --ink-light:  #6d7679;
+    --rule:       #dadfde;
+    --accent:     #20795b;
+    --accent2:    #a16a17;
+    --steel:      #4a6fa5;
+    --accent-tint:#eaf5ef;
+    --accent2-tint:#f7efe2;
+    --steel-tint: #eaf0f7;
+    --max:        740px;
+    --wide:       1000px;
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background-color: var(--cream);
+    color: var(--ink);
+    font-family: 'Iowan Old Style', 'Palatino Linotype', Palatino, Georgia, serif;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; }
+  .container--wide { max-width: var(--wide); margin: 0 auto; padding: 0 2rem; }
+
+  /* ─── Nav ─── */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background-color: var(--cream);
+    border-bottom: 1px solid var(--rule);
+    padding: 1rem 2rem;
+  }
+  .nav-inner {
+    max-width: var(--wide); margin: 0 auto;
+    display: flex; align-items: baseline; justify-content: space-between; gap: 1rem;
+    flex-wrap: wrap;
+  }
+  .nav-wordmark {
+    display: inline-flex; align-items: center; gap: 0.48em;
+    font-size: 0.95rem; letter-spacing: 0.16em; text-transform: uppercase;
+    font-weight: 700; text-decoration: none; color: var(--ink);
+  }
+  .nav-wordmark .logo-mark { width: auto; height: 1.5em; flex-shrink: 0; }
+  .nav-wordmark .logo-mark .star-a { fill: var(--accent); }
+  .nav-wordmark .logo-mark .star-b { fill: var(--accent2); }
+  .nav-back {
+    font-size: 0.8rem; letter-spacing: 0.06em; color: var(--ink-light);
+    text-decoration: none; border-bottom: 1px solid var(--rule);
+  }
+  .nav-back:hover { color: var(--accent); border-color: var(--accent); }
+
+  /* ─── Header ─── */
+  .report-header { padding: 3.5rem 0 2.5rem; }
+  .breadcrumb {
+    font-size: 0.72rem; letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--accent); margin-bottom: 1rem; display: block;
+  }
+  .breadcrumb .sep { color: var(--ink-light); margin: 0 0.5em; letter-spacing: 0; }
+  h1 {
+    font-size: clamp(1.9rem, 4vw, 2.7rem);
+    line-height: 1.2; margin: 0 0 1rem; letter-spacing: -0.01em; font-weight: 500;
+  }
+  .report-intro { color: var(--ink-mid); font-size: 1.05rem; max-width: 680px; margin: 0 0 0.9rem; }
+  .report-meta { font-size: 0.82rem; color: var(--ink-light); }
+  .report-meta .status { color: var(--accent2); font-weight: 600; }
+
+  h2.section-head {
+    font-size: 1.35rem; font-weight: 500; letter-spacing: -0.01em;
+    margin: 3.5rem 0 0.4rem; padding-top: 2rem; border-top: 1px solid var(--rule);
+  }
+  .section-sub { color: var(--ink-light); font-size: 0.9rem; margin: 0 0 1.8rem; max-width: 680px; }
+
+  /* ─── Insights ─── */
+  .insights {
+    background: var(--cream-dark); border-radius: 6px;
+    padding: 2rem 2.2rem 2.2rem; margin: 0.5rem 0 1rem;
+  }
+  .insights .section-label {
+    font-size: 0.72rem; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--accent); font-weight: 700; margin: 0 0 1.2rem; display: block;
+  }
+  .insight-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 1.1rem; }
+  .insight-list li { display: grid; grid-template-columns: 1.6rem 1fr; gap: 0.9rem; align-items: start; }
+  .insight-num { font-size: 0.85rem; font-weight: 700; color: var(--accent); font-variant-numeric: tabular-nums; }
+  .insight-list p { margin: 0; font-size: 0.98rem; color: var(--ink-mid); }
+  .insight-list strong { color: var(--ink); }
+
+  /* ─── Scan table ─── */
+  .table-scroll { overflow-x: auto; margin: 0 0 1rem; border: 1px solid var(--rule); border-radius: 4px; }
+  table.scan { border-collapse: collapse; width: 100%; min-width: 720px; font-size: 0.88rem; }
+  table.scan th, table.scan td {
+    text-align: left; padding: 0.75rem 0.9rem; border-bottom: 1px solid var(--rule);
+    vertical-align: top; color: var(--ink-mid);
+  }
+  table.scan th {
+    font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--ink-light); font-weight: 700; background: var(--cream-dark);
+    border-bottom: 1px solid var(--rule);
+  }
+  table.scan tr:last-child td { border-bottom: none; }
+  table.scan td.name { color: var(--ink); font-weight: 600; white-space: nowrap; }
+  .scroll-hint { font-size: 0.78rem; color: var(--ink-light); margin: 0 0 3rem; }
+
+  .cat { font-size: 0.7rem; letter-spacing: 0.06em; font-weight: 700; padding: 0.15em 0.5em; border-radius: 3px; white-space: nowrap; }
+  .cat-b { background: var(--accent2-tint); color: var(--accent2); }
+  .cat-c { background: var(--steel-tint); color: var(--steel); }
+  .yes { color: var(--accent); font-weight: 600; }
+  .no  { color: var(--accent2); font-weight: 600; }
+  .maybe { color: var(--ink-light); font-style: italic; }
+
+  /* ─── Concept cards ─── */
+  .concept {
+    border: 1px solid var(--rule); border-left: 3px solid var(--accent);
+    border-radius: 4px; padding: 1.6rem 1.8rem; margin: 0 0 1.5rem;
+  }
+  .concept.is-c { border-left-color: var(--steel); }
+  .concept h3 { margin: 0 0 0.2rem; font-size: 1.15rem; font-weight: 600; }
+  .concept .derives {
+    font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--ink-light); margin: 0 0 1rem; display: block;
+  }
+  .concept p { margin: 0 0 0.9rem; font-size: 0.95rem; color: var(--ink-mid); }
+  .concept dl { margin: 1rem 0 0; display: grid; grid-template-columns: 9.5rem 1fr; gap: 0.55rem 1rem; font-size: 0.9rem; }
+  .concept dt {
+    font-size: 0.68rem; letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--ink-light); font-weight: 700; padding-top: 0.22em;
+  }
+  .concept dd { margin: 0; color: var(--ink-mid); }
+  @media (max-width: 620px) { .concept dl { grid-template-columns: 1fr; gap: 0.2rem 0; } .concept dd { margin-bottom: 0.7rem; } }
+
+  /* ─── Sophie marks ─── */
+  .sophie {
+    display: block; margin: 0.9rem 0 0; padding: 0.7rem 0 0.7rem 0.95rem;
+    border-left: 2px solid var(--accent2); background: transparent;
+    font-size: 0.9rem; color: var(--ink-mid);
+  }
+  .sophie .tag {
+    display: block; font-size: 0.64rem; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--accent2); font-weight: 700; margin-bottom: 0.25rem;
+  }
+
+  /* ─── Axes ─── */
+  .axis { margin: 0 0 1.8rem; }
+  .axis h4 { margin: 0 0 0.4rem; font-size: 1rem; font-weight: 600; }
+  .axis p { margin: 0 0 0.6rem; font-size: 0.95rem; color: var(--ink-mid); }
+
+  /* ─── Caveat block ─── */
+  .caveat {
+    border: 1px solid var(--rule); border-left: 3px solid var(--accent2);
+    background: var(--accent2-tint); border-radius: 4px;
+    padding: 1.6rem 1.8rem; margin: 0 0 1.5rem;
+  }
+  .caveat .label {
+    font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--accent2); font-weight: 700; margin-bottom: 0.6rem; display: block;
+  }
+  .caveat p { margin: 0 0 0.8rem; font-size: 0.95rem; color: var(--ink-mid); }
+  .caveat p:last-child { margin-bottom: 0; }
+  .caveat strong { color: var(--ink); }
+
+  .method-note {
+    border: 1px solid var(--rule); border-radius: 4px;
+    padding: 1.3rem 1.6rem; margin: 0 0 3rem; background: var(--cream-dark);
+    font-size: 0.9rem; color: var(--ink-mid);
+  }
+  .method-note .label {
+    font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--ink-light); font-weight: 700; margin-bottom: 0.5rem; display: block;
+  }
+  .method-note p { margin: 0 0 0.7rem; }
+  .method-note p:last-child { margin-bottom: 0; }
+
+  .report-footer {
+    margin-top: 3rem; padding: 2rem 0 4rem; border-top: 1px solid var(--rule);
+    font-size: 0.9rem; color: var(--ink-light);
+  }
+  .report-footer p { margin: 0 0 0.9rem; max-width: 700px; }
+  .footer-links { margin-top: 1.5rem; font-size: 0.85rem; }
+  .footer-links a { color: var(--accent); text-decoration: none; border-bottom: 1px solid var(--rule); }
+  .footer-links a:hover { border-color: var(--accent); }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a class="nav-wordmark" href="../index.html">
+      <svg class="logo-mark" viewBox="0 0 32 28" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path class="star-a" d="M11,0.5 Q13.027,8.973 21.5,11 Q13.027,13.027 11,21.5 Q8.973,13.027 0.5,11 Q8.973,8.973 11,0.5 Z"/>
+        <path class="star-b" d="M23.5,12.5 Q25.197,18.303 31,20 Q25.197,21.697 23.5,27.5 Q21.803,21.697 16,20 Q21.803,18.303 23.5,12.5 Z"/>
+      </svg>
+      Altair8 Labs
+    </a>
+    <a class="nav-back" href="../index.html#progress">&larr; Back to Progress</a>
+  </div>
+</nav>
+
+<div class="container--wide">
+
+  <header class="report-header">
+    <span class="breadcrumb">Design &amp; Development <span class="sep">/</span> Sprint 10</span>
+    <h1>Six rival concepts for a communication layer — and what verification did to them</h1>
+    <p class="report-intro">
+      Ten sprints in, this team had never designed alternatives. It had designed
+      implementations — one architecture, reviewed before it was built. Sprint 10 asked a
+      different question: what else could the communication layer be? Six concepts were
+      generated, then put through a prior-art check that none of them survived unqualified.
+    </p>
+    <p class="report-meta">
+      Sprint open — <span class="status">no direction chosen yet.</span>
+      Concepts by Priya Raghunathan · verification by Kenji Ochiai ·
+      buildability by Mateo Fittipaldi · review gates by Dr. Ingrid Solberg.
+    </p>
+  </header>
+
+  <div class="insights">
+    <span class="section-label">What this sprint found</span>
+    <ul class="insight-list">
+      <li>
+        <span class="insight-num">01</span>
+        <p><strong>No concept survived verification unqualified.</strong> Every one of the six
+        carries a prior-art qualification, a retrieval-failure caveat, or both. The comparison
+        below reads more decisively than the evidence under it, and that gap is the most
+        important thing on this page.</p>
+      </li>
+      <li>
+        <span class="insight-num">02</span>
+        <p><strong>Five concepts were generated blind, and the reading list added exactly one.</strong>
+        The concept designer worked without any list of existing approaches — deliberately, and
+        verified by inspecting the actual prompt she received. Shown the withheld material
+        afterwards, she added one concept, revised one, and withdrew none.</p>
+      </li>
+      <li>
+        <span class="insight-num">03</span>
+        <p><strong>None of the five blind concepts is a new visual form.</strong> All are
+        architectures for what should <em>drive</em> form selection. The previous sprint,
+        generating from a survey of adjacent fields, produced only new visual forms. Same
+        problem, different generative input, categorically different output.</p>
+      </li>
+      <li>
+        <span class="insight-num">04</span>
+        <p><strong>A 1986 system contradicted one concept outright.</strong> Mackinlay's APT
+        derives visual form from a formal analysis of data structure — which is precisely what
+        Concept 3 claimed was not standard practice. Forty years of visualization-recommendation
+        research follows it.</p>
+      </li>
+      <li>
+        <span class="insight-num">05</span>
+        <p><strong>Three of five falsification tests cannot be run.</strong> Not because the
+        tests are bad — because they need human readers, and this team has no way to recruit
+        them. That constraint decided more than any argument in the sprint did.</p>
+      </li>
+    </ul>
+  </div>
+
+  <div class="method-note">
+    <span class="label">How to read this page</span>
+    <p>Passages marked <strong>Team lead's own observation</strong> are exactly that: synthesis
+    written by the team lead, not findings any of the four passes produced. The distinction is
+    enforced rather than promised — the reviewer checks the marking against the source passes
+    and rejected the first version of this comparison for seven unmarked sentences and one
+    dropped caveat.</p>
+    <p>Every novelty claim below sits next to the verdict on it. That is deliberate: the
+    researcher's condition for this material being shown at all was that no concept be
+    presented as novel ahead of the evidence.</p>
+  </div>
+
+  <h2 class="section-head">The six at a glance</h2>
+  <p class="section-sub">Category B: viable, but the novelty claim must be restated before it is
+  shown to anyone. Category C: cannot be presented in current form — either contradicted by
+  retrieved evidence, or resting on a prior-art check this team could not perform.</p>
+
+  <div class="table-scroll">
+    <table class="scan">
+      <thead>
+        <tr>
+          <th>Concept</th>
+          <th>Form derives from</th>
+          <th>Goal region</th>
+          <th>Verdict</th>
+          <th>Test runnable?</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="name">C1 · Commitment Audit</td>
+          <td>The agent's audit of its own claims</td>
+          <td>Persuade a sceptical decision-maker</td>
+          <td>Partially novel <span class="cat cat-b">B</span></td>
+          <td class="yes">Yes</td>
+        </tr>
+        <tr>
+          <td class="name">C2 · Audience-in-the-Loop</td>
+          <td>An explicit, contestable model of the reader</td>
+          <td>Persuade / align, known audience</td>
+          <td>Narrowly novel <span class="cat cat-b">B</span></td>
+          <td class="maybe">Cannot judge</td>
+        </tr>
+        <tr>
+          <td class="name">C3 · Dimensionality-First</td>
+          <td>The information's intrinsic structure</td>
+          <td>Inform a working team</td>
+          <td>Not novel as stated <span class="cat cat-c">C</span></td>
+          <td class="yes">Yes</td>
+        </tr>
+        <tr>
+          <td class="name">C4 · Decision-Surface</td>
+          <td>The geometry of the reader's decision</td>
+          <td>Persuade-to-decide only</td>
+          <td>Narrowly novel <span class="cat cat-c">C</span></td>
+          <td class="no">No</td>
+        </tr>
+        <tr>
+          <td class="name">C5 · Relational Register</td>
+          <td>The sender–receiver relationship</td>
+          <td>All four, strongest at high stakes</td>
+          <td>Partially novel <span class="cat cat-b">B</span></td>
+          <td class="no">No</td>
+        </tr>
+        <tr>
+          <td class="name">C6 · Diegetic Embedding</td>
+          <td>A world model of the domain itself</td>
+          <td>Inform / align, familiar domain</td>
+          <td>No prior art found <span class="cat cat-c">C</span></td>
+          <td class="maybe">Not assessed</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="scroll-hint">Scroll the table sideways on a narrow screen.</p>
+
+  <h2 class="section-head">The concepts</h2>
+  <p class="section-sub">Each with the verdict that landed on it, and what building it first
+  would commit the team to.</p>
+
+  <div class="concept">
+    <h3>C1 · The Commitment Audit</h3>
+    <span class="derives">Form derives from the agent's epistemic self-audit</span>
+    <p>An argument map in which the agent first classifies every claim it is about to make as
+    evidence, inference, assumption or assertion, scores its own confidence, and then renders
+    the argument so that <em>visual weight encodes confidence rather than rhetorical emphasis</em>.
+    The default reading path is the minimum-spanning argument — the fewest claims that establish
+    the conclusion. A sceptical reader can pull any thread and see what it rests on.</p>
+    <dl>
+      <dt>Verdict</dt>
+      <dd>Partially novel. PaperTrail (claim-evidence provenance mapping) and Epistemic Blinding
+      (inference-time epistemic auditing) are prior art. The claim that survives is narrower:
+      continuous confidence scoring across four categories, visual weight from confidence, and
+      the minimum-spanning path as a reading scaffold.</dd>
+      <dt>Biggest risk</dt>
+      <dd>The interactive filter layer assumes an analytical reading literacy the concept cannot
+      guarantee — a tension with the team's principle that no user should need a tool-specific skill.</dd>
+      <dt>Falsification</dt>
+      <dd>Runnable in one sprint. Whether readers can locate the argument's weakest claim, against
+      a conventional document control.</dd>
+    </dl>
+    <span class="sophie"><span class="tag">Team lead's own observation</span>
+    This is the concept most tightly coupled to the failures that motivated the sprint — a
+    generated chart that passed every structural check while containing data about an entirely
+    different subject. If that is the sharpest pain point, this is the most targeted response to it.</span>
+  </div>
+
+  <div class="concept">
+    <h3>C2 · Audience-in-the-Loop Simulation</h3>
+    <span class="derives">Form derives from an explicit model of the reader</span>
+    <p>The agent builds a discrete, inspectable model of the audience — what they already know,
+    what they will question, what they are being asked to do — <em>before</em> selecting any form,
+    and ships that model with the artifact as a visible trace the reader can see and the author
+    can contest in plain language. Correcting the audience model changes the form, not just the wording.</p>
+    <dl>
+      <dt>Verdict</dt>
+      <dd>Narrowly novel. PosterMate and Proxona (both 2025) are prior art for LLM audience-persona
+      simulation as an <em>author-facing</em> design tool. What is not described in retrieved work:
+      the trace as a <em>reader-facing</em> component, and the audience model as structurally prior
+      to form selection rather than feedback on a form already chosen.</dd>
+      <dt>Biggest risk</dt>
+      <dd>A structural confabulation trap, named during verification: the simulation is most useful
+      when the human lacks ground truth about the audience, and the human can only correct it when
+      they have ground truth.</dd>
+      <dt>Falsification</dt>
+      <dd>Unjudgeable — depends on whether a corpus of real audience responses exists to check
+      the simulation against.</dd>
+    </dl>
+    <span class="sophie"><span class="tag">Team lead's own observation</span>
+    This is the only concept that puts the agent's reasoning about the reader into the reader's
+    hands. That is a structurally different design move from the other five, and the closest to
+    the team's own finding that the reader–artifact relationship is the real design space.</span>
+  </div>
+
+  <div class="concept is-c">
+    <h3>C3 · Dimensionality-First Rendering</h3>
+    <span class="derives">Form derives from the information's intrinsic structure</span>
+    <p>No chart-type selection at all. The agent characterises how many genuinely independent axes
+    the content has and how they relate, then assembles a representation from composable spatial
+    primitives — position, scale, proximity, containment, sequence, path. The reader navigates a
+    space whose geometry reflects the information's actual structure.</p>
+    <dl>
+      <dt>Verdict</dt>
+      <dd><strong>Not novel as stated.</strong> Mackinlay's APT (1986) was retrieved as a primary
+      document. Its pipeline — characterise data type and relations, apply expressiveness and
+      effectiveness criteria, derive primitive selection, compose output — is this concept's
+      pipeline. The broader claim that the whole grammar-and-recommendation tradition forecloses
+      the concept rests partly on recollection: Bertin and Munzner were never retrieved as primary
+      sources, and the researcher flagged his lower confidence there. The APT contradiction itself
+      is firm.</dd>
+      <dt>Possible recovery</dt>
+      <dd>Reframe around communication rather than analysis — selecting primitives to achieve a
+      communicative goal for a specific audience, not to express data relationships accurately for
+      an analyst. APT's effectiveness criteria are perceptual, not communicative.</dd>
+      <dt>Falsification</dt>
+      <dd>Runnable — but the constrained prototype risks reintroducing chart-type conventions
+      through the back door if the primitive set is too small.</dd>
+    </dl>
+    <span class="sophie"><span class="tag">Team lead's own observation</span>
+    Building this before resolving the APT question would produce a prototype whose intellectual
+    positioning is unclear. That is a research-validity risk, not a technical one — a different
+    category of problem from every other concept here.</span>
+  </div>
+
+  <div class="concept is-c">
+    <h3>C4 · Decision-Surface Rendering</h3>
+    <span class="derives">Form derives from the decision the reader must make</span>
+    <p>The artifact's geometry comes from decomposing the decision itself: the option space, the
+    criteria that distinguish the options, how this audience weighs them, and where the evidence
+    points. Options are positioned in a criteria space, the recommendation is marked, and the
+    reader can drag criteria weights and watch whether the recommendation moves — making its
+    robustness visible rather than asserted.</p>
+    <dl>
+      <dt>Verdict</dt>
+      <dd>Narrowly novel, but not presentable as written. NL2INTERFACE covers natural-language-to-interactive-visualization
+      generation; the multi-criteria decision literature covers the computational operations. A
+      viable narrower claim exists — the communicative, persuasion-framed decision artifact as
+      distinct from an analytical tool — but the concept does not currently make that its claim.</dd>
+      <dt>Biggest risk</dt>
+      <dd>Narrow by design: it explicitly does not serve inform, align or report.</dd>
+      <dt>Falsification</dt>
+      <dd>Not runnable in one sprint. Expert-rated decision quality across two participant pools
+      cannot be recruited, run and scored in the time available.</dd>
+    </dl>
+    <p style="margin-top:1rem;">Its own falsification test is the sharpest in the set: if the
+    decision-surface group reports higher <em>confidence</em> without higher decision
+    <em>quality</em>, the concept is actively harmful — worse than a conventional format, not better.</p>
+  </div>
+
+  <div class="concept">
+    <h3>C5 · Relational Register Adaptation</h3>
+    <span class="derives">Form derives from the sender–receiver relationship</span>
+    <p>The agent maps the relationship along four axes — authority direction, expertise direction,
+    trust baseline, and what it would take this audience to act — and generates the artifact's
+    rhetorical structure from that map: what must be established before the main claim, what can
+    simply be asserted, what the closing move is. The same content is structurally reorganised,
+    not restyled, for a junior-to-senior message versus a message between peers.</p>
+    <dl>
+      <dt>Verdict</dt>
+      <dd>Partially novel. Computational register synthesis is a documented field. What is not
+      described in retrieved literature: the four-axis map as an explicit, correctable intermediate
+      artifact that is structurally prior to rhetorical organisation. The politeness-theory
+      computational literature was not reached in either retrieval round, so this remains unconfirmed.</dd>
+      <dt>Biggest risk</dt>
+      <dd>The concept is only as good as the human's self-knowledge about their own social position.
+      A miscalibrated relational map produces a confidently wrong artifact.</dd>
+      <dt>Falsification</dt>
+      <dd>Not runnable in one sprint — the 48-hour action-rate window alone consumes two days
+      before recruitment even begins.</dd>
+    </dl>
+    <span class="sophie"><span class="tag">Team lead's own observation</span>
+    This is the only concept whose primary failure mode is invisible from inside the system. The
+    artifact produced by a wrong relational map looks exactly correct. Its designer identified this
+    herself and named it as the reason she would bet against her own concept — and noted that her
+    falsification test cannot reach that failure.</span>
+  </div>
+
+  <div class="concept is-c">
+    <h3>C6 · Diegetic Data Embedding</h3>
+    <span class="derives">Form derives from a world model of the domain</span>
+    <p>Data is not displayed <em>about</em> a subject; it is encoded <em>into</em> a depiction of
+    the subject itself. Route thickness carries cost, a warehouse's visual pressure carries backlog.
+    There is no chart panel beside the description — the depiction and the data are inseparable.
+    Borrowed from game interfaces, where a fuel gauge is part of the world rather than a readout
+    next to it.</p>
+    <dl>
+      <dt>Verdict</dt>
+      <dd><strong>No prior art found — and that is a retrieval failure, not a finding.</strong> Two
+      rounds never reached the diegetic display literature, the Isotype tradition, or data
+      journalism practice. Precedents are known to exist in all three. The agent-generative
+      mechanism for arbitrary domains has no retrieved analog, but that cannot be claimed as
+      novelty on this evidence.</dd>
+      <dt>Biggest risk</dt>
+      <dd>The world model must be recognisable to the audience. If it is not, the artifact is not
+      confusing — it is simply irrelevant. Constructing that model for an arbitrary business domain
+      is the hardest generation problem in the set.</dd>
+      <dt>Provenance</dt>
+      <dd>The only concept the designer did not find blind. It came from the previous sprint's
+      survey of adjacent fields, and she said so plainly rather than absorbing it as her own.</dd>
+    </dl>
+    <span class="sophie"><span class="tag">Team lead's own observation</span>
+    Because C6 was the one concept that required outside material to surface, it sits furthest from
+    the failure-data reasoning that produced the other five. Whether that distance is a strength or
+    a weakness is not something this sprint established.</span>
+  </div>
+
+  <h2 class="section-head">Where they genuinely differ</h2>
+  <p class="section-sub">Not six variations on one idea. Six different diagnoses of why current
+  systems fail.</p>
+
+  <div class="axis">
+    <h4>What the agent reasons about before generating anything</h4>
+    <p>Each concept puts a different computation ahead of form selection: the agent's audit of its
+    own claims (C1), its prediction of the reader (C2), the information's dimensional structure (C3),
+    the decision the reader faces (C4), the social relationship (C5), or the domain itself (C6).</p>
+    <span class="sophie"><span class="tag">Team lead's own observation</span>
+    Choosing between these is not primarily a technical choice. It is a choice about which variable
+    is most underweighted in current AI communication systems — which means it is a choice of
+    diagnosis, not just architecture.</span>
+  </div>
+
+  <div class="axis">
+    <h4>What the human actually controls</h4>
+    <p>Every concept routes human control through natural language, but the language targets
+    different points in the pipeline: a confidence threshold (C1), the audience model (C2), a
+    dimensionality reduction (C3), criteria weights (C4), relational parameters (C5), the world
+    model or its data mapping (C6).</p>
+    <span class="sophie"><span class="tag">Team lead's own observation</span>
+    These imply different assumptions about what the human knows well enough to correct. Someone
+    who does not know their audience cannot improve C2; someone who misreads their own social
+    position cannot improve C5.</span>
+  </div>
+
+  <div class="axis">
+    <h4>How exposed each is to prior art</h4>
+    <p>C1, C2 and C5 need their novelty claims restated and can then proceed. C3 and C4 are
+    contradicted by retrieved work and cannot be presented as written. C6 is unresolved for the
+    opposite reason — the search never reached the field.</p>
+    <span class="sophie"><span class="tag">Team lead's own observation</span>
+    C3 and C6 are both blocked, but recovering them means different work. C3 needs an argument:
+    what is different from APT. C6 needs a search this team currently cannot run.</span>
+  </div>
+
+  <h2 class="section-head">What this sprint did not establish</h2>
+  <p class="section-sub">The section that constrains how decisively everything above should be read.</p>
+
+  <div class="caveat">
+    <span class="label">Read the table against this</span>
+    <p><strong>No concept reached the researcher's Category A.</strong> The verdicts rest on two
+    retrieval rounds totalling roughly 835 results at a 93.5% noise rate. They are best assessments,
+    not confirmations — and the researcher said so himself before anyone asked, declaring his own
+    first round inadequate for four of the six concepts.</p>
+    <p><strong>The prior-art capability has a blind spot exactly where the question lives.</strong>
+    The relevant literature is in ACM venues — CHI, UIST, DIS — in design history, and in data
+    journalism practice. The team's four databases reach those poorly, and the ACM library has no
+    open API available to it. This did not become visible until the search was actually run.</p>
+    <p><strong>Three of five falsification tests cannot be run at all.</strong> Not for lack of
+    design — they need human readers, and this team has one, who is also its founder and therefore
+    the least blind rater available. The same wall has now deferred a separate validation twice.</p>
+    <p><strong>Two concepts still carry unresolved retrieval gaps</strong> — the politeness-theory
+    computational literature for C5, and the older natural-language-generation planning literature
+    for C2, neither of which was reached as primary sources.</p>
+  </div>
+
+  <footer class="report-footer">
+    <p>The concept designer joined this team the day before this sprint ran. Her first act was to
+    refuse one of her own inputs: she declined to derive from the team's stated mission on the
+    grounds that <em>"aspirations generate concepts that serve the team's excitement rather than a
+    real problem,"</em> and worked from the documented failures instead. Five of the six concepts
+    came out of that decision.</p>
+    <p>The sixth did not, and she said so: <em>"I was looking at what the agent was doing wrong; I
+    was not looking at what the chart form itself was doing wrong."</em> That sentence is the most
+    useful thing the sprint produced about the limits of its own method.</p>
+    <p>Sprint 10 remains open. No direction has been chosen, and this page exists so that the
+    choice can be made against the evidence rather than against the enthusiasm.</p>
+    <div class="footer-links">
+      <a href="../index.html#progress">&larr; All sprints</a>
+    </div>
+  </footer>
+
+</div>
+</body>
+</html>
