@@ -41,7 +41,3 @@ workspace/workfiles/*.pdf
 config/certs/*
 !config/certs/.gitkeep
 !config/certs/README.md
-
-# Full-text PDFs: publisher copies, large, and not ours to redistribute.
-# The extracted text and the Chroma index are what the agents actually use.
-workspace/papers/*.pdf
