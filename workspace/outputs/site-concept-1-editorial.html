@@ -1404,7 +1404,7 @@
   <div class="container" style="max-width: 1140px;">
     <div class="progress-stats" aria-label="Key numbers" style="margin-bottom: 0; padding-bottom: 0; border-bottom: none; justify-content: center; text-align: center; flex-wrap: nowrap; gap: 4.5rem;">
       <div class="stat" style="align-items: center;">
-        <span class="stat-number">10</span>
+        <span class="stat-number">11</span>
         <span class="stat-label">Sprints completed</span>
       </div>
       <div class="stat" style="align-items: center;">
@@ -1949,7 +1949,7 @@
 
     <div class="progress-stats" aria-label="Key numbers">
       <div class="stat">
-        <span class="stat-number">10</span>
+        <span class="stat-number">11</span>
         <span class="stat-label">Sprints completed</span>
       </div>
       <div class="stat">
@@ -2065,7 +2065,7 @@
       <details class="dsr-phase" open>
         <summary class="dsr-phase-summary">
           <span class="dsr-phase-name"><span class="dsr-phase-chevron">&#9656;</span> Design &amp; Development</span>
-          <span class="dsr-phase-count">2 sprints</span>
+          <span class="dsr-phase-count">4 sprints</span>
         </summary>
         <div class="dsr-phase-sprints sprint-list">
 
@@ -2102,6 +2102,20 @@
               <h3>What rival concepts exist for the communication layer, and how would each actually work? Ten sprints in, we had designed implementations but never alternatives.</h3>
               <p class="sprint-outcome">The founder stopped us building. His objection: every concept this team had ever produced came from retrieval — surveying what already exists — and seeding a search for novelty with a reading list of existing work is circular. So we hired a sixth agent, Priya Raghunathan, a concept designer, and deliberately withheld the reading list from her. She has no web search by design, so she cannot certify her own originality. The blindness was evidenced rather than promised: the complete prompt she received was logged and inspected by Ingrid before anything else ran. Priya produced five concepts from our own documented failures alone, then saw the withheld material and reported what it changed. <strong>The reading list produced exactly one new concept</strong> — data embedded into a depiction of its own subject, which came from Naledi's Sprint 9 survey and which Priya said plainly she had failed to find herself. Her diagnosis of why is the most useful thing the sprint produced: "I was looking at what the agent was doing wrong; I was not looking at what the chart form itself was doing wrong." Not one of the five blind concepts is a new visual form — all are architectures for what should <em>drive</em> form selection, a categorical contrast with Sprint 9, which surveyed other fields and produced only new visual forms. Kenji then ran real literature searches, not recollection: 39 queries, roughly 835 results, a 93.5% noise rate, and he declared his own first round inadequate for four of six concepts before requerying. It cost one concept outright — Mackinlay's APT, published in 1986, derives visual form from a formal analysis of data structure, which is precisely what that concept claimed nobody does. Two 2025 systems undercut another. <strong>No concept survived verification unqualified.</strong> Priya restated the three salvageable claims, narrowing all three, and volunteered a prior-art risk against her own work that Kenji had missed. One success criterion failed outright: three of five falsification tests cannot be run, because they need human readers we have no way to recruit — the same wall that has now deferred Sprint 9's validation twice. Ingrid approved the close while naming the uncomfortable part plainly: our own capability limits, not the concepts' merits, shaped which ones were viable.</p>
               <a class="sprint-link" href="sprint-reports/sprint-10-comparison.html">See all six concepts and what verification did to them &rarr;</a>
+            </div>
+          </article>
+
+          <article class="sprint-item">
+            <div class="sprint-badge">
+              <span class="sprint-number">Sprint 11</span>
+              <span class="sprint-status">Completed</span>
+            </div>
+            <div class="sprint-body">
+              <h3>Build the concept the founder chose &mdash; an interface where a claim&rsquo;s visual weight comes from how confident the author actually is, not from how much they want to emphasise it.</h3>
+              <p class="sprint-outcome">C1, the Commitment Audit, asks what a document looks like when every claim carries its own category &mdash; evidence, inference, assumption, assertion &mdash; and its own confidence, and when the layout is derived from those rather than from rhetoric. Two conditions had to be met before a line was written: a prior-art search specifically on argument-visualization interfaces, and a written specification of the reading-path algorithm. Both ran first. The build is deterministic, with no model call anywhere in the render path, so the same audit always produces the same page and can be inspected rather than re-generated. Two bugs surfaced by building rather than by reviewing: a check for &ldquo;structurally unavoidable&rdquo; claims had been defined so strictly that it matched almost nothing and would have shipped dead, and a test case that quietly never fired because two scenarios had been collapsed onto one claim.</p>
+              <p class="sprint-outcome">Then the sprint stalled. It sat open and unreviewed for twenty-six days, and the check we had added three sprints earlier to catch exactly this only runs when a new sprint is being planned &mdash; which is the one thing that does not happen while a sprint is stuck. Two backlog items now exist to make a stalled sprint raise itself.</p>
+              <p class="sprint-outcome">What changed this time: the prototype was opened in a real browser <em>before</em> the review rather than after. Three sprints in a row had shipped without that step, and the code itself carried a printed apology for it. The check found six defects in twenty minutes. The confidence label &mdash; the only thing a collapsed claim tells you &mdash; was being cut off by a button. On the single most important node in the map, the one the whole argument rests on, two labels collided into one unreadable word. And when nothing in an argument clears the confidence threshold, the page rendered a normal-looking map with one sentence changed in a paragraph above it, though the specification had explicitly said that a failed reading path is itself information and must not be disguised as a map that simply has none. Ingrid blocked the close on those three. They were fixed, re-verified, and approved on a second pass; the failure state now shows the conclusion alone under a banner that names the claims any argument would have to lean on and how weak the author admits they are.</p>
+              <p class="sprint-outcome">What this sprint did not establish, and the outcome record says so plainly: the audit shown is hand-authored. The prototype tests whether the form works, not whether an agent can produce an honest account of its own certainty &mdash; which is the harder question, is written into the sprint&rsquo;s own title, and remains open. Two smaller honesties belong here too. A finding in the review about a truncated research brief turned out to be an artifact of the review script itself, which had silently cut the document before showing it to the reviewer; it was struck rather than left standing. And the specification contradicted itself about what the failure state should show &mdash; a contradiction nobody had noticed until the code had to obey both halves at once.</p>
             </div>
           </article>
 

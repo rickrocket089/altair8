@@ -80,8 +80,12 @@ def run(tau: float, out_name: str) -> None:
     with open(out_path, "w", encoding="utf-8") as f:
         f.write(html)
     print(f"  written: {out_path} ({len(html)} chars)")
-    print("  NOT verified in a real browser — same limitation flagged in "
-          "Sprints 8 and 9; needs a founder pass.")
+    print("  Verify in a real browser before treating this as done -- three "
+          "sprints shipped without it. Headless is enough for a first pass:")
+    print("    chrome --headless=new --window-size=1400,1400 "
+          f"--screenshot=out.png file:///<abs-path>/{out_name}")
+    print("  Sprint 11 findings: workspace/outputs/prototype-runs/"
+          "verification/sprint11-c1-render-verification.md")
 
 
 if __name__ == "__main__":

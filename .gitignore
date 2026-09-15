@@ -35,3 +35,9 @@ workspace/memory/*
 # Sensitive personal files -- contains real PII (address, phone, birthdate),
 # never commit even to a private repo.
 workspace/workfiles/*.pdf
+
+# Locally trusted CAs for TLS-intercepting antivirus/proxies.
+# Machine-specific; the directory is kept, its certificates are not.
+config/certs/*
+!config/certs/.gitkeep
+!config/certs/README.md

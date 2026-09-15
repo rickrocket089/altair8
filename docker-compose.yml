@@ -53,6 +53,7 @@ services:
     volumes:
       - ./dashboard:/app/dashboard
       - ./tools:/app/tools
+      - ./agents:/app/agents
       - ./config:/app/config
     env_file:
       - config/.env

@@ -88,6 +88,22 @@ def render(audit: Audit, prp: list[str], tau: float, warnings: list[str]) -> str
     prp_set = set(prp)
     load_bearing = set(load_bearing_weak_claims(audit, tau))
     boat = bottleneck(audit, prp)
+    root_id = audit.root().id
+
+    # Mateo's spec, Case 1: when nothing clears the threshold, the map must not
+    # render as though the reading path merely happened to be absent -- "a
+    # failed PRP is itself information". The first build rendered the full map
+    # with one sentence changed in the intro prose, which Ingrid blocked on at
+    # the Sprint 11 close review: a reader who skips the paragraph sees a
+    # normal-looking argument map. Below, the root stands alone, marked, and
+    # the banner carries the load-bearing confession (spec Case 3) rather than
+    # leaving it to an ochre border nobody is told to look for.
+    no_path = not prp
+    suppressed = 0
+    if no_path:
+        suppressed = len(pos) - 1
+        pos = {root_id: (pos[root_id][0], PAD)}
+        canvas_h = PAD * 2 + ROW_H
 
     edges = []
     for claim in audit.claims:
@@ -113,12 +129,21 @@ def render(audit: Audit, prp: list[str], tau: float, warnings: list[str]) -> str
         colour, tint, cat_label = CATEGORY_STYLE[claim.category]
         on_path = claim.id in prp_set
         classes = f"node band-{band_key} cat-{claim.category}"
-        classes += " node--path" if on_path else " node--collapsed"
+        if no_path and claim.id == root_id:
+            classes += " node--belowthreshold"
+        else:
+            classes += " node--path" if on_path else " node--collapsed"
         if claim.id in load_bearing:
             classes += " node--loadbearing"
-        affordance = "" if on_path else '<button class="expand" aria-label="Expand">+</button>'
+        affordance = (
+            "" if on_path or (no_path and claim.id == root_id)
+            else '<button class="expand" aria-label="Expand">+</button>'
+        )
         flag = ('<span class="loadbearing-flag">load-bearing</span>'
                 if claim.id in load_bearing else "")
+        if no_path and claim.id == root_id:
+            flag += ('<span class="threshold-flag">no reading path '
+                     'clears the threshold</span>')
         nodes.append(
             f'<div class="{classes}" style="left:{x}px;top:{y}px" '
             f'data-cat="{claim.category}" data-id="{claim.id}">'
@@ -137,6 +162,41 @@ def render(audit: Audit, prp: list[str], tau: float, warnings: list[str]) -> str
             'reviews the audit, deliberately kept out of the reader-facing map: a '
             'reader cannot interpret them without context, and surfacing them would '
             'be noise competing with the visual encoding.</p></details>'
+        )
+
+    rest_txt = "Everything else is still here, collapsed."
+    legend_txt = (
+        "<span>Solid border, green rule — on the primary reading path</span>"
+        "<span>Dashed border — present but collapsed; click + to open</span>"
+        "<span>Ochre border — the only thing holding up the claim above it</span>"
+    )
+
+    banner_html = ""
+    if no_path:
+        rest_txt = ("No such chain exists at this threshold, so none is drawn "
+                    "and the rest of the map is held back — see below.")
+        legend_txt = ("<span>Ochre border — the conclusion, with no reading "
+                      "path beneath it that clears the threshold</span>")
+        confession = ""
+        if load_bearing:
+            named = "".join(
+                f"<li>{index[c].text} <em>({index[c].band()[1]})</em></li>"
+                for c in sorted(load_bearing)
+            )
+            confession = (
+                "<p>Any path to the conclusion would have to pass through claims "
+                "the audit itself rates below the threshold, each the sole "
+                f"support of the claim above it:</p><ul>{named}</ul>"
+            )
+        banner_html = (
+            '<div class="banner" role="status">'
+            f'<p class="banner-head">No path above confidence threshold '
+            f'&tau; = {tau:.2f}.</p>'
+            f'<p>The map is not empty, and it is not being shown: {suppressed} '
+            'further claim(s) sit below the threshold. Only the conclusion is '
+            'drawn, so that a failed reading path cannot be mistaken for a map '
+            'that simply has none. Lower the threshold to see one.</p>'
+            f'{confession}</div>'
         )
 
     boat_txt = (
@@ -205,6 +265,33 @@ def render(audit: Audit, prp: list[str], tau: float, warnings: list[str]) -> str
   .node--collapsed .claim{{display:none}}
   .node--collapsed.is-open .claim{{display:block}}
   .node--loadbearing{{border-color:var(--accent2)}}
+
+  /* Blocks A and B from Ingrid's Sprint 11 close review. Collapsed nodes hide
+     their claim text, which put the category chip, the load-bearing flag and
+     the band on one line: the band ran under the expand button ("PARTIALLY
+     SUPPORTEI") and the flag collided with it ("LOAD-BEARINGWEAKLY
+     SUPPORTED"). In a collapsed node the band is the only confidence
+     information there is, and on a load-bearing node it is the most important
+     label in the map -- so both get their own line and the button gets
+     reserved space rather than overlapping text. */
+  .node--collapsed{{padding-right:2.5rem}}
+  .node--collapsed .band{{display:block;margin-top:.3rem}}
+  .node--collapsed .loadbearing-flag{{display:block;margin:.3rem 0 0}}
+
+  /* The threshold-failure state (spec Case 1). Marked, not merely pathless. */
+  .node--belowthreshold{{border-color:var(--accent2);
+    border-left:3px solid var(--accent2);background:#fffdf8}}
+  .threshold-flag{{display:block;margin:.3rem 0 0;font-size:.58rem;
+    letter-spacing:.1em;text-transform:uppercase;color:var(--accent2);
+    font-weight:700}}
+  .banner{{max-width:1100px;margin:0 auto 1.6rem;padding:1rem 1.2rem;
+    border:1px solid var(--accent2);border-left:4px solid var(--accent2);
+    border-radius:6px;background:#fdf8ef;color:var(--ink-mid);font-size:.88rem}}
+  .banner p{{margin:.35rem 0}}
+  .banner-head{{font-weight:700;color:var(--accent2);font-size:.95rem}}
+  .banner ul{{margin:.4rem 0 .2rem;padding-left:1.1rem}}
+  .banner li{{margin:.25rem 0}}
+  .banner em{{color:var(--ink-light);font-style:normal}}
   .loadbearing-flag{{font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;
     color:var(--accent2);font-weight:700;margin-left:.4rem}}
   .node.dimmed{{opacity:.15}}
@@ -227,7 +314,7 @@ def render(audit: Audit, prp: list[str], tau: float, warnings: list[str]) -> str
   emphasis — a claim it is unsure of looks weaker whether or not the argument
   needs it. The solid green chain is the primary reading path: the shortest route
   from the conclusion down to something grounded, using only claims above the
-  current threshold. Everything else is still here, collapsed.</p>
+  current threshold. {rest_txt}</p>
   <p class="sub">Right now, {boat_txt}.</p>
 </header>
 
@@ -244,11 +331,9 @@ def render(audit: Audit, prp: list[str], tau: float, warnings: list[str]) -> str
   </div>
 </div>
 
-<div class="legend">
-  <span>Solid border, green rule — on the primary reading path</span>
-  <span>Dashed border — present but collapsed; click + to open</span>
-  <span>Ochre border — the only thing holding up the claim above it</span>
-</div>
+<div class="legend">{legend_txt}</div>
+
+{banner_html}
 
 <div class="canvas-wrap"><div class="canvas">
   <svg class="edges">{''.join(edges)}</svg>
