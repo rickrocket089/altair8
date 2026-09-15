@@ -83,12 +83,48 @@ def _reconstruct_openalex_abstract(inverted_index: dict | None) -> str:
     return " ".join(positions[i] for i in sorted(positions))
 
 
-def search_openalex(query: str, max_results: int = 5) -> list[dict]:
+def search_openalex(
+    query: str,
+    max_results: int = 5,
+    venue_issn: str | None = None,
+    year_from: int | None = None,
+    open_access_only: bool = False,
+) -> list[dict]:
     """Free, fully open API, no key required. Set OPENALEX_MAILTO in
     config/.env to join the "polite pool" for higher/more reliable rate limits.
+
+    Returns venue and an open-access full-text URL where one exists, which the
+    first version did not. That omission mattered: OpenAlex indexes ACM and
+    IEEE venues, so CHI, UIST and TVCG work was reachable all along, but a
+    result carried no venue and no link to anything readable -- so a search for
+    argument-visualization prior art came back looking indistinguishable from
+    unrelated psychometrics, and backlog #15 was recorded as "we have no access
+    to this literature" when what was missing was the ability to tell what we
+    had retrieved and to reach the text. Found 2026-09-15 while checking
+    whether #15 was a procurement problem; it is mostly not.
+
+    `venue_issn` filters to one venue by ISSN (TVCG is 1077-2626),
+    `year_from` bounds publication year, `open_access_only` restricts to work
+    with a free full text. Filters are ANDed.
     """
     url = "https://api.openalex.org/works"
     params = {"search": query, "per-page": max_results}
+
+    filters = []
+    if venue_issn:
+        # By ISSN, not by name: OpenAlex rejects
+        # primary_location.source.display_name.search with a 400, single-token
+        # values included. Venues that matter here -- IEEE TVCG (InfoVis, VAST,
+        # SciVis) 1077-2626, ACM TOCHI 1073-0516, IJHCS 1071-5819. CHI and UIST
+        # are conference series without an ISSN and still need another route.
+        filters.append(f"primary_location.source.issn:{venue_issn}")
+    if year_from:
+        filters.append(f"publication_year:>{year_from - 1}")
+    if open_access_only:
+        filters.append("open_access.is_oa:true")
+    if filters:
+        params["filter"] = ",".join(filters)
+
     mailto = os.environ.get("OPENALEX_MAILTO")
     if mailto:
         params["mailto"] = mailto
@@ -105,6 +141,10 @@ def search_openalex(query: str, max_results: int = 5) -> list[dict]:
             if a.get("author")
         )
         openalex_id = (work.get("id") or "").rsplit("/", 1)[-1]
+        source_block = (work.get("primary_location") or {}).get("source") or {}
+        oa = work.get("open_access") or {}
+        best = work.get("best_oa_location") or {}
+        fulltext = oa.get("oa_url") or best.get("pdf_url") or ""
         results.append(
             {
                 "source": "openalex",
@@ -113,6 +153,10 @@ def search_openalex(query: str, max_results: int = 5) -> list[dict]:
                 "authors": authors,
                 "abstract": _reconstruct_openalex_abstract(work.get("abstract_inverted_index")),
                 "url": work.get("id") or "",
+                "venue": source_block.get("display_name") or "",
+                "year": work.get("publication_year"),
+                "is_oa": bool(oa.get("is_oa")),
+                "fulltext_url": fulltext,
             }
         )
     return results
