@@ -16,13 +16,17 @@ v1 preserved at team_leader/sprint10_synthesis_v1.
 import os
 
 from dotenv import load_dotenv
-from anthropic import Anthropic
+from openai import OpenAI
 
 from agents.permissions import require_tool
 from agents.team_leader.persona import NAME, SYSTEM_PROMPT
 from tools import db, vectorstore
 
 load_dotenv(os.path.join(os.path.dirname(__file__), "..", "..", "config", ".env"))
+
+# Sophie's own reasoning runs on OpenAI (2026-09-16, founder request);
+# every other persona stays on Anthropic. See config/.env.example.
+MODEL = "gpt-5.2"
 
 
 def run() -> None:
@@ -47,12 +51,13 @@ def run() -> None:
         description="Seven marks added, C3 recollection caveat restored.",
     )
 
-    client = Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"])
-    with client.messages.stream(
-        model="claude-sonnet-4-6",
-        max_tokens=16000,
-        system=SYSTEM_PROMPT,
-        messages=[{"role": "user", "content": (
+    client = OpenAI(api_key=os.environ["TEAM_LEADER_OPENAI_API_KEY"])
+    response = client.chat.completions.create(
+        model=MODEL,
+        max_completion_tokens=16000,
+        messages=[
+            {"role": "system", "content": SYSTEM_PROMPT},
+            {"role": "user", "content": (
             "Ingrid checked your Pass 4 marking and returned MARKING NOT "
             "HONEST. Revise.\n\n"
             "Reproduce the synthesis in full with her required fixes applied "
@@ -99,12 +104,12 @@ def run() -> None:
             f"{synthesis}\n\n"
             "Output the complete revised synthesis. No preamble, no summary of "
             "what you changed -- just the document."
-        )}],
-    ) as stream:
-        response = stream.get_final_message()
+        )},
+        ],
+    )
 
-    revised = response.content[0].text
-    db.log_usage("team_leader", response.usage.input_tokens, response.usage.output_tokens)
+    revised = response.choices[0].message.content
+    db.log_usage("team_leader", response.usage.prompt_tokens, response.usage.completion_tokens)
 
     marks = revised.count("[SOPHIE]")
     has_caveat = "recollection" in revised.lower()

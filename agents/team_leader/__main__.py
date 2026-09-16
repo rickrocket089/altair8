@@ -8,13 +8,17 @@ works before other agent roles are built out.
 import os
 
 from dotenv import load_dotenv
-from anthropic import Anthropic
+from openai import OpenAI
 
 from agents.team_leader.persona import NAME, SYSTEM_PROMPT
 from tools import db
 from tools import vectorstore
 
 load_dotenv(os.path.join(os.path.dirname(__file__), "..", "..", "config", ".env"))
+
+# Sophie's own reasoning runs on OpenAI (2026-09-16, founder request);
+# every other persona stays on Anthropic. See config/.env.example.
+MODEL = "gpt-5.2"
 
 
 def bootstrap() -> None:
@@ -26,12 +30,12 @@ def bootstrap() -> None:
         description="Verify Postgres + Chroma + Claude wiring end-to-end.",
     )
 
-    client = Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"])
-    response = client.messages.create(
-        model="claude-sonnet-4-6",
-        max_tokens=300,
-        system=SYSTEM_PROMPT,
+    client = OpenAI(api_key=os.environ["TEAM_LEADER_OPENAI_API_KEY"])
+    response = client.chat.completions.create(
+        model=MODEL,
+        max_completion_tokens=300,
         messages=[
+            {"role": "system", "content": SYSTEM_PROMPT},
             {
                 "role": "user",
                 "content": (
@@ -39,11 +43,11 @@ def bootstrap() -> None:
                     "confirming the team infrastructure is online, and stating the "
                     "single next step you recommend for Altair8."
                 ),
-            }
+            },
         ],
     )
-    greeting = response.content[0].text
-    db.log_usage("team_leader", response.usage.input_tokens, response.usage.output_tokens)
+    greeting = response.choices[0].message.content
+    db.log_usage("team_leader", response.usage.prompt_tokens, response.usage.completion_tokens)
 
     vectorstore.remember(
         collection_name="team_leader_memory",

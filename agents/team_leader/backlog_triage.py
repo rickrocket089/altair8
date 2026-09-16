@@ -11,7 +11,7 @@ now, ahead of the other three items already marked 'high'.
 import os
 
 from dotenv import load_dotenv
-from anthropic import Anthropic
+from openai import OpenAI
 
 from agents.permissions import require_tool
 from agents.team_leader.persona import NAME, SYSTEM_PROMPT
@@ -19,7 +19,9 @@ from tools import db, vectorstore
 
 load_dotenv(os.path.join(os.path.dirname(__file__), "..", "..", "config", ".env"))
 
-MODEL = "claude-sonnet-4-6"
+# Sophie's own reasoning runs on OpenAI (2026-09-16, founder request);
+# every other persona stays on Anthropic. See config/.env.example.
+MODEL = "gpt-5.2"
 
 
 def run() -> None:
@@ -66,10 +68,12 @@ def run() -> None:
         description="Process Review #3's S30 requirement, run once before Sprint 13 scoping.",
     )
 
-    client = Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"])
-    with client.messages.stream(
-        model=MODEL, max_tokens=8000, system=SYSTEM_PROMPT,
-        messages=[{"role": "user", "content": (
+    client = OpenAI(api_key=os.environ["TEAM_LEADER_OPENAI_API_KEY"])
+    response = client.chat.completions.create(
+        model=MODEL, max_completion_tokens=8000,
+        messages=[
+            {"role": "system", "content": SYSTEM_PROMPT},
+            {"role": "user", "content": (
             "Run the backlog triage Process Review #3 required of you before "
             "any new sprint gets scoped. Your PROCESS REVIEW STATUS and "
             "SESSION-OPEN STALL CHECK blocks must be grounded in the real "
@@ -113,12 +117,12 @@ def run() -> None:
             f"=== OPEN CANDIDATE APPROACHES, FOR CONTEXT ===\n{candidate_block}\n\n"
             f"=== CURRENT FOCUS ===\n{current_focus}\n\n"
             f"=== HYPOTHESES ===\n{hypotheses}\n"
-        )}],
-    ) as stream:
-        response = stream.get_final_message()
+        )},
+        ],
+    )
 
-    triage = response.content[0].text
-    db.log_usage("team_leader", response.usage.input_tokens, response.usage.output_tokens)
+    triage = response.choices[0].message.content
+    db.log_usage("team_leader", response.usage.prompt_tokens, response.usage.completion_tokens)
 
     db.set_memory("team_leader", "backlog_triage_1", triage)
     vectorstore.remember(

@@ -24,7 +24,7 @@ of that history, not as a formality.
 import os
 
 from dotenv import load_dotenv
-from anthropic import Anthropic
+from openai import OpenAI
 
 from agents.permissions import require_tool
 from agents.team_leader.persona import NAME, SYSTEM_PROMPT
@@ -32,7 +32,9 @@ from tools import db, vectorstore
 
 load_dotenv(os.path.join(os.path.dirname(__file__), "..", "..", "config", ".env"))
 
-MODEL = "claude-sonnet-4-6"
+# Sophie's own reasoning runs on OpenAI (2026-09-16, founder request);
+# every other persona stays on Anthropic. See config/.env.example.
+MODEL = "gpt-5.2"
 
 
 def run() -> None:
@@ -51,12 +53,13 @@ def run() -> None:
         description="Comparative format for the founder. No new claims; Sophie's own observations marked.",
     )
 
-    client = Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"])
-    with client.messages.stream(
+    client = OpenAI(api_key=os.environ["TEAM_LEADER_OPENAI_API_KEY"])
+    response = client.chat.completions.create(
         model=MODEL,
-        max_tokens=16000,
-        system=SYSTEM_PROMPT,
-        messages=[{"role": "user", "content": (
+        max_completion_tokens=16000,
+        messages=[
+            {"role": "system", "content": SYSTEM_PROMPT},
+            {"role": "user", "content": (
             "Sprint 10, Pass 4. Assemble the sprint's output into the "
             "comparison the founder will choose from.\n\n"
             "THE HARD CONSTRAINT: no new claims. You may restate, organise and "
@@ -111,12 +114,12 @@ def run() -> None:
             "Do not recommend a winner. The founder chooses, as he has on "
             "every prior direction decision. Your job is to make the choice "
             "legible, not to make it."
-        )}],
-    ) as stream:
-        response = stream.get_final_message()
+        )},
+        ],
+    )
 
-    synthesis = response.content[0].text
-    db.log_usage("team_leader", response.usage.input_tokens, response.usage.output_tokens)
+    synthesis = response.choices[0].message.content
+    db.log_usage("team_leader", response.usage.prompt_tokens, response.usage.completion_tokens)
 
     marks = synthesis.count("[SOPHIE]")
     print(f"[{NAME}] Synthesis written: {len(synthesis)} chars, "

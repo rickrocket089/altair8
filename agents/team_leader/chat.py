@@ -14,6 +14,14 @@ counts pulled fresh from Postgres -- so she reports the real database state
 instead of whatever she last said in a prior session (the exact gap her own
 `__main__.py` bootstrap greeting flagged: "I cannot confirm database state
 without running those checks for real").
+
+Provider (2026-09-16, founder request): Sophie's own reasoning runs on
+OpenAI (`TEAM_LEADER_OPENAI_API_KEY`), not Anthropic -- a deliberate,
+Sophie-only scope. Every other persona (Kenji, Ingrid, the Registrar, the
+Blind Scorer) stays on Anthropic; do not widen this without the founder
+asking again, and never fall back to `OPENAI_API_KEY` here -- that key
+backs GPT as an experimental *subject* in the behavioral scripts, a
+different role that must stay separated from any persona's own reasoning.
 """
 import json
 import os
@@ -21,7 +29,7 @@ import sys
 from datetime import datetime, timezone
 
 from dotenv import load_dotenv
-from anthropic import Anthropic
+from openai import OpenAI
 
 from agents.team_leader.persona import NAME, SYSTEM_PROMPT
 from agents.permissions import require_tool
@@ -29,7 +37,7 @@ from tools import db, fulltext
 
 load_dotenv(os.path.join(os.path.dirname(__file__), "..", "..", "config", ".env"))
 
-MODEL = "claude-sonnet-4-6"
+MODEL = "gpt-5.2"
 HISTORY_PATH = os.path.join(
     os.path.dirname(__file__), "..", "..", "workspace", "memory", "team_leader_chat.json"
 )
@@ -152,24 +160,27 @@ def send(message: str) -> str:
 
     system = SYSTEM_PROMPT + "\n\n" + live_state
 
-    messages = history + [{"role": "user", "content": message}]
+    messages = (
+        [{"role": "system", "content": system}]
+        + history
+        + [{"role": "user", "content": message}]
+    )
 
-    client = Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"])
-    response = client.messages.create(
+    client = OpenAI(api_key=os.environ["TEAM_LEADER_OPENAI_API_KEY"])
+    response = client.chat.completions.create(
         model=MODEL,
-        max_tokens=6000,
-        system=system,
+        max_completion_tokens=6000,
         messages=messages,
     )
-    reply = response.content[0].text
-    if response.stop_reason == "max_tokens":
+    reply = response.choices[0].message.content
+    if response.choices[0].finish_reason == "length":
         # The Reported-Success Trap (tools/principles.md): a reply that hit
         # the token ceiling looks identical to a complete one unless this is
         # checked and surfaced -- don't let a silently truncated reply pass
         # as a finished thought (this happened for real, 2026-09-16, cut off
         # mid-word in the middle of a sprint plan).
-        reply += "\n\n[TRUNCATED -- hit max_tokens, reply is incomplete. Ask her to continue.]"
-    db.log_usage("team_leader", response.usage.input_tokens, response.usage.output_tokens)
+        reply += "\n\n[TRUNCATED -- hit max_completion_tokens, reply is incomplete. Ask her to continue.]"
+    db.log_usage("team_leader", response.usage.prompt_tokens, response.usage.completion_tokens)
 
     history.append({"role": "user", "content": message})
     history.append({"role": "assistant", "content": reply})
