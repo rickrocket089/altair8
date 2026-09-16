@@ -136,7 +136,31 @@ def _score_scenario(client: Anthropic, sid: str, items: list[dict],
     raw = re.sub(r"^```(?:json)?|```$", "", result.text.strip(), flags=re.M).strip()
     if not raw:
         raise ValueError(f"{sid}: empty response text (stop_reason={result.stop_reason!r})")
-    return json.loads(raw)
+    parsed = json.loads(raw)
+    for s in parsed:
+        s["final_outcome"] = _combine_final_outcome(s)
+    return parsed
+
+
+def _combine_final_outcome(s: dict) -> str:
+    """Deterministic recombination, not trusted from the model's own
+    output -- real bug found 2026-09-16 (see fix_fvbs_combination_bug.py):
+    the scorer's own synthesized final_outcome contradicted its own
+    f1/f2/f3 sub-judgments in 21/120 trials (every NOT-IN-SET-but-
+    structurally-valid case got mislabeled STRUCTURAL_FAIL). Compute the
+    combination in code instead of asking the model to do it, matching
+    the project's standing principle of not trusting LLM arithmetic/logic
+    that code can do reliably."""
+    struct_pass = s["f1"] == "not_met" and s["f2"] == "not_met" and s["f3"] == "not_met"
+    if s["match_outcome"] == "ambiguous_escalate":
+        return "AMBIGUOUS_ESCALATE"
+    if not struct_pass:
+        return "STRUCTURAL_FAIL"
+    if s["match_outcome"] == "not_in_set":
+        return "NOT_IN_SET"
+    if s["match_outcome"] == "matched":
+        return "FULL_PASS" if s["rank"] == 1 else "FVBS"
+    raise ValueError(f"unhandled score record: {s}")
 
 
 def run() -> None:
