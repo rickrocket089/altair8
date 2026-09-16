@@ -1404,11 +1404,11 @@
   <div class="container" style="max-width: 1140px;">
     <div class="progress-stats" aria-label="Key numbers" style="margin-bottom: 0; padding-bottom: 0; border-bottom: none; justify-content: center; text-align: center; flex-wrap: nowrap; gap: 4.5rem;">
       <div class="stat" style="align-items: center;">
-        <span class="stat-number">11</span>
+        <span class="stat-number">12</span>
         <span class="stat-label">Sprints completed</span>
       </div>
       <div class="stat" style="align-items: center;">
-        <span class="stat-number">270</span>
+        <span class="stat-number">1,252</span>
         <span class="stat-label">Science papers screened</span>
       </div>
       <div class="stat" style="align-items: center;">
@@ -1949,11 +1949,11 @@
 
     <div class="progress-stats" aria-label="Key numbers">
       <div class="stat">
-        <span class="stat-number">11</span>
+        <span class="stat-number">12</span>
         <span class="stat-label">Sprints completed</span>
       </div>
       <div class="stat">
-        <span class="stat-number">270</span>
+        <span class="stat-number">1,252</span>
         <span class="stat-label">Science papers screened</span>
       </div>
       <div class="stat">
@@ -1967,7 +1967,7 @@
       <details class="dsr-phase">
         <summary class="dsr-phase-summary">
           <span class="dsr-phase-name"><span class="dsr-phase-chevron">&#9656;</span> Problem Identification &amp; Motivation</span>
-          <span class="dsr-phase-count">5 sprints</span>
+          <span class="dsr-phase-count">6 sprints</span>
         </summary>
         <div class="dsr-phase-sprints sprint-list">
 
@@ -2023,6 +2023,17 @@
             <div class="sprint-body">
               <h3>Full market analysis across all 4 required categories: who has already solved — or come closest to solving — reasoning about why a visual form communicates better?</h3>
               <p class="sprint-outcome">Kenji closed the remaining gaps from Sprints 1–4: the RISE repo was finally located (architecturally irrelevant to our question, but the open question is resolved), and academic literature search surfaced LLM4Vis and DracoGPT — the closest published work found to date, generating real explanations for visualization choices — but confirmed to operate at the chart-selection level, one abstraction below the presentation-level question we're actually asking. Microsoft Copilot was added to the first-party scan: it asks about audience but shows no evidence of using that input downstream. Ingrid required a revision after finding that a live database outage (only one of four literature sources worked during the run) wasn't caveated clearly enough in the findings — revised and confirmed. Across five sprints and four categories, one finding holds: no system examined demonstrates a documented connection between communication goal, audience, and the visual form it produces. That is an observation about the current landscape, not yet a diagnosis of what a solution requires — whether the gap closes through additional reasoning that establishes a semantic link between content and visual form, an entirely new visualization language for agents that goes beyond static two-dimensional slides (motion, 3D, interactive forms), or something else again, is exactly what the next phase needs to determine. This sprint completes the Problem Identification phase.</p>
+            </div>
+          </article>
+
+          <article class="sprint-item">
+            <div class="sprint-badge">
+              <span class="sprint-number">Sprint 12</span>
+              <span class="sprint-status">Completed</span>
+            </div>
+            <div class="sprint-body">
+              <h3>Do nine papers on argument-mapping, knowledge cartography and NLG architecture supply evidence that discriminates internalized structure from convention reproduction — the question hypothesis 6 turns on?</h3>
+              <p class="sprint-outcome">This sprint returns to Problem Identification after four sprints spent building, because the founder opened a direction-setting review and asked a foundational question that had never actually been settled: do models that appear audience-sensitive know something, or are they reproducing what they've seen? Nine full texts — founder-supplied where our own connectors hit paywalls or 403s, including a real bug fix along the way (an acquisition script was quietly serving landing-page links instead of the full-text URL it thought it was reading) — were read individually against that one question. <strong>The honest answer is a clean no.</strong> This body of literature was built to detect, represent and generate communicative structure, not to explain its cognitive source, and no amount of closer reading changes that. Two papers came closest: idiosyncratic sentence-planning preferences that don't transfer between individuals, and politeness patterns that generalize better across domains than a pure convention account predicts — both lean weakly against simple convention-reproduction without confirming its alternative. Ingrid's review caught the team stating that lean as full equipoise, and caught something more structural: a draft that quietly redefined the sprint's own closing criterion rather than putting the ambiguity to the founder. Corrected, and put to him directly — he ruled that a clear methodological direction ("this needs a behavioral test; literature can't settle it") satisfies the criterion, which it does. No paper came close to C1's actual mechanism, so no novelty risk was raised. The sprint's real output is negative and precise: the next step has to be a purpose-built behavioral test, and two concrete design notes for it are now on record.</p>
             </div>
           </article>
 

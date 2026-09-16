@@ -24,7 +24,7 @@ from anthropic import Anthropic
 
 from agents.team_leader.persona import NAME, SYSTEM_PROMPT
 from agents.permissions import require_tool
-from tools import db
+from tools import db, fulltext
 
 load_dotenv(os.path.join(os.path.dirname(__file__), "..", "..", "config", ".env"))
 
@@ -60,6 +60,18 @@ def _live_state_block() -> str:
     sprints = db.list_sprints()
     reviews = db.list_process_reviews()
 
+    # Mechanical state (which PDFs are actually ingested) lives on disk, not
+    # in agent_memory, so it was invisible here -- caused two real recall
+    # gaps in one session (2026-09-16: the already-resolved TVCG check, then
+    # Mackinlay/Moore&Paris/Reiter&Dale status) where Sophie treated settled
+    # work as open because nothing in her prompt said otherwise.
+    try:
+        ingested_papers = sorted(
+            f[:-4] for f in os.listdir(fulltext.PAPERS_DIR) if f.endswith(".pdf")
+        )
+    except FileNotFoundError:
+        ingested_papers = []
+
     last_sprint = sprints[-1] if sprints else None
     last_review = reviews[-1] if reviews else None
 
@@ -89,6 +101,11 @@ HYPOTHESES:
 
 DESIGN PRINCIPLES:
 {design_principles}
+
+FULL TEXTS ALREADY INGESTED (workspace/papers/, `paper_fulltext` Chroma collection --
+if a paper you're about to call unresolved/unconfirmed is in this list, it is
+resolved; check before writing it up as open):
+{chr(10).join('  - ' + p for p in ingested_papers) if ingested_papers else '  (none)'}
 
 LAST SPRINT: #{last_sprint['sprint_number'] if last_sprint else 'none'} \
 ({last_sprint['status'] if last_sprint else 'n/a'})
