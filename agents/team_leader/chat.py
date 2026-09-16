@@ -157,11 +157,18 @@ def send(message: str) -> str:
     client = Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"])
     response = client.messages.create(
         model=MODEL,
-        max_tokens=1200,
+        max_tokens=6000,
         system=system,
         messages=messages,
     )
     reply = response.content[0].text
+    if response.stop_reason == "max_tokens":
+        # The Reported-Success Trap (tools/principles.md): a reply that hit
+        # the token ceiling looks identical to a complete one unless this is
+        # checked and surfaced -- don't let a silently truncated reply pass
+        # as a finished thought (this happened for real, 2026-09-16, cut off
+        # mid-word in the middle of a sprint plan).
+        reply += "\n\n[TRUNCATED -- hit max_tokens, reply is incomplete. Ask her to continue.]"
     db.log_usage("team_leader", response.usage.input_tokens, response.usage.output_tokens)
 
     history.append({"role": "user", "content": message})

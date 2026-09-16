@@ -31,6 +31,23 @@ PERMITTED_TOOLS = {
         "read_brief", "read_cognitive_annotation",
         "search_vectorstore", "write_concept_scenario",
     },
+    # Temporary, single-sprint roles ("freelancers"), founder-approved
+    # 2026-08-20 -- err 2026-09-16 -- for Sprint 13's parallelization needs.
+    # Not part of the standing 6-person team; scoped to Backlog #23's
+    # specific methodological requirements and nothing else.
+    "registrar": {
+        # Writes predictions/rubric BEFORE any run, never reads results --
+        # the whole point is a wall between "what we predicted" and "what
+        # we saw," per the "Judging LLM-as-a-Judge: Rubric Artifacts"
+        # caution Kenji's prior-art check surfaced.
+        "write_preregistration",
+    },
+    "blind_scorer": {
+        # Sees anonymized outputs only -- no condition labels, no prompts,
+        # no knowledge of which intervention produced what. Structurally
+        # breaks the LLM-as-judge-knows-the-hypothesis coupling.
+        "read_anonymized_output", "write_score",
+    },
 }
 
 
