@@ -18,6 +18,7 @@ without running those checks for real").
 import json
 import os
 import sys
+from datetime import datetime, timezone
 
 from dotenv import load_dotenv
 from anthropic import Anthropic
@@ -72,6 +73,32 @@ def _live_state_block() -> str:
     except FileNotFoundError:
         ingested_papers = []
 
+    # Process Review #3 (2026-09-16), S22/S28: the Standing Obligations Check
+    # only runs at sprint planning -- the one moment that cannot occur while
+    # a sprint IS stalled, which is exactly how Sprint 11 sat stuck for 26
+    # days undetected. This runs on every chat turn instead, so it fires
+    # regardless of what the founder is actually asking about. Deliberately
+    # code, not just a persona instruction -- Review #3's own meta-finding
+    # was that "build a mechanism" and "restate the rule as a backlog item"
+    # get conflated, and an instruction alone would repeat that exact gap.
+    stalled_sprint_alert = ""
+    now = datetime.now(timezone.utc)
+    for s in sprints:
+        if s["status"] != "in_progress" or not s.get("started_at"):
+            continue
+        started = s["started_at"]
+        if started.tzinfo is None:
+            started = started.replace(tzinfo=timezone.utc)
+        age_days = (now - started).days
+        if age_days > 10:
+            stalled_sprint_alert = (
+                f"\n\n*** STALLED SPRINT ALERT (session-open check, S22) ***\n"
+                f"Sprint #{s['sprint_number']} has been status='in_progress' for "
+                f"{age_days} days (started {started.date()}). Surface this to the "
+                f"founder before anything else in this reply.\n"
+            )
+            break
+
     last_sprint = sprints[-1] if sprints else None
     last_review = reviews[-1] if reviews else None
 
@@ -89,7 +116,7 @@ def _live_state_block() -> str:
     return f"""CURRENT LIVE STATE (queried fresh from Postgres just now -- this is ground
 truth, not memory; if it conflicts with anything you recall saying earlier,
 this wins):
-
+{stalled_sprint_alert}
 NORTH STAR:
 {north_star}
 
