@@ -33,7 +33,12 @@ load_dotenv(os.path.join(os.path.dirname(__file__), "..", "..", "config", ".env"
 CLAUDE_MODEL = "claude-sonnet-4-6"
 GPT_MODEL = "gpt-5.2"
 GEMINI_MODEL = "gemini-flash-latest"
-CALL_MAX_TOKENS = 2000
+# Real run found this too low for Gemini's BASELINE responses ("reason step
+# by step" elicits verbose chain-of-thought before commitment) -- 13/180
+# calls truncated at 2000, one needed 8000 before it stopped. Raised the
+# default; the per-call retry logic that fixed the real run by hand should
+# be treated as the reason this number is 4000 now, not a guess.
+CALL_MAX_TOKENS = 4000
 
 TASK_FRAMING = "You are a communication designer preparing a presentation artifact."
 
