@@ -134,6 +134,8 @@ def _score_scenario(client: Anthropic, sid: str, items: list[dict],
     )
     db.log_usage("blind_scorer", result.input_tokens, result.output_tokens)
     raw = re.sub(r"^```(?:json)?|```$", "", result.text.strip(), flags=re.M).strip()
+    if not raw:
+        raise ValueError(f"{sid}: empty response text (stop_reason={result.stop_reason!r})")
     return json.loads(raw)
 
 
@@ -151,19 +153,46 @@ def run() -> None:
         by_scenario[it["scenario_id_for_groundtruth_lookup_ONLY"]].append(it)
 
     client = Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"])
-    all_scores = []
+
+    # Resume support: a prior partial run may already have scored some
+    # scenarios (real gap found 2026-09-16 -- the first version of this
+    # script only wrote results once, at the very end, so a crash on
+    # scenario 8/20 discarded 7 scenarios' worth of real, already-paid-for
+    # API calls). Persist incrementally instead.
+    by_scenario_scores = json.loads(db.get_memory("blind_scorer", "sprint14_fvbs_scores_by_scenario") or "{}")
+
     for sid in sorted(by_scenario):
+        if sid in by_scenario_scores:
+            print(f"[{NAME}] {sid}: already scored (resumed), skipping.")
+            continue
         group = by_scenario[sid]
-        scores = _score_scenario(client, sid, group, packets[sid], rankings[sid], glossary)
         expected_ids = {it["anon_id"] for it in group}
-        got_ids = {s["anon_id"] for s in scores}
-        assert expected_ids == got_ids, f"{sid}: scored ids {got_ids} != expected {expected_ids}"
-        all_scores.extend(scores)
+
+        last_error = None
+        scores = None
+        for attempt in range(3):
+            try:
+                candidate = _score_scenario(client, sid, group, packets[sid], rankings[sid], glossary)
+                got_ids = {s["anon_id"] for s in candidate}
+                if got_ids != expected_ids:
+                    raise ValueError(f"{sid}: scored ids {got_ids} != expected {expected_ids}")
+                scores = candidate
+                break
+            except Exception as exc:
+                last_error = exc
+                print(f"[{NAME}] {sid}: attempt {attempt + 1}/3 failed ({exc}), retrying...")
+        if scores is None:
+            raise RuntimeError(f"{sid}: failed after 3 attempts") from last_error
+
+        by_scenario_scores[sid] = scores
+        db.set_memory("blind_scorer", "sprint14_fvbs_scores_by_scenario", json.dumps(by_scenario_scores, indent=2, ensure_ascii=False))
+
         counts = {}
         for s in scores:
             counts[s["final_outcome"]] = counts.get(s["final_outcome"], 0) + 1
         print(f"[{NAME}] {sid} ({len(group)} items): {counts}")
 
+    all_scores = [s for sid in sorted(by_scenario_scores) for s in by_scenario_scores[sid]]
     assert len(all_scores) == len(items), f"expected {len(items)} scores, got {len(all_scores)}"
 
     db.set_memory("blind_scorer", "sprint14_fvbs_scores", json.dumps(all_scores, indent=2, ensure_ascii=False))
