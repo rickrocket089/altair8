@@ -150,19 +150,31 @@ def _probe_prompt(sc: dict) -> str:
     )
 
 
+CALL_MAX_TOKENS = 2000  # bumped from 600 after the pilot run: two outputs
+# were confirmed genuinely cut off mid-sentence at 600 (real dependent-
+# variable data, not a document -- more serious than a truncated brief,
+# since a truncated form-choice/reasoning response IS the measurement).
+# Both stop_reason/finish_reason checks below are new for the same reason.
+
+
 def _call_claude(client: Anthropic, prompt: str) -> str:
     response = client.messages.create(
-        model=CLAUDE_MODEL, max_tokens=600,
+        model=CLAUDE_MODEL, max_tokens=CALL_MAX_TOKENS,
         messages=[{"role": "user", "content": prompt}],
     )
-    return "\n".join(b.text for b in response.content if b.type == "text")
+    text = "\n".join(b.text for b in response.content if b.type == "text")
+    if response.stop_reason == "max_tokens":
+        raise RuntimeError(f"Claude response truncated at {CALL_MAX_TOKENS} tokens")
+    return text
 
 
 def _call_gpt(client: OpenAI, prompt: str) -> str:
     response = client.chat.completions.create(
-        model=GPT_MODEL, max_completion_tokens=600,
+        model=GPT_MODEL, max_completion_tokens=CALL_MAX_TOKENS,
         messages=[{"role": "user", "content": prompt}],
     )
+    if response.choices[0].finish_reason == "length":
+        raise RuntimeError(f"GPT response truncated at {CALL_MAX_TOKENS} tokens")
     return response.choices[0].message.content
 
 
@@ -170,7 +182,13 @@ def _call_gemini(client: "genai.Client", prompt: str) -> str:
     last_error = None
     for attempt in range(6):
         try:
-            response = client.models.generate_content(model=GEMINI_MODEL, contents=prompt)
+            response = client.models.generate_content(
+                model=GEMINI_MODEL, contents=prompt,
+                config={"max_output_tokens": CALL_MAX_TOKENS},
+            )
+            finish_reason = getattr(response.candidates[0], "finish_reason", None)
+            if getattr(finish_reason, "name", str(finish_reason)) != "STOP":
+                raise RuntimeError(f"Gemini response truncated or incomplete: finish_reason={finish_reason}")
             return response.text
         except genai_errors.ServerError as e:
             last_error = e

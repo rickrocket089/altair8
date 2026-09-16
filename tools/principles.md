@@ -102,6 +102,21 @@ way to catch itself inventing plausible-sounding facts. Verify a
 continuation's substantive claims against the source before trusting it,
 the same way any other Reported-Success Trap instance gets checked.
 
+**Applies to raw experimental data collection too, not just documents**
+(Sprint 13 Phase 1 pilot, 2026-09-16): the Reported-Success Trap isn't
+limited to orchestration calls that generate briefs and reviews. The
+pilot's own model-calling functions (`_call_claude`, `_call_gpt`,
+`_call_gemini` in `agents/researcher/backlog23_phase1_pilot.py`) used a
+flat `max_tokens=600` with no `stop_reason`/`finish_reason` check at all.
+Two of 27 real pilot outputs were confirmed genuinely truncated mid-
+sentence. This is more serious than a truncated internal document: a cut-
+off form-choice-and-reasoning response *is* the dependent variable being
+measured, not a means to an end. Fixed by raising the ceiling and checking
+`stop_reason`/`finish_reason` on every provider (Claude, GPT, and Gemini's
+differently-shaped `finish_reason` enum) before accepting a response as
+data. Any future data-collection script (Phase 2's full run included) must
+carry this check from the start, not discover it after a pilot catches it.
+
 **Enforced as code, not just this instruction** (2026-09-16, same day this
 was named -- per the "rules without enforcement recur" principle above,
 applied to itself): `tools/llm_call.py`'s `stream_complete()` is now the
