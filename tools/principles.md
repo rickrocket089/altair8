@@ -101,3 +101,15 @@ because a continuation with only its own tail and no source material has no
 way to catch itself inventing plausible-sounding facts. Verify a
 continuation's substantive claims against the source before trusting it,
 the same way any other Reported-Success Trap instance gets checked.
+
+**Enforced as code, not just this instruction** (2026-09-16, same day this
+was named -- per the "rules without enforcement recur" principle above,
+applied to itself): `tools/llm_call.py`'s `stream_complete()` is now the
+one call site for "stream a message and get the complete text back."
+It replays the full original messages (system prompt and all) with the
+partial reply appended as an assistant turn, rather than hand-extracting a
+tail excerpt -- so grounding is automatic instead of something each new
+script has to remember to reconstruct. It raises loudly if still truncated
+after its continuation budget, rather than ever returning a silently
+partial document. New scripts should call this instead of
+`client.messages.stream(...)` directly.
