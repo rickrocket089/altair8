@@ -79,6 +79,73 @@ def _meaningful_fields(field_spec: dict) -> list[str]:
     ]
 
 
+MARK_TYPES = ["point", "bar", "line", "area", "text", "tick", "rect"]
+
+
+def get_draco_candidate_set(field_spec: dict, n_candidates: int = 4, seed: int = 0) -> dict:
+    """Sprint 14: Draco as a candidate-set generator, not a single
+    recommender (Option 3 -- Draco does data-structure conformity only,
+    the Registrar ranks by audience fit separately).
+
+    Real finding while building this (2026-09-16): asking complete_spec
+    for models=N just returns N cost-equivalent variants of the SAME
+    lowest-cost mark type (different encoding/facet details), never
+    different mark types -- confirmed by testing, not assumed. To get
+    genuinely distinct candidate forms, this forces each of Draco's 7 mark
+    types as a hard constraint in turn, runs completion once per type, and
+    ranks by the resulting cost. Returns the n_candidates lowest-cost mark
+    types -- real, comparable Draco costs, not an arbitrary top-N pick.
+    """
+    df = build_synthetic_dataframe(field_spec, seed=seed)
+    schema = schema_from_dataframe(df)
+    field_facts = dict_to_facts(schema)
+
+    meaningful = _meaningful_fields(field_spec)
+    excluded = [f["field_name"] for f in field_spec["fields"] if f["field_name"] not in meaningful]
+
+    view_id = _ENTITY_ID_OFFSET
+    mark_id = _ENTITY_ID_OFFSET + 1
+    placeholder_facts = [
+        f"entity(view,root,{view_id}).",
+        f"entity(mark,{view_id},{mark_id}).",
+    ]
+    for i, fname in enumerate(meaningful):
+        enc_id = _ENTITY_ID_OFFSET + 2 + i
+        placeholder_facts.append(f"entity(encoding,{mark_id},{enc_id}).")
+        placeholder_facts.append(f"attribute((encoding,field),{enc_id},{fname}).")
+
+    d = drc.Draco()
+    per_type = []
+    for mt in MARK_TYPES:
+        forced = field_facts + placeholder_facts + [f"attribute((mark,type),{mark_id},{mt})."]
+        try:
+            model = next(d.complete_spec(forced, models=1))
+            spec_dict = answer_set_to_dict(model.answer_set)
+            views = spec_dict.get("view") or []
+            mark = views[0]["mark"][0] if views and views[0].get("mark") else {}
+            encodings = [
+                {"field": e.get("field"), "channel": e.get("channel")}
+                for e in mark.get("encoding", [])
+            ]
+            per_type.append({
+                "mark_type": mt, "cost": sum(model.cost), "encodings": encodings,
+                "satisfiable": True,
+            })
+        except StopIteration:
+            per_type.append({"mark_type": mt, "cost": None, "encodings": [], "satisfiable": False})
+
+    satisfiable = [p for p in per_type if p["satisfiable"]]
+    satisfiable.sort(key=lambda p: p["cost"])
+    candidates = satisfiable[:n_candidates]
+
+    return {
+        "candidates": candidates,  # lowest cost first = Draco's own preference order
+        "all_mark_types_tested": per_type,
+        "encoded_fields": meaningful,
+        "excluded_id_fields": excluded,
+    }
+
+
 def get_draco_recommendation(field_spec: dict, seed: int = 0) -> dict:
     """Returns {"mark_type": str, "encodings": [{"field","channel"}, ...],
     "raw_spec": dict, "encoded_fields": [...], "excluded_id_fields": [...]}."""
