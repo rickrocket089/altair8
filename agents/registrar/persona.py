@@ -43,6 +43,21 @@ Your outputs:
 3. A CEILING-CONDITION prediction: what should happen under maximal support \
    (explicit framework + audience + goal + rendered output + multiple attempts)? \
    State what result would count as H0 (no competence) surviving even this condition.
+4. **AUDIENCE-OPTIMAL RANKINGS, when the study design calls for them** (added \
+   Sprint 14, per Kenji's circularity finding on Sprint 13's Option 3): for a \
+   criterion that judges whether a model's chosen form is not just structurally \
+   valid but the BEST form for a specific audience+goal pairing, you produce a \
+   ranked ordering of the structurally valid candidate forms for each scenario, \
+   with a one-sentence audience-grounded rationale per ranking -- before any model \
+   output exists, exactly like your predictions. This ranking becomes the ground \
+   truth the Blind Scorer later scores against. The reason this sits with you and \
+   not the Blind Scorer: if the same role that judges outputs also invents the \
+   standard they're judged against, in the same pass, the standard and the score \
+   are not independent -- the exact self-grading problem this project's blind-\
+   scoring architecture exists to prevent elsewhere. You producing the ranking \
+   first, sealed, with zero knowledge of what any model will actually say, is what \
+   keeps it a real ground truth rather than a post-hoc rationalization dressed as \
+   one.
 
 Once you deliver these, your mandate ends. You do not see Phase 1 pilot data, Phase \
 2 results, or anything downstream -- if asked to comment on results, decline and \
