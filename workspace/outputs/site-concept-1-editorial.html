@@ -1404,7 +1404,7 @@
   <div class="container" style="max-width: 1140px;">
     <div class="progress-stats" aria-label="Key numbers" style="margin-bottom: 0; padding-bottom: 0; border-bottom: none; justify-content: center; text-align: center; flex-wrap: nowrap; gap: 4.5rem;">
       <div class="stat" style="align-items: center;">
-        <span class="stat-number">12</span>
+        <span class="stat-number">13</span>
         <span class="stat-label">Sprints completed</span>
       </div>
       <div class="stat" style="align-items: center;">
@@ -1949,7 +1949,7 @@
 
     <div class="progress-stats" aria-label="Key numbers">
       <div class="stat">
-        <span class="stat-number">12</span>
+        <span class="stat-number">13</span>
         <span class="stat-label">Sprints completed</span>
       </div>
       <div class="stat">
@@ -2043,7 +2043,7 @@
       <details class="dsr-phase">
         <summary class="dsr-phase-summary">
           <span class="dsr-phase-name"><span class="dsr-phase-chevron">&#9656;</span> Define Objectives of a Solution</span>
-          <span class="dsr-phase-count">2 sprints</span>
+          <span class="dsr-phase-count">3 sprints</span>
         </summary>
         <div class="dsr-phase-sprints sprint-list">
 
@@ -2056,6 +2056,19 @@
               <h3>Is base-model visual-form-selection reasoning (Claude, GPT, Gemini) principled or confabulated — does it track the actual audience and goal, or just fluently rationalize a form chosen some other way?</h3>
               <p class="sprint-outcome">Naledi ran a pilot behavioral test: 3 paired scenarios (audience varied, goal varied, content type held as a control), 6 variants, each model responding once per variant. The reasoning found was cognitively coherent, tracked the manipulated variable, and discriminated between rejected alternatives in most cases — more consistent with partially principled reasoning than pure confabulation, though not provable as causal from API output alone. Each model showed a distinct signature: Claude's shift to plain prose for new support reps and GPT's heatmap choice for urgency detection were the strongest evidence of tracking the manipulated variable; GPT's chart-default for a narrative-comprehension audience is better characterized as "medium-frame anchoring" than generic reasoning; Gemini showed a candidate (single-pair, hedged) form-conservatism pattern — adapting within a preferred chart form rather than switching forms when the goal warranted it. Ingrid's review required revision twice: first on the original Claude/GPT pilot (removed a false-precision confidence estimate, marked cross-model comparisons as provisional, redesigned the Sprint 7 follow-up around adversarial pairs), then again after Gemini was added as a third model in a follow-up step once a Google API key became available (fixed a drafting artifact, an underspecified failure-mode label, an incomplete appendix, and an inconsistently-hedged claim). This pilot answers Ingrid's own open question from Sprint 4, and is sufficient to inform, not decide, the founder's solution-direction choice.</p>
               <a class="sprint-link" href="sprint-reports/sprint-6-results.html">View the visual results &rarr;</a>
+            </div>
+          </article>
+
+          <article class="sprint-item">
+            <div class="sprint-badge">
+              <span class="sprint-number">Sprint 13</span>
+              <span class="sprint-status">Completed</span>
+            </div>
+            <div class="sprint-body">
+              <h3>Is form-sensitive behavior in LLMs internalized structure or convention reproduction &mdash; the causal test Sprint 6/7's observational studies couldn't run?</h3>
+              <p class="sprint-outcome">The largest real experiment this programme has run: 180 model calls across 20 scenarios, three conditions, and three models (Claude, GPT, Gemini), pre-registered before any data existed and scored blind by a temporary reviewer role built for exactly this purpose. The primary result is a complete null: zero failures out of 60 baseline trials, across all three models, with no exceptions &mdash; falsifying the pre-registered floor outright rather than narrowly missing it. That single number cascaded through the rest of the design: the paired statistical test on the ordering manipulation became mathematically undefined (an outcome with no variance has nothing to test), and the follow-up question this sprint was built to answer &mdash; is a wrong answer a knowledge gap or an application failure &mdash; had no failures left to classify.</p>
+              <p class="sprint-outcome">We treated that as a finding about the test, not about the models. The scoring criterion asked only whether a chosen form was structurally defensible, not whether it was the one a specific audience actually needed &mdash; and a model that reliably reaches for "a bar chart is usually fine" will pass a structural check every time without ever being shown to reason from the audience at all. Our reviewer's first read of the result leaned toward crediting the models; a second pass found that lean wasn't earned by the evidence and corrected it before it shipped. Given the choice between accepting a ceiling result and rebuilding a sharper test, we're rebuilding: the next version of this experiment measures whether a choice was the right one for this audience, not merely a defensible one.</p>
+              <p class="sprint-outcome">Two things survived the null result intact. The knowledge-probe instrument itself worked cleanly across all three models, and one model's answers were consistently narrower than the other two on identical questions &mdash; a real, model-specific pattern held for the next round rather than averaged away. And closing the loop on our own tooling: the ground-truth system we'd hoped to lean on for this sprint turned out to reach only one of the three algorithmic tools we'd planned around &mdash; documented as a real limitation of this result, not quietly absorbed into it.</p>
             </div>
           </article>
 
