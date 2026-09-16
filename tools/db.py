@@ -333,3 +333,33 @@ def update_backlog_item_status(item_id: int, status: str, resolved_sprint_id: in
             (status, resolved_sprint_id, item_id),
         )
         conn.commit()
+
+
+def process_review_status_block() -> str:
+    """A ready-to-paste ground-truth string for the sprint/review-cadence
+    facts every persona's process check (PROCESS REVIEW STATUS, PRELIMINARY
+    checks, etc.) keeps needing.
+
+    Added 2026-09-16 after this exact gap recurred three separate times in
+    one session, in three different scripts (chat.py, backlog_triage.py, and
+    backlog23_phase0_gate.py) -- each one either fabricated a plausible-
+    sounding cadence count or had to be told the facts by hand. Any script
+    that asks a persona to state or verify PROCESS REVIEW STATUS should call
+    this and pass the result in, rather than let the model estimate it.
+    """
+    sprints = list_sprints()
+    reviews = list_process_reviews()
+    completed = [s for s in sprints if s["status"] == "completed"]
+    last_sprint = completed[-1] if completed else None
+    last_review = reviews[-1] if reviews else None
+    if not last_sprint or not last_review:
+        return "No sprint/review data found -- do not estimate these numbers."
+    since = last_sprint["sprint_number"] - last_review["covers_sprint_to"]
+    return (
+        f"Last sprint completed: #{last_sprint['sprint_number']}\n"
+        f"Last Process Review: covers sprints "
+        f"{last_review['covers_sprint_from']}-{last_review['covers_sprint_to']}, "
+        f"conducted_by={last_review['conducted_by']}\n"
+        f"Sprints since last review: {since}\n"
+        f"Review due (>=3 sprints since): {'YES' if since >= 3 else 'no'}"
+    )

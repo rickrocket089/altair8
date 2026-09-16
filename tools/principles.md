@@ -67,3 +67,37 @@ enforcement gap, ask whether the fix is a persona instruction alone, or a
 persona instruction backed by code that runs automatically at the relevant
 trigger point (session start, sprint close, publish). Instruction-only
 fixes for enforcement gaps should be treated as provisional, not closed.
+
+## Continuation Grounding
+
+**Named:** Sprint 13, Phase 0 gate review (2026-09-16), the same day the
+Reported-Success Trap itself was named.
+
+**Statement:** When a model reply is truncated at a token limit and gets
+continued in a fresh call, the continuation must be grounded in the full
+source material (the original document/protocol being discussed, and
+everything the reply itself already committed to), not just the tail end of
+the truncated text. A continuation fed only the last ~1000-1500 characters
+of context has nothing to check new claims against, and will fill gaps with
+plausible-sounding but fabricated specifics.
+
+**What happened:** Ingrid's Sprint 13 Phase 0 gate review was truncated
+mid-sentence inside its contamination-prevention procedure. The continuation
+call was given only the last 1200 characters of her own text as context.
+When it reached the final "Gate Verdict" section, it fabricated a sample
+size, model count, and condition count that appear nowhere in the actual
+study (the real design is 20 scenarios, 3 models, 2 conditions — the
+continuation invented "N=600 scenarios x 4 models x 3 conditions" and an
+unrelated power-calculation framework). Caught by comparing the continuation
+against the real protocol before it was shown to anyone or stored as final;
+the fabricated section was discarded and regenerated with the full protocol
+and the reviewer's own prior checks as grounding.
+
+**The rule:** any truncation-continuation call must include (a) the full
+original source document being analyzed, not a summary or an excerpt, and
+(b) enough of the already-generated reply that the continuation stays
+consistent with commitments already made — but (a) matters more than (b),
+because a continuation with only its own tail and no source material has no
+way to catch itself inventing plausible-sounding facts. Verify a
+continuation's substantive claims against the source before trusting it,
+the same way any other Reported-Success Trap instance gets checked.
