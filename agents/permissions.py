@@ -48,6 +48,12 @@ PERMITTED_TOOLS = {
         # breaks the LLM-as-judge-knows-the-hypothesis coupling.
         "read_anonymized_output", "write_score",
     },
+    "knowledge_architect": {
+        # Sprint 16 only, founder-approved 2026-09-17. Design/architecture
+        # only -- explicitly no code-writing tool and no real-data access,
+        # scoped to the scaling question (question 3 of 5) and nothing else.
+        "write_brief",
+    },
 }
 
 
